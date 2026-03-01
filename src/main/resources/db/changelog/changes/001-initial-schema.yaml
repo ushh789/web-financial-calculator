@@ -1,0 +1,291 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1-create-extension-uuid-ossp
+      author: mozya
+      changes:
+        - sql:
+            sql: 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp";'
+
+  - changeSet:
+      id: 2-create-table-roles
+      author: mozya
+      changes:
+        - createTable:
+            tableName: roles
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+                  defaultValueComputed: uuid_generate_v4()
+              - column:
+                  name: name
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: description
+                  type: VARCHAR(255)
+
+  - changeSet:
+      id: 3-create-table-users
+      author: mozya
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+                  defaultValueComputed: uuid_generate_v4()
+              - column:
+                  name: username
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: email
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: first_name
+                  type: VARCHAR(100)
+              - column:
+                  name: last_name
+                  type: VARCHAR(100)
+              - column:
+                  name: profile_picture_url
+                  type: TEXT
+              - column:
+                  name: role_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_users_role
+                    references: roles(id)
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+                  defaultValueComputed: now()
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+
+  - changeSet:
+      id: 4-create-table-calculators
+      author: mozya
+      changes:
+        - createTable:
+            tableName: calculators
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+                  defaultValueComputed: uuid_generate_v4()
+              - column:
+                  name: code
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: TEXT
+              - column:
+                  name: active
+                  type: BOOLEAN
+                  constraints:
+                    nullable: false
+                  defaultValueBoolean: true
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+                  defaultValueComputed: now()
+
+  - changeSet:
+      id: 5-create-table-calculator-versions
+      author: mozya
+      changes:
+        - createTable:
+            tableName: calculator_versions
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+                  defaultValueComputed: uuid_generate_v4()
+              - column:
+                  name: calculator_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_calculator_versions_calculator
+                    references: calculators(id)
+              - column:
+                  name: version
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: algorithm_metadata
+                  type: JSONB
+              - column:
+                  name: ui_schema
+                  type: JSONB
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+                  defaultValueComputed: now()
+        - addUniqueConstraint:
+            tableName: calculator_versions
+            columnNames: calculator_id, version
+            constraintName: uq_calculator_versions_calc_ver
+
+  - changeSet:
+      id: 6-create-table-calculations
+      author: mozya
+      changes:
+        - createTable:
+            tableName: calculations
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+                  defaultValueComputed: uuid_generate_v4()
+              - column:
+                  name: user_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_calculations_user
+                    references: users(id)
+              - column:
+                  name: calculator_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_calculations_calculator
+                    references: calculators(id)
+              - column:
+                  name: calculator_version_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_calculations_calculator_version
+                    references: calculator_versions(id)
+              - column:
+                  name: currency
+                  type: VARCHAR(3)
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+                  defaultValueComputed: now()
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+        - createIndex:
+            tableName: calculations
+            indexName: idx_calculations_user
+            columns:
+              - column:
+                  name: user_id
+        - createIndex:
+            tableName: calculations
+            indexName: idx_calculations_type
+            columns:
+              - column:
+                  name: calculator_id
+        - createIndex:
+            tableName: calculations
+            indexName: idx_calculations_created
+            columns:
+              - column:
+                  name: created_at
+
+  - changeSet:
+      id: 7-create-table-calculation-scenarios
+      author: mozya
+      changes:
+        - createTable:
+            tableName: calculation_scenarios
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+                  defaultValueComputed: uuid_generate_v4()
+              - column:
+                  name: calculation_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_calculation_scenarios_calculation
+                    references: calculations(id)
+                    deleteCascade: true
+              - column:
+                  name: scenario_name
+                  type: VARCHAR(255)
+              - column:
+                  name: scenario_input
+                  type: JSONB
+                  constraints:
+                    nullable: false
+              - column:
+                  name: scenario_result
+                  type: JSONB
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+                  defaultValueComputed: now()
+
+  - changeSet:
+      id: 8-add-selected-scenario-fk
+      author: mozya
+      changes:
+        - addColumn:
+            tableName: calculations
+            columns:
+              - column:
+                  name: selected_scenario_id
+                  type: UUID
+                  constraints:
+                    foreignKeyName: fk_calculations_selected_scenario
+                    references: calculation_scenarios(id)
+                    deferrable: true
+                    initiallyDeferred: true

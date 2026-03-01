@@ -1,0 +1,553 @@
+openapi: 3.1.0
+info:
+  title: Financial Calculator API
+  version: 1.0.0
+  description: API for Financial Calculator Platform
+
+servers:
+  - url: http://localhost:8080/api
+    description: Local Development Server
+
+paths:
+  # USERS
+  /users:
+    get:
+      summary: Get all users
+      operationId: getAllUsers
+      tags: [Users]
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: List of users
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageUserDto'
+    post:
+      summary: Create a new user
+      operationId: createUser
+      tags: [Users]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserRequest'
+      responses:
+        '201':
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDto'
+
+  /users/{id}:
+    get:
+      summary: Get user by ID
+      operationId: getUserById
+      tags: [Users]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: User found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDto'
+        '404':
+          description: User not found
+
+    delete:
+      summary: Delete user
+      operationId: deleteUser
+      tags: [Users]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: User deleted
+
+  # CALCULATORS
+  /calculators:
+    get:
+      summary: Get all calculators
+      operationId: getAllCalculators
+      tags: [Calculators]
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: List of calculators
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageCalculatorDto'
+    post:
+      summary: Create a new calculator
+      operationId: createCalculator
+      tags: [Calculators]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCalculatorRequest'
+      responses:
+        '201':
+          description: Calculator created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CalculatorDto'
+
+  /calculators/{id}:
+    get:
+      summary: Get calculator by ID
+      operationId: getCalculatorById
+      tags: [Calculators]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Calculator found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CalculatorDto'
+
+  /calculators/{id}/versions:
+    get:
+      summary: Get calculator versions
+      operationId: getCalculatorVersions
+      tags: [Calculators]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: List of versions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CalculatorVersionDto'
+    post:
+      summary: Add a new version
+      operationId: addCalculatorVersion
+      tags: [Calculators]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateVersionRequest'
+      responses:
+        '201':
+          description: Version added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CalculatorVersionDto'
+
+  # CALCULATIONS
+  /calculations:
+    get:
+      summary: Get user calculations
+      operationId: getCalculations
+      tags: [Calculations]
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: List of calculations
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageCalculationDto'
+    post:
+      summary: Create a new calculation
+      operationId: createCalculation
+      tags: [Calculations]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCalculationRequest'
+      responses:
+        '201':
+          description: Calculation created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CalculationDto'
+
+  /calculations/{id}/scenarios:
+    get:
+      summary: Get scenarios for calculation
+      operationId: getScenarios
+      tags: [Calculations]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: List of scenarios
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CalculationScenarioDto'
+    post:
+      summary: Add a scenario
+      operationId: addScenario
+      tags: [Calculations]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateScenarioRequest'
+      responses:
+        '201':
+          description: Scenario added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CalculationScenarioDto'
+
+  /calculations/{id}/select-scenario/{scenarioId}:
+    put:
+      summary: Select active scenario
+      operationId: selectScenario
+      tags: [Calculations]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: scenarioId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Scenario selected
+
+components:
+  schemas:
+    # USERS
+    UserDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        username:
+          type: string
+        email:
+          type: string
+          format: email
+        firstName:
+          type: string
+        lastName:
+          type: string
+        profilePictureUrl:
+          type: string
+        role:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    CreateUserRequest:
+      type: object
+      required: [username, email]
+      properties:
+        username:
+          type: string
+          minLength: 3
+          maxLength: 100
+        email:
+          type: string
+          format: email
+        firstName:
+          type: string
+        lastName:
+          type: string
+        profilePictureUrl:
+          type: string
+        role:
+          type: string
+
+    PageUserDto:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserDto'
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+        size:
+          type: integer
+        number:
+          type: integer
+
+    # CALCULATORS
+    CalculatorDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        code:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        active:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+
+    CreateCalculatorRequest:
+      type: object
+      required: [code, name, algorithmMetadata, uiSchema]
+      properties:
+        code:
+          type: string
+          pattern: '^[a-zA-Z0-9_-]+$'
+        name:
+          type: string
+        description:
+          type: string
+        algorithmMetadata:
+          type: object
+          additionalProperties: true
+        uiSchema:
+          type: object
+          additionalProperties: true
+
+    CalculatorVersionDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        calculatorId:
+          type: string
+          format: uuid
+        version:
+          type: integer
+        algorithmMetadata:
+          type: object
+          additionalProperties: true
+        uiSchema:
+          type: object
+          additionalProperties: true
+        createdAt:
+          type: string
+          format: date-time
+
+    CreateVersionRequest:
+      type: object
+      required: [algorithmMetadata, uiSchema]
+      properties:
+        algorithmMetadata:
+          type: object
+          additionalProperties: true
+        uiSchema:
+          type: object
+          additionalProperties: true
+
+    PageCalculatorDto:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/CalculatorDto'
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+        size:
+          type: integer
+        number:
+          type: integer
+
+    # CALCULATIONS
+    CalculationDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        calculatorId:
+          type: string
+          format: uuid
+        calculatorVersionId:
+          type: string
+          format: uuid
+        currency:
+          type: string
+        selectedScenarioId:
+          type: string
+          format: uuid
+        createdAt:
+          type: string
+          format: date-time
+
+    CreateCalculationRequest:
+      type: object
+      required: [userId, calculatorId, inputData]
+      properties:
+        userId:
+          type: string
+          format: uuid
+        calculatorId:
+          type: string
+          format: uuid
+        inputData:
+          type: object
+          additionalProperties: true
+        currency:
+          type: string
+          minLength: 3
+          maxLength: 3
+
+    CalculationScenarioDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        calculationId:
+          type: string
+          format: uuid
+        scenarioName:
+          type: string
+        scenarioInput:
+          type: object
+          additionalProperties: true
+        scenarioResult:
+          type: object
+          additionalProperties: true
+        createdAt:
+          type: string
+          format: date-time
+
+    CreateScenarioRequest:
+      type: object
+      required: [scenarioInput]
+      properties:
+        scenarioName:
+          type: string
+        scenarioInput:
+          type: object
+          additionalProperties: true
+
+    PageCalculationDto:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/CalculationDto'
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+        size:
+          type: integer
+        number:
+          type: integer

@@ -1,0 +1,65 @@
+databaseChangeLog:
+  - changeSet:
+      id: 10-insert-default-roles
+      author: mozya
+      changes:
+        - insert:
+            tableName: roles
+            columns:
+              - column: { name: name, value: "USER" }
+              - column: { name: description, value: "Default user" }
+        - insert:
+            tableName: roles
+            columns:
+              - column: { name: name, value: "ADMIN" }
+              - column: { name: description, value: "Administrator" }
+
+  - changeSet:
+      id: 11-insert-test-user
+      author: mozya
+      changes:
+        - sql:
+            sql: "INSERT INTO users (username, email, role_id) SELECT 'testuser', 'test@example.com', id FROM roles WHERE name = 'USER';"
+
+  - changeSet:
+      id: 12-insert-mortgage-calculator
+      author: mozya
+      changes:
+        - insert:
+            tableName: calculators
+            columns:
+              - column: { name: code, value: "MORTGAGE_ANNUITY" }
+              - column: { name: name, value: "Mortgage Calculator (Annuity)" }
+              - column: { name: description, value: "Standard mortgage calculator with annuity payments." }
+        - sql:
+            sql: >
+              INSERT INTO calculator_versions (calculator_id, version, algorithm_metadata, ui_schema)
+              SELECT 
+                c.id, 
+                1,
+                '{
+                  "type": "LOAN",
+                  "interest": {
+                    "method": "SIMPLE",
+                    "dayCountConvention": "ACTUAL_365",
+                    "rateType": "FIXED",
+                    "accrualFrequency": "DAILY",
+                    "compoundingFrequency": null
+                  },
+                  "repayment": {
+                    "strategy": "ANNUITY",
+                    "frequency": "MONTHLY"
+                  },
+                  "defaultParameters": {
+                    "roundingScale": 2,
+                    "roundingMode": "HALF_UP"
+                  }
+                }'::jsonb,
+                '{
+                  "fields": [
+                    { "name": "amount", "label": "Loan Amount", "type": "number", "defaultValue": 100000 },
+                    { "name": "rate", "label": "Annual Rate (%)", "type": "number", "defaultValue": 12 },
+                    { "name": "term", "label": "Term (in months)", "type": "number", "defaultValue": 24 }
+                  ]
+                }'::jsonb
+              FROM calculators c WHERE c.code = 'MORTGAGE_ANNUITY';
