@@ -5,7 +5,8 @@
 # Default ignored files
 /shelf/
 /workspace.xml
-/.idea
+/api/.idea
+.idea
 
 logs/
 HELP.md
@@ -24,11 +25,11 @@ target/
 .sts4-cache
 
 ### IntelliJ IDEA ###
-.idea
+api/.idea
 *.iws
 *.iml
 *.ipr
-.idea/
+api/.idea/
 
 ### NetBeans ###
 /nbproject/private/
