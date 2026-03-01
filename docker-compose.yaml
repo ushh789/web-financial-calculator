@@ -1,0 +1,48 @@
+services:
+  db:
+    image: postgres:18.3-alpine
+    container_name: financial-calc-db
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5431:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - financial_calc_network
+
+  api:
+    build: ./api
+    container_name: financial-calc-api
+    ports:
+      - "8080:8080"
+    environment:
+      DB_URL: ${DB_URL}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+    depends_on:
+      - db
+    restart: on-failure
+    networks:
+      - financial_calc_network
+
+  ui:
+    build: ./ui
+    container_name: financial-calc-ui
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api
+    restart: on-failure
+    networks:
+      - financial_calc_network
+
+
+networks:
+  financial_calc_network:
+    driver: bridge
+
+volumes:
+  db_data:
