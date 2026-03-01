@@ -1,20 +1,24 @@
 spring:
+  application:
+    name: financial-calc
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: ${TEST_DB_URL}
-    username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:postgres}
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
   liquibase:
     enabled: true
     change-log: classpath:db/changelog/db.changelog-master.yaml
-    url: ${TEST_DB_URL}
-    user: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:postgres}
-    drop-first: true
+    url: ${DB_URL}
+    user: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
   jpa:
-    hibernate:
-      ddl-auto: validate
+    open-in-view: false
     properties:
       hibernate:
         type:
           json_format_mapper: org.hibernate.type.format.jackson.JacksonJsonFormatMapper
+
+springdoc:
+  swagger-ui:
+    url: /v3/api-docs
