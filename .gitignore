@@ -11,6 +11,7 @@
 logs/
 HELP.md
 target/
+api/out
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**
 !**/src/test/**
