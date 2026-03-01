@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "generate:api": "openapi-generator-cli generate -i ../api/src/main/resources/openapi/api.yaml -g typescript-fetch -o src/generated --additional-properties=apiPackage=client,modelPackage=types,typescriptThreePlus=true"
   },
   "dependencies": {
     "react": "^19.2.0",
@@ -19,6 +20,8 @@
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.1",
+    "@openapitools/openapi-generator-cli": "^2.16.0",
+    "sass": "^1.81.0",
     "eslint": "^9.39.1",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",
