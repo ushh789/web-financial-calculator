@@ -26,4 +26,5 @@ public abstract class UiField {
     private FieldType type;
     private boolean required;
     private Object defaultValue;
+    private int order;
 }
