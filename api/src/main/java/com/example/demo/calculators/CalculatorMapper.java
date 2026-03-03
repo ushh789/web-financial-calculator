@@ -4,19 +4,47 @@ import com.example.demo.common.DateTimeMapper;
 import com.example.demo.model.CalculatorDto;
 import com.example.demo.model.CalculatorVersionDto;
 import com.example.demo.model.CreateCalculatorRequest;
+import com.example.demo.model.FinancialProductDefinitionDto;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Map;
 
 @Mapper(componentModel = "spring", uses = {DateTimeMapper.class})
-public interface CalculatorMapper {
+public abstract class CalculatorMapper {
 
-    CalculatorDto toDto(Calculator calculator);
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    public abstract CalculatorDto toDto(Calculator calculator);
 
     @Mapping(source = "calculator.id", target = "calculatorId")
-    CalculatorVersionDto toDto(CalculatorVersion version);
+    public abstract CalculatorVersionDto toDto(CalculatorVersion version);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "active", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
-    Calculator toEntity(CreateCalculatorRequest request);
+    public abstract Calculator toEntity(CreateCalculatorRequest request);
+
+    /**
+     * Converts Map (from Entity) to FinancialProductDefinitionDto (for DTO).
+     */
+    public FinancialProductDefinitionDto mapToFinancialProductDefinitionDto(Map<String, Object> map) {
+        if (map == null) {
+            return null;
+        }
+        return objectMapper.convertValue(map, FinancialProductDefinitionDto.class);
+    }
+
+    /**
+     * Converts FinancialProductDefinitionDto (from Request) to Map (for Entity).
+     */
+    public Map<String, Object> financialProductDefinitionDtoToMap(FinancialProductDefinitionDto dto) {
+        if (dto == null) {
+            return null;
+        }
+        return objectMapper.convertValue(dto, Map.class);
+    }
 }

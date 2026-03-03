@@ -3,6 +3,7 @@ package com.example.demo.calculations;
 import com.example.demo.common.CalculationResult;
 import com.example.demo.common.DateTimeMapper;
 import com.example.demo.model.CalculationDto;
+import com.example.demo.model.CalculationInputDto;
 import com.example.demo.model.CalculationScenarioDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.mapstruct.Mapper;
@@ -24,13 +25,32 @@ public abstract class CalculationMapper {
     public abstract CalculationScenarioDto toDto(CalculationScenario scenario);
 
     /**
-     * This method will be automatically used by MapStruct to convert
-     * CalculationResult to Map<String, Object>.
+     * Converts CalculationResult to Map for DTO.
      */
     public Map<String, Object> calculationResultToMap(CalculationResult result) {
         if (result == null) {
             return null;
         }
         return objectMapper.convertValue(result, Map.class);
+    }
+
+    /**
+     * Converts Map (from Entity) to CalculationInputDto (for DTO).
+     */
+    public CalculationInputDto mapToCalculationInputDto(Map<String, Object> map) {
+        if (map == null) {
+            return null;
+        }
+        return objectMapper.convertValue(map, CalculationInputDto.class);
+    }
+
+    /**
+     * Converts CalculationInputDto (from Request) to Map (for Entity).
+     */
+    public Map<String, Object> calculationInputDtoToMap(CalculationInputDto dto) {
+        if (dto == null) {
+            return null;
+        }
+        return objectMapper.convertValue(dto, Map.class);
     }
 }

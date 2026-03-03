@@ -4,6 +4,7 @@ import com.example.demo.model.CalculatorDto;
 import com.example.demo.model.CalculatorVersionDto;
 import com.example.demo.model.CreateCalculatorRequest;
 import com.example.demo.model.CreateVersionRequest;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -22,6 +24,7 @@ public class CalculatorService {
     private final CalculatorRepository calculatorRepository;
     private final CalculatorVersionRepository versionRepository;
     private final CalculatorMapper mapper;
+    private final ObjectMapper objectMapper;
 
     @Transactional(readOnly = true)
     public Page<CalculatorDto> findAll(Pageable pageable) {
@@ -50,11 +53,15 @@ public class CalculatorService {
         Calculator calculator = mapper.toEntity(request);
         calculator = calculatorRepository.save(calculator);
 
+        // Convert DTOs to Maps for Entity
+        Map<String, Object> metadataMap = objectMapper.convertValue(request.getAlgorithmMetadata(), Map.class);
+        Map<String, Object> uiSchemaMap = objectMapper.convertValue(request.getUiSchema(), Map.class);
+
         CalculatorVersion version = new CalculatorVersion();
         version.setCalculator(calculator);
         version.setVersion(1);
-        version.setAlgorithmMetadata(request.getAlgorithmMetadata());
-        version.setUiSchema(request.getUiSchema());
+        version.setAlgorithmMetadata(metadataMap);
+        version.setUiSchema(uiSchemaMap);
         versionRepository.save(version);
 
         return mapper.toDto(calculator);
@@ -71,11 +78,15 @@ public class CalculatorService {
                 .map(v -> v.getVersion() + 1)
                 .orElse(1);
 
+        // Convert DTOs to Maps
+        Map<String, Object> metadataMap = objectMapper.convertValue(request.getAlgorithmMetadata(), Map.class);
+        Map<String, Object> uiSchemaMap = objectMapper.convertValue(request.getUiSchema(), Map.class);
+
         CalculatorVersion version = new CalculatorVersion();
         version.setCalculator(calculator);
         version.setVersion(nextVersion);
-        version.setAlgorithmMetadata(request.getAlgorithmMetadata());
-        version.setUiSchema(request.getUiSchema());
+        version.setAlgorithmMetadata(metadataMap);
+        version.setUiSchema(uiSchemaMap);
 
         return mapper.toDto(versionRepository.save(version));
     }
