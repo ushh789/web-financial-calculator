@@ -29,7 +29,9 @@ services:
       - financial_calc_network
 
   ui:
-    build: ./ui
+    build:
+      context: .
+      dockerfile: ui/Dockerfile
     container_name: financial-calc-ui
     ports:
       - "5173:5173"
