@@ -1,5 +1,5 @@
 ﻿import { useMemo, useState, type FormEvent } from 'react'
-import { CalculatorsApi, type CreateCalculatorRequest } from '../generated'
+import { CalculatorsApi, type CreateCalculatorRequest, type FinancialProductDefinitionDto } from '../generated'
 
 type UiField = {
   id: string
@@ -13,9 +13,26 @@ type CreateCalculatorFormState = {
     code: string
     name: string
     description: string
-    algorithmEngine: string
-    algorithmInputs: string
-    algorithmOutputs: string
+    algorithmType: string
+    interestMethod: string
+    interestDayCountConvention: string
+    interestRateType: string
+    interestAccrualFrequency: string
+    interestCompoundingFrequency: string
+    repaymentStrategy: string
+    repaymentFrequency: string
+    constraintsMinAmount: string
+    constraintsMaxAmount: string
+    constraintsMinTerm: string
+    constraintsMaxTerm: string
+    constraintsMinRate: string
+    constraintsMaxRate: string
+    defaultsFixedRate: string
+    defaultsDefaultRate: string
+    defaultsDefaultTerm: string
+    defaultsCurrency: string
+    defaultsRoundingScale: string
+    defaultsRoundingMode: string
     uiTitle: string
   }
   uiFields: UiField[]
@@ -26,15 +43,12 @@ type CreateCalculatorFormState = {
   isSubmitting: boolean
   updateField: (field: keyof CreateCalculatorFormState['formData'], value: string) => void
   updateUiField: (index: number, patch: Partial<UiField>) => void
+  moveUiField: (fromIndex: number, toIndex: number) => void
   addUiField: () => void
   removeUiField: (index: number) => void
   resetForm: () => void
   derivedPayload: {
-    algorithmMetadata: {
-      engine: string
-      inputs: string[]
-      outputs: string[]
-    }
+    algorithmMetadata: FinancialProductDefinitionDto
     uiSchema: {
       title: string
       fields: Array<{
@@ -42,27 +56,50 @@ type CreateCalculatorFormState = {
         label: string
         type: string
         required?: boolean
+        order: number
       }>
-      layout: string[][]
     }
   }
   handleSubmit: (event: FormEvent<HTMLFormElement>) => Promise<void>
 }
 
-const buildList = (value: string) =>
-  value
-    .split(',')
-    .map((item) => item.trim())
-    .filter(Boolean)
+const parseOptionalNumber = (value: string) => {
+  const trimmed = value.trim()
+  if (!trimmed) return undefined
+  const parsed = Number(trimmed)
+  return Number.isFinite(parsed) ? parsed : undefined
+}
+
+const parseOptionalString = (value: string) => {
+  const trimmed = value.trim()
+  return trimmed ? trimmed : undefined
+}
 
 export const useCreateCalculatorForm = (): CreateCalculatorFormState => {
   const [formData, setFormData] = useState({
     code: '',
     name: '',
     description: '',
-    algorithmEngine: 'amortization-v1',
-    algorithmInputs: 'principal, rate, termYears, extraPayment',
-    algorithmOutputs: 'totalInterest, payoffDate, paymentSchedule',
+    algorithmType: 'LOAN',
+    interestMethod: 'SIMPLE',
+    interestDayCountConvention: 'ACTUAL_365',
+    interestRateType: 'FIXED',
+    interestAccrualFrequency: '',
+    interestCompoundingFrequency: '',
+    repaymentStrategy: 'ANNUITY',
+    repaymentFrequency: 'MONTHLY',
+    constraintsMinAmount: '',
+    constraintsMaxAmount: '',
+    constraintsMinTerm: '',
+    constraintsMaxTerm: '',
+    constraintsMinRate: '',
+    constraintsMaxRate: '',
+    defaultsFixedRate: '',
+    defaultsDefaultRate: '',
+    defaultsDefaultTerm: '',
+    defaultsCurrency: '',
+    defaultsRoundingScale: '',
+    defaultsRoundingMode: '',
     uiTitle: 'Mortgage Payoff Planner',
   })
   const [uiFields, setUiFields] = useState<UiField[]>([
@@ -85,6 +122,19 @@ export const useCreateCalculatorForm = (): CreateCalculatorFormState => {
     setUiFields((prev) => prev.map((field, i) => (i === index ? { ...field, ...patch } : field)))
   }
 
+  const moveUiField = (fromIndex: number, toIndex: number) => {
+    if (fromIndex === toIndex) return
+    setUiFields((prev) => {
+      if (fromIndex < 0 || toIndex < 0 || fromIndex >= prev.length || toIndex >= prev.length) {
+        return prev
+      }
+      const next = [...prev]
+      const [moved] = next.splice(fromIndex, 1)
+      next.splice(toIndex, 0, moved)
+      return next
+    })
+  }
+
   const addUiField = () => {
     setUiFields((prev) => [
       ...prev,
@@ -101,9 +151,26 @@ export const useCreateCalculatorForm = (): CreateCalculatorFormState => {
       code: '',
       name: '',
       description: '',
-      algorithmEngine: 'amortization-v1',
-      algorithmInputs: 'principal, rate, termYears, extraPayment',
-      algorithmOutputs: 'totalInterest, payoffDate, paymentSchedule',
+      algorithmType: 'LOAN',
+      interestMethod: 'SIMPLE',
+      interestDayCountConvention: 'ACTUAL_365',
+      interestRateType: 'FIXED',
+      interestAccrualFrequency: '',
+      interestCompoundingFrequency: '',
+      repaymentStrategy: 'ANNUITY',
+      repaymentFrequency: 'MONTHLY',
+      constraintsMinAmount: '',
+      constraintsMaxAmount: '',
+      constraintsMinTerm: '',
+      constraintsMaxTerm: '',
+      constraintsMinRate: '',
+      constraintsMaxRate: '',
+      defaultsFixedRate: '',
+      defaultsDefaultRate: '',
+      defaultsDefaultTerm: '',
+      defaultsCurrency: '',
+      defaultsRoundingScale: '',
+      defaultsRoundingMode: '',
       uiTitle: 'Mortgage Payoff Planner',
     })
     setUiFields([
@@ -116,24 +183,91 @@ export const useCreateCalculatorForm = (): CreateCalculatorFormState => {
   }
 
   const derivedPayload = useMemo(() => {
+    const constraints = {
+      minAmount: parseOptionalNumber(formData.constraintsMinAmount),
+      maxAmount: parseOptionalNumber(formData.constraintsMaxAmount),
+      minTerm: parseOptionalNumber(formData.constraintsMinTerm),
+      maxTerm: parseOptionalNumber(formData.constraintsMaxTerm),
+      minRate: parseOptionalNumber(formData.constraintsMinRate),
+      maxRate: parseOptionalNumber(formData.constraintsMaxRate),
+    }
+    const defaults = {
+      fixedRate: parseOptionalNumber(formData.defaultsFixedRate),
+      defaultRate: parseOptionalNumber(formData.defaultsDefaultRate),
+      defaultTerm: parseOptionalNumber(formData.defaultsDefaultTerm),
+      currency: parseOptionalString(formData.defaultsCurrency),
+      roundingScale: parseOptionalNumber(formData.defaultsRoundingScale),
+      roundingMode: parseOptionalString(formData.defaultsRoundingMode),
+    }
+    const hasConstraints = Object.values(constraints).some((value) => value !== undefined)
+    const hasDefaults = Object.values(defaults).some((value) => value !== undefined)
+
     return {
       algorithmMetadata: {
-        engine: formData.algorithmEngine.trim(),
-        inputs: buildList(formData.algorithmInputs),
-        outputs: buildList(formData.algorithmOutputs),
+        type: formData.algorithmType as FinancialProductDefinitionDto['type'],
+        interest: {
+          method: formData.interestMethod as FinancialProductDefinitionDto['interest']['method'],
+          dayCountConvention:
+            formData.interestDayCountConvention as FinancialProductDefinitionDto['interest']['dayCountConvention'],
+          rateType: formData.interestRateType as FinancialProductDefinitionDto['interest']['rateType'],
+          accrualFrequency: parseOptionalString(formData.interestAccrualFrequency) as
+            | FinancialProductDefinitionDto['interest']['accrualFrequency']
+            | undefined,
+          compoundingFrequency: parseOptionalString(formData.interestCompoundingFrequency) as
+            | FinancialProductDefinitionDto['interest']['compoundingFrequency']
+            | undefined,
+        },
+        repayment: {
+          strategy: formData.repaymentStrategy as FinancialProductDefinitionDto['repayment']['strategy'],
+          frequency: formData.repaymentFrequency as FinancialProductDefinitionDto['repayment']['frequency'],
+        },
+        constraints: hasConstraints ? constraints : undefined,
+        defaults: hasDefaults
+          ? {
+              fixedRate: defaults.fixedRate,
+              defaultRate: defaults.defaultRate,
+              defaultTerm: defaults.defaultTerm,
+              currency: defaults.currency,
+              roundingScale: defaults.roundingScale,
+              roundingMode: defaults.roundingMode,
+            }
+          : undefined,
       },
       uiSchema: {
         title: formData.uiTitle.trim(),
-        fields: uiFields.map((field) => ({
+        fields: uiFields.map((field, index) => ({
           id: field.id.trim(),
           label: field.label.trim(),
           type: field.type,
           required: field.required || undefined,
+          order: index + 1,
         })),
-        layout: uiFields.map((field) => [field.id.trim()]).filter((item) => item[0]),
       },
     }
-  }, [formData.algorithmEngine, formData.algorithmInputs, formData.algorithmOutputs, formData.uiTitle, uiFields])
+  }, [
+    formData.algorithmType,
+    formData.interestMethod,
+    formData.interestDayCountConvention,
+    formData.interestRateType,
+    formData.interestAccrualFrequency,
+    formData.interestCompoundingFrequency,
+    formData.repaymentStrategy,
+    formData.repaymentFrequency,
+    formData.constraintsMinAmount,
+    formData.constraintsMaxAmount,
+    formData.constraintsMinTerm,
+    formData.constraintsMaxTerm,
+    formData.constraintsMinRate,
+    formData.constraintsMaxRate,
+    formData.defaultsFixedRate,
+    formData.defaultsDefaultRate,
+    formData.defaultsDefaultTerm,
+    formData.defaultsCurrency,
+    formData.defaultsRoundingScale,
+    formData.defaultsRoundingMode,
+    formData.uiTitle,
+    uiFields,
+  ])
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -186,6 +320,7 @@ export const useCreateCalculatorForm = (): CreateCalculatorFormState => {
     isSubmitting,
     updateField,
     updateUiField,
+    moveUiField,
     addUiField,
     removeUiField,
     resetForm,
