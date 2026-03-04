@@ -314,7 +314,38 @@ paths:
 
 components:
   schemas:
-    # USERS
+    ProductType:
+      type: string
+      enum: [LOAN, DEPOSIT]
+    
+    InterestMethod:
+      type: string
+      enum: [SIMPLE, COMPOUND]
+    
+    DayCountConvention:
+      type: string
+      enum: [ACTUAL_365, ACTUAL_360, THIRTY_360, ACTUAL_ACTUAL]
+    
+    RateType:
+      type: string
+      enum: [FIXED, FLOATING]
+    
+    Frequency:
+      type: string
+      enum: [ONCE, DAILY, WEEKLY, BI_WEEKLY, MONTHLY, QUARTERLY, SEMI_ANNUALLY, ANNUALLY]
+    
+    AmortizationType:
+      type: string
+      enum: [ANNUITY, LINEAR, BULLET, ZERO_COUPON]
+    
+    CurrencyCode:
+      type: string
+      enum: [USD, EUR, UAH, GBP]
+    
+    RoundingMode:
+      type: string
+      enum: [UP, DOWN, CEILING, FLOOR, HALF_UP, HALF_DOWN, HALF_EVEN, UNNECESSARY]
+
     UserDto:
       type: object
       properties:
@@ -375,7 +406,6 @@ components:
         number:
           type: integer
 
-    # CALCULATORS
     CalculatorDto:
       type: object
       properties:
@@ -396,7 +426,7 @@ components:
 
     CreateCalculatorRequest:
       type: object
-      required: [code, name, algorithmMetadata, uiSchema]
+      required: [code, name, algorithmMetadata]
       properties:
         code:
           type: string
@@ -407,9 +437,6 @@ components:
           type: string
         algorithmMetadata:
           $ref: '#/components/schemas/FinancialProductDefinitionDto'
-        uiSchema:
-          type: object
-          additionalProperties: true
 
     CalculatorVersionDto:
       type: object
@@ -424,30 +451,23 @@ components:
           type: integer
         algorithmMetadata:
           $ref: '#/components/schemas/FinancialProductDefinitionDto'
-        uiSchema:
-          type: object
-          additionalProperties: true
         createdAt:
           type: string
           format: date-time
 
     CreateVersionRequest:
       type: object
-      required: [algorithmMetadata, uiSchema]
+      required: [algorithmMetadata]
       properties:
         algorithmMetadata:
           $ref: '#/components/schemas/FinancialProductDefinitionDto'
-        uiSchema:
-          type: object
-          additionalProperties: true
 
     FinancialProductDefinitionDto:
       type: object
       required: [type, interest, repayment]
       properties:
         type:
-          type: string
-          enum: [LOAN, DEPOSIT]
+          $ref: '#/components/schemas/ProductType'
         interest:
           $ref: '#/components/schemas/InterestConfigDto'
         repayment:
@@ -462,31 +482,24 @@ components:
       required: [method, dayCountConvention, rateType]
       properties:
         method:
-          type: string
-          enum: [SIMPLE, COMPOUND]
+          $ref: '#/components/schemas/InterestMethod'
         dayCountConvention:
-          type: string
-          enum: [ACTUAL_365, ACTUAL_360, THIRTY_360, ACTUAL_ACTUAL]
+          $ref: '#/components/schemas/DayCountConvention'
         rateType:
-          type: string
-          enum: [FIXED, FLOATING]
+          $ref: '#/components/schemas/RateType'
         accrualFrequency:
-          type: string
-          enum: [DAILY, MONTHLY, QUARTERLY, ANNUALLY]
+          $ref: '#/components/schemas/Frequency'
         compoundingFrequency:
-          type: string
-          enum: [DAILY, MONTHLY, QUARTERLY, ANNUALLY]
+          $ref: '#/components/schemas/Frequency'
 
     RepaymentConfigDto:
       type: object
       required: [strategy, frequency]
       properties:
         strategy:
-          type: string
-          enum: [ANNUITY, LINEAR, ZERO_COUPON]
+          $ref: '#/components/schemas/AmortizationType'
         frequency:
-          type: string
-          enum: [MONTHLY, QUARTERLY, ANNUALLY, AT_MATURITY]
+          $ref: '#/components/schemas/Frequency'
 
     ProductConstraintsDto:
       type: object
@@ -509,20 +522,14 @@ components:
       properties:
         fixedRate:
           type: number
-          description: "If set, user cannot change rate"
-        defaultRate:
-          type: number
-        defaultTerm:
-          type: integer
         currency:
-          type: string
+          $ref: '#/components/schemas/CurrencyCode'
           default: "USD"
         roundingScale:
           type: integer
           default: 2
         roundingMode:
-          type: string
-          enum: [UP, DOWN, CEILING, FLOOR, HALF_UP, HALF_DOWN, HALF_EVEN, UNNECESSARY]
+          $ref: '#/components/schemas/RoundingMode'
           default: "HALF_UP"
 
     CalculationInputDto:
@@ -535,16 +542,9 @@ components:
           type: number
         term:
           type: integer
-          description: "Duration in periods (e.g. months)"
         startDate:
           type: string
           format: date
-        endDate:
-          type: string
-          format: date
-        paymentFrequency:
-          type: string
-          enum: [MONTHLY, QUARTERLY, ANNUALLY, AT_MATURITY]
 
     PageCalculatorDto:
       type: object
@@ -563,7 +563,6 @@ components:
         number:
           type: integer
 
-    # CALCULATIONS
     CalculationDto:
       type: object
       properties:

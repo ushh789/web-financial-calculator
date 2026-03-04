@@ -1,15 +1,16 @@
 package com.example.demo.calculations;
 
 import com.example.demo.calculations.engine.StandardFinancialProductEngine;
+import com.example.demo.calculations.validation.CalculationConstraintsValidator;
 import com.example.demo.common.CalculationResult;
-import com.example.demo.common.FinancialProductDefinition;
 import com.example.demo.model.CalculationDto;
+import com.example.demo.model.CalculationInputDto;
 import com.example.demo.model.CalculationScenarioDto;
 import com.example.demo.model.CreateCalculationRequest;
 import com.example.demo.model.CreateScenarioRequest;
 import com.example.demo.model.CalculatorVersionDto;
+import com.example.demo.model.FinancialProductDefinitionDto;
 import com.example.demo.calculators.CalculatorService;
-import com.example.demo.ui.InputValidator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -32,7 +33,7 @@ public class CalculationService {
     private final CalculatorService calculatorService;
     private final StandardFinancialProductEngine standardFinancialProductEngine;
     private final ObjectMapper objectMapper;
-    private final InputValidator inputValidator;
+    private final CalculationConstraintsValidator constraintsValidator;
 
     @Transactional(readOnly = true)
     public Page<CalculationDto> findAllByUserId(UUID userId, Pageable pageable) {
@@ -45,16 +46,11 @@ public class CalculationService {
         CalculatorVersionDto version = calculatorService.findLatestVersion(request.getCalculatorId())
                 .orElseThrow(() -> new IllegalArgumentException("Calculator version not found"));
 
-        // Convert DTO to Map for validation and engine
-        Map<String, Object> inputDataMap = objectMapper.convertValue(request.getInputData(), Map.class);
+        FinancialProductDefinitionDto productDefinition = version.getAlgorithmMetadata();
+        CalculationInputDto inputData = request.getInputData();
 
-        // Validate Input
-        inputValidator.validate(inputDataMap, version.getUiSchema());
-
-        FinancialProductDefinition productDefinition = objectMapper.convertValue(
-            version.getAlgorithmMetadata(),
-            FinancialProductDefinition.class
-        );
+        // Validate Constraints
+        constraintsValidator.validate(inputData, productDefinition.getConstraints());
 
         Calculation calculation = new Calculation();
         calculation.setUserId(request.getUserId());
@@ -64,6 +60,9 @@ public class CalculationService {
         
         calculation = calculationRepository.save(calculation);
 
+        // Convert DTO to Map for Entity storage
+        Map<String, Object> inputDataMap = objectMapper.convertValue(inputData, Map.class);
+
         CalculationScenario defaultScenario = new CalculationScenario();
         defaultScenario.setCalculation(calculation);
         defaultScenario.setScenarioName("Default");
@@ -71,7 +70,7 @@ public class CalculationService {
         
         CalculationResult calculationResult = standardFinancialProductEngine.generateSchedule(
             productDefinition,
-            inputDataMap
+            inputData
         );
         defaultScenario.setScenarioResult(calculationResult);
         
@@ -91,25 +90,22 @@ public class CalculationService {
         CalculatorVersionDto version = calculatorService.findLatestVersion(calculation.getCalculatorId())
                 .orElseThrow(() -> new IllegalArgumentException("Calculator version not found"));
         
-        // Convert DTO to Map
-        Map<String, Object> scenarioInputMap = objectMapper.convertValue(request.getScenarioInput(), Map.class);
+        FinancialProductDefinitionDto productDefinition = version.getAlgorithmMetadata();
+        CalculationInputDto inputData = request.getScenarioInput();
 
-        // Validate Input
-        inputValidator.validate(scenarioInputMap, version.getUiSchema());
-        
-        FinancialProductDefinition productDefinition = objectMapper.convertValue(
-            version.getAlgorithmMetadata(),
-            FinancialProductDefinition.class
-        );
+        // Validate Constraints
+        constraintsValidator.validate(inputData, productDefinition.getConstraints());
+
+        Map<String, Object> inputDataMap = objectMapper.convertValue(inputData, Map.class);
 
         CalculationScenario scenario = new CalculationScenario();
         scenario.setCalculation(calculation);
         scenario.setScenarioName(request.getScenarioName());
-        scenario.setScenarioInput(scenarioInputMap);
+        scenario.setScenarioInput(inputDataMap);
         
         CalculationResult calculationResult = standardFinancialProductEngine.generateSchedule(
             productDefinition,
-            scenarioInputMap
+            inputData
         );
         scenario.setScenarioResult(calculationResult);
 

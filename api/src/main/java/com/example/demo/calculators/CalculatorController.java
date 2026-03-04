@@ -39,12 +39,6 @@ public class CalculatorController implements CalculatorsApiDelegate {
     }
 
     @Override
-    public ResponseEntity<CalculatorDto> createCalculator(CreateCalculatorRequest createCalculatorRequest) {
-        CalculatorDto created = calculatorService.createCalculator(createCalculatorRequest);
-        return ResponseEntity.status(HttpStatus.CREATED).body(created);
-    }
-
-    @Override
     public ResponseEntity<CalculatorDto> getCalculatorById(UUID id) {
         return calculatorService.findById(id)
                 .map(ResponseEntity::ok)
@@ -55,6 +49,12 @@ public class CalculatorController implements CalculatorsApiDelegate {
     public ResponseEntity<List<CalculatorVersionDto>> getCalculatorVersions(UUID id) {
         List<CalculatorVersionDto> versions = calculatorService.getVersions(id);
         return ResponseEntity.ok(versions);
+    }
+
+    @Override
+    public ResponseEntity<CalculatorDto> createCalculator(CreateCalculatorRequest createCalculatorRequest) {
+        CalculatorDto created = calculatorService.createCalculator(createCalculatorRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @Override

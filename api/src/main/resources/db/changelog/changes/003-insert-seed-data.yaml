@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
       id: 10-insert-default-roles
-      author: mozya
+      author: USHH
       changes:
         - insert:
             tableName: roles
@@ -16,14 +16,14 @@ databaseChangeLog:
 
   - changeSet:
       id: 11-insert-test-user
-      author: mozya
+      author: USHH
       changes:
         - sql:
             sql: "INSERT INTO users (username, email, role_id) SELECT 'testuser', 'test@example.com', id FROM roles WHERE name = 'USER';"
 
   - changeSet:
       id: 12-insert-mortgage-calculator
-      author: mozya
+      author: USHH
       changes:
         - insert:
             tableName: calculators
@@ -33,7 +33,7 @@ databaseChangeLog:
               - column: { name: description, value: "Standard mortgage calculator with annuity payments." }
         - sql:
             sql: >
-              INSERT INTO calculator_versions (calculator_id, version, algorithm_metadata, ui_schema)
+              INSERT INTO calculator_versions (calculator_id, version, algorithm_metadata)
               SELECT 
                 c.id, 
                 1,
@@ -50,16 +50,10 @@ databaseChangeLog:
                     "strategy": "ANNUITY",
                     "frequency": "MONTHLY"
                   },
-                  "defaultParameters": {
+                  "defaults": {
+                    "currency": "USD",
                     "roundingScale": 2,
                     "roundingMode": "HALF_UP"
                   }
-                }'::jsonb,
-                '{
-                  "fields": [
-                    { "name": "amount", "label": "Loan Amount", "type": "number", "defaultValue": 100000 },
-                    { "name": "rate", "label": "Annual Rate (%)", "type": "number", "defaultValue": 12 },
-                    { "name": "term", "label": "Term (in months)", "type": "number", "defaultValue": 24 }
-                  ]
                 }'::jsonb
               FROM calculators c WHERE c.code = 'MORTGAGE_ANNUITY';

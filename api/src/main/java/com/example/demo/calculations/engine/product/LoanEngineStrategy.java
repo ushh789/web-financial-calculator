@@ -5,28 +5,39 @@ import com.example.demo.calculations.engine.interest.InterestStrategyFactory;
 import com.example.demo.calculations.engine.repayment.RepaymentStrategy;
 import com.example.demo.calculations.engine.repayment.RepaymentStrategyFactory;
 import com.example.demo.calculations.engine.timeline.TimelineGenerator;
+import com.example.demo.model.AmortizationType;
 import com.example.demo.common.CalculationResult;
 import com.example.demo.common.CashFlow;
-import com.example.demo.common.FinancialProductDefinition;
+import com.example.demo.common.Frequency;
 import com.example.demo.common.Money;
 import com.example.demo.common.PaymentBreakdown;
-import com.example.demo.common.ProductType;
-import lombok.RequiredArgsConstructor;
+import com.example.demo.model.CalculationInputDto;
+import com.example.demo.model.DayCountConvention;
+import com.example.demo.model.FinancialProductDefinitionDto;
+import com.example.demo.model.InterestMethod;
+import com.example.demo.model.ProductDefaultsDto;
+import com.example.demo.model.ProductType;
+import com.example.demo.model.RateType;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
 @Component
-@RequiredArgsConstructor
-public class LoanEngineStrategy implements ProductEngineStrategy {
+public class LoanEngineStrategy extends BaseProductEngineStrategy {
 
-    private final TimelineGenerator timelineGenerator;
     private final InterestStrategyFactory interestStrategyFactory;
     private final RepaymentStrategyFactory repaymentStrategyFactory;
+
+    public LoanEngineStrategy(TimelineGenerator timelineGenerator,
+                              InterestStrategyFactory interestStrategyFactory,
+                              RepaymentStrategyFactory repaymentStrategyFactory) {
+        super(timelineGenerator);
+        this.interestStrategyFactory = interestStrategyFactory;
+        this.repaymentStrategyFactory = repaymentStrategyFactory;
+    }
 
     @Override
     public boolean supports(ProductType type) {
@@ -34,37 +45,40 @@ public class LoanEngineStrategy implements ProductEngineStrategy {
     }
 
     @Override
-    public CalculationResult generateSchedule(FinancialProductDefinition product, Map<String, Object> input) {
-        // 1. Merge parameters (input overrides defaults)
-        Map<String, Object> params = product.defaultParameters();
-        params.putAll(input);
-
-        // 2. Extract parameters
-        Money amount = Money.of(((Number) params.get("amount")).doubleValue(), (String) params.getOrDefault("currency", "USD"));
-        BigDecimal rate = BigDecimal.valueOf(((Number) params.get("rate")).doubleValue()).divide(BigDecimal.valueOf(100));
-        int term = ((Number) params.get("term")).intValue();
-        LocalDate startDate = LocalDate.now();
-        int scale = ((Number) params.getOrDefault("roundingScale", 2)).intValue();
-        RoundingMode roundingMode = RoundingMode.valueOf((String) params.getOrDefault("roundingMode", "HALF_UP"));
-
-        // 3. Generate schedule
-        List<LocalDate> dates = timelineGenerator.generateDates(startDate, term, product.repayment().frequency());
+    public CalculationResult generateSchedule(FinancialProductDefinitionDto product, CalculationInputDto input) {
+        ProductDefaultsDto defaults = product.getDefaults();
+        
+        BigDecimal amount = resolveAmount(input);
+        BigDecimal rate = resolveRate(input, defaults);
+        int term = resolveTerm(input);
+        String currency = resolveCurrency(defaults);
+        int scale = resolveScale(defaults);
+        RoundingMode roundingMode = resolveRoundingMode(defaults);
+        
+        LocalDate startDate = input.getStartDate() != null ? input.getStartDate() : LocalDate.now();
+        Frequency frequency = Frequency.valueOf(product.getRepayment().getFrequency().getValue());
+        List<LocalDate> dates = generateDates(startDate, term, frequency);
         
         CalculationResult result = new CalculationResult();
-        result.addSimple(startDate, amount, CashFlow.CashFlowType.INFLOW, "Disbursement");
+        result.addSimple(startDate, new Money(amount, currency), CashFlow.CashFlowType.INFLOW, "Disbursement");
 
-        Money balance = amount;
+        Money balance = new Money(amount, currency);
         LocalDate prevDate = startDate;
 
         for (int i = 0; i < dates.size(); i++) {
             LocalDate currentDate = dates.get(i);
             int periodsRemaining = dates.size() - i;
-            
-            InterestStrategy interestStrategy = interestStrategyFactory.getStrategy(product.interest().rateType());
-            Money interestForPeriod = interestStrategy.calculateInterest(balance, rate, prevDate, currentDate, product.interest().dayCountConvention());
 
-            RepaymentStrategy repaymentStrategy = repaymentStrategyFactory.getStrategy(product.repayment().strategy());
-            Money principalPayment = repaymentStrategy.calculatePrincipalPayment(balance, interestForPeriod, rate, periodsRemaining, product.repayment().frequency().getNominalPeriodsPerYear());
+            DayCountConvention dayCount = product.getInterest().getDayCountConvention();
+            RateType rateType = RateType.valueOf(product.getInterest().getRateType().getValue());
+
+            InterestStrategy interestStrategy = interestStrategyFactory.getStrategy(rateType);
+            Money interestForPeriod = interestStrategy.calculateInterest(balance, rate, prevDate, currentDate, dayCount);
+
+            AmortizationType amortizationType = AmortizationType.valueOf(product.getRepayment().getStrategy().getValue());
+            
+            RepaymentStrategy repaymentStrategy = repaymentStrategyFactory.getStrategy(amortizationType);
+            Money principalPayment = repaymentStrategy.calculatePrincipalPayment(balance, interestForPeriod, rate, periodsRemaining, frequency.getNominalPeriodsPerYear());
             
             if (i == dates.size() - 1) {
                 principalPayment = balance;
@@ -73,7 +87,7 @@ public class LoanEngineStrategy implements ProductEngineStrategy {
             PaymentBreakdown breakdown = new PaymentBreakdown(
                 principalPayment.round(scale, roundingMode),
                 interestForPeriod.round(scale, roundingMode),
-                Money.zero(amount.currencyCode())
+                Money.zero(currency)
             );
 
             result.add(currentDate, breakdown, CashFlow.CashFlowType.OUTFLOW, "Monthly Payment");

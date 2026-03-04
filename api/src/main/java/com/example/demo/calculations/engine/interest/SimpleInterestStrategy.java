@@ -1,8 +1,8 @@
 package com.example.demo.calculations.engine.interest;
 
-import com.example.demo.common.DayCountConvention;
+import com.example.demo.model.DayCountConvention;
 import com.example.demo.common.Money;
-import com.example.demo.common.RateType;
+import com.example.demo.model.RateType;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;

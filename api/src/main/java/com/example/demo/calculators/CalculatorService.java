@@ -53,15 +53,12 @@ public class CalculatorService {
         Calculator calculator = mapper.toEntity(request);
         calculator = calculatorRepository.save(calculator);
 
-        // Convert DTOs to Maps for Entity
         Map<String, Object> metadataMap = objectMapper.convertValue(request.getAlgorithmMetadata(), Map.class);
-        Map<String, Object> uiSchemaMap = objectMapper.convertValue(request.getUiSchema(), Map.class);
 
         CalculatorVersion version = new CalculatorVersion();
         version.setCalculator(calculator);
         version.setVersion(1);
         version.setAlgorithmMetadata(metadataMap);
-        version.setUiSchema(uiSchemaMap);
         versionRepository.save(version);
 
         return mapper.toDto(calculator);
@@ -78,15 +75,12 @@ public class CalculatorService {
                 .map(v -> v.getVersion() + 1)
                 .orElse(1);
 
-        // Convert DTOs to Maps
         Map<String, Object> metadataMap = objectMapper.convertValue(request.getAlgorithmMetadata(), Map.class);
-        Map<String, Object> uiSchemaMap = objectMapper.convertValue(request.getUiSchema(), Map.class);
 
         CalculatorVersion version = new CalculatorVersion();
         version.setCalculator(calculator);
         version.setVersion(nextVersion);
         version.setAlgorithmMetadata(metadataMap);
-        version.setUiSchema(uiSchemaMap);
 
         return mapper.toDto(versionRepository.save(version));
     }

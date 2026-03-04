@@ -23,20 +23,16 @@ public class CalculatorVersion {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "calculator_id", nullable = false)
     private Calculator calculator;
 
-    @Column(nullable = false)
-    private int version;
+    @Column(name = "version", nullable = false)
+    private Integer version;
 
     @Column(name = "algorithm_metadata", columnDefinition = "jsonb")
     @JdbcTypeCode(SqlTypes.JSON)
     private Map<String, Object> algorithmMetadata;
-
-    @Column(name = "ui_schema", columnDefinition = "jsonb")
-    @JdbcTypeCode(SqlTypes.JSON)
-    private Map<String, Object> uiSchema;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)

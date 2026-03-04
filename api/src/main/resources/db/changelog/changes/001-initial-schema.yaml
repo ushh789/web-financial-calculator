@@ -1,14 +1,14 @@
 databaseChangeLog:
   - changeSet:
       id: 1-create-extension-uuid-ossp
-      author: mozya
+      author: USHH
       changes:
         - sql:
             sql: 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp";'
 
   - changeSet:
       id: 2-create-table-roles
-      author: mozya
+      author: USHH
       changes:
         - createTable:
             tableName: roles
@@ -32,7 +32,7 @@ databaseChangeLog:
 
   - changeSet:
       id: 3-create-table-users
-      author: mozya
+      author: USHH
       changes:
         - createTable:
             tableName: users
@@ -84,7 +84,7 @@ databaseChangeLog:
 
   - changeSet:
       id: 4-create-table-calculators
-      author: mozya
+      author: USHH
       changes:
         - createTable:
             tableName: calculators
@@ -125,7 +125,7 @@ databaseChangeLog:
 
   - changeSet:
       id: 5-create-table-calculator-versions
-      author: mozya
+      author: USHH
       changes:
         - createTable:
             tableName: calculator_versions
@@ -153,9 +153,6 @@ databaseChangeLog:
                   name: algorithm_metadata
                   type: JSONB
               - column:
-                  name: ui_schema
-                  type: JSONB
-              - column:
                   name: created_at
                   type: TIMESTAMP
                   constraints:
@@ -168,7 +165,7 @@ databaseChangeLog:
 
   - changeSet:
       id: 6-create-table-calculations
-      author: mozya
+      author: USHH
       changes:
         - createTable:
             tableName: calculations
@@ -234,7 +231,7 @@ databaseChangeLog:
 
   - changeSet:
       id: 7-create-table-calculation-scenarios
-      author: mozya
+      author: USHH
       changes:
         - createTable:
             tableName: calculation_scenarios
@@ -276,7 +273,7 @@ databaseChangeLog:
 
   - changeSet:
       id: 8-add-selected-scenario-fk
-      author: mozya
+      author: USHH
       changes:
         - addColumn:
             tableName: calculations

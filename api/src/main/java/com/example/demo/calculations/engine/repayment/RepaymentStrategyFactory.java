@@ -1,6 +1,6 @@
 package com.example.demo.calculations.engine.repayment;
 
-import com.example.demo.common.AmortizationType;
+import com.example.demo.model.AmortizationType;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

@@ -1,14 +1,10 @@
 package com.example.demo.calculations.engine.product;
 
 import com.example.demo.common.CalculationResult;
-import com.example.demo.common.FinancialProductDefinition;
-import com.example.demo.common.ProductType;
+import com.example.demo.model.CalculationInputDto;
+import com.example.demo.model.FinancialProductDefinitionDto;
+import com.example.demo.model.ProductType;
 
-import java.util.Map;
-
-/**
- * Strategy for generating a payment schedule for a specific product type (e.g., LOAN, DEPOSIT).
- */
 public interface ProductEngineStrategy {
 
     /**
@@ -17,7 +13,7 @@ public interface ProductEngineStrategy {
     boolean supports(ProductType type);
 
     /**
-     * Generates the full cash flow schedule for a product.
+     * Generates a schedule for the given product and input.
      */
-    CalculationResult generateSchedule(FinancialProductDefinition product, Map<String, Object> input);
+    CalculationResult generateSchedule(FinancialProductDefinitionDto product, CalculationInputDto input);
 }
