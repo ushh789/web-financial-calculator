@@ -1,12 +1,9 @@
-﻿import { useMemo, useState } from 'react'
-import binIcon from '../assets/svg/bin.svg'
+import { useMemo, useState } from 'react'
 import { useCreateCalculatorForm } from '../hooks/useCreateCalculatorForm'
 
 type CreateCalculatorFormProps = {
   onBack: () => void
 }
-
-const fieldTypeOptions = ['currency', 'number', 'percent', 'text', 'select']
 
 const highlightJson = (value: string) => {
   const escaped = value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
@@ -31,20 +28,13 @@ const highlightJson = (value: string) => {
 const CreateCalculatorForm = ({ onBack }: CreateCalculatorFormProps) => {
   const {
     formData,
-    uiFields,
     formStatus,
     isSubmitting,
     updateField,
-    updateUiField,
-    moveUiField,
-    addUiField,
-    removeUiField,
     resetForm,
-    derivedPayload,
+    algorithmMetadata,
     handleSubmit,
   } = useCreateCalculatorForm()
-  const [draggingIndex, setDraggingIndex] = useState<number | null>(null)
-  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null)
   const [showPayloadPreview, setShowPayloadPreview] = useState(true)
 
   const jsonPreview = useMemo(
@@ -54,12 +44,12 @@ const CreateCalculatorForm = ({ onBack }: CreateCalculatorFormProps) => {
           code: formData.code.trim(),
           name: formData.name.trim(),
           description: formData.description.trim() || undefined,
-          ...derivedPayload,
+          algorithmMetadata,
         },
         null,
         2,
       ),
-    [formData.code, formData.description, formData.name, derivedPayload],
+    [formData.code, formData.description, formData.name, algorithmMetadata],
   )
 
   const highlightedPreview = useMemo(() => highlightJson(jsonPreview), [jsonPreview])
@@ -359,122 +349,6 @@ const CreateCalculatorForm = ({ onBack }: CreateCalculatorFormProps) => {
                   </select>
                 </label>
               </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="field-group">
-          <div className="field-group__header">
-            <div>
-              <h4>UI schema</h4>
-              <p>Define how fields appear in the calculator UI.</p>
-            </div>
-          </div>
-          <div className="field-group__body">
-            <label className="field field--wide">
-              <span className="field__label">Title</span>
-              <input
-                className="field__input"
-                type="text"
-                value={formData.uiTitle}
-                onChange={(event) => updateField('uiTitle', event.target.value)}
-                required
-              />
-            </label>
-            <div className="ui-fields">
-              {uiFields.map((field, index) => (
-                <div
-                  className={`ui-field${draggingIndex === index ? ' ui-field--dragging' : ''}${
-                    dragOverIndex === index ? ' ui-field--over' : ''
-                  }`}
-                  key={`${field.id}-${index}`}
-                  draggable
-                  onDragStart={(event) => {
-                    event.dataTransfer.setData('text/plain', String(index))
-                    event.dataTransfer.effectAllowed = 'move'
-                    setDraggingIndex(index)
-                  }}
-                  onDragOver={(event) => {
-                    event.preventDefault()
-                    event.dataTransfer.dropEffect = 'move'
-                  }}
-                  onDragEnter={(event) => {
-                    event.preventDefault()
-                    if (draggingIndex !== index) {
-                      setDragOverIndex(index)
-                    }
-                  }}
-                  onDrop={(event) => {
-                    event.preventDefault()
-                    const fromIndex = Number(event.dataTransfer.getData('text/plain'))
-                    if (!Number.isNaN(fromIndex)) {
-                      moveUiField(fromIndex, index)
-                    }
-                    setDragOverIndex(null)
-                    setDraggingIndex(null)
-                  }}
-                  onDragEnd={() => {
-                    setDragOverIndex(null)
-                    setDraggingIndex(null)
-                  }}
-                >
-                  <div className="ui-field__drag">
-                    <span className="ui-field__handle" aria-hidden="true">
-                      ⋮⋮
-                    </span>
-                  </div>
-                  <label className="field">
-                    <span className="field__label">Field id</span>
-                    <input
-                      className="field__input"
-                      type="text"
-                      value={field.id}
-                      onChange={(event) => updateUiField(index, { id: event.target.value })}
-                      required
-                    />
-                  </label>
-                  <label className="field">
-                    <span className="field__label">Label</span>
-                    <input
-                      className="field__input"
-                      type="text"
-                      value={field.label}
-                      onChange={(event) => updateUiField(index, { label: event.target.value })}
-                      required
-                    />
-                  </label>
-                  <label className="field">
-                    <span className="field__label">Type</span>
-                    <select
-                      className="field__input"
-                      value={field.type}
-                      onChange={(event) => updateUiField(index, { type: event.target.value })}
-                    >
-                      {fieldTypeOptions.map((option) => (
-                        <option key={option} value={option}>
-                          {option}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                  <label className="field field--toggle">
-                    <span className="field__label">Required</span>
-                    <input
-                      className="field__checkbox"
-                      type="checkbox"
-                      checked={field.required}
-                      onChange={(event) => updateUiField(index, { required: event.target.checked })}
-                    />
-                  </label>
-                  <button className="icon-button ui-field__delete" type="button" onClick={() => removeUiField(index)}>
-                    <img className="icon-button__img" src={binIcon} alt="Remove field" />
-                  </button>
-                </div>
-              ))}
-              <button className="ui-field ui-field--adder" type="button" onClick={addUiField}>
-                <span className="ui-field__adder-icon">+</span>
-                <span className="ui-field__adder-label">Add field</span>
-              </button>
             </div>
           </div>
         </div>

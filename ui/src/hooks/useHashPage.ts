@@ -1,10 +1,31 @@
-﻿import { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
-type Page = 'home' | 'admin'
+type Page =
+  | { kind: 'home' }
+  | { kind: 'admin' }
+  | { kind: 'calculator'; id: string }
 
 const getPageFromHash = (): Page => {
-  const hash = window.location.hash.replace('#', '').trim().toLowerCase()
-  return hash === 'admin' ? 'admin' : 'home'
+  const rawHash = window.location.hash.replace('#', '').trim()
+  if (!rawHash) {
+    return { kind: 'home' }
+  }
+
+  const [route, ...rest] = rawHash.split('/')
+  const normalizedRoute = route.toLowerCase()
+
+  if (normalizedRoute === 'admin') {
+    return { kind: 'admin' }
+  }
+
+  if (normalizedRoute === 'calculator' && rest.length > 0) {
+    const id = rest.join('/').trim()
+    if (id) {
+      return { kind: 'calculator', id }
+    }
+  }
+
+  return { kind: 'home' }
 }
 
 export const useHashPage = () => {
@@ -21,7 +42,17 @@ export const useHashPage = () => {
 
   const navigate = (next: Page) => {
     setPage(next)
-    window.location.hash = next === 'home' ? '' : `#${next}`
+    if (next.kind === 'home') {
+      window.location.hash = ''
+      return
+    }
+
+    if (next.kind === 'admin') {
+      window.location.hash = '#admin'
+      return
+    }
+
+    window.location.hash = `#calculator/${next.id}`
   }
 
   return { page, navigate }

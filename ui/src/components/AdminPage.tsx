@@ -1,14 +1,22 @@
-﻿import CreateCalculatorForm from './CreateCalculatorForm'
+import { useState } from 'react'
+import CalculatorsList from './CalculatorsList'
+import CreateCalculatorForm from './CreateCalculatorForm'
 
 type AdminPageProps = {
   onBack: () => void
+  onOpenCalculator: (id: string) => void
 }
 
-const AdminPage = ({ onBack }: AdminPageProps) => {
+const AdminPage = ({ onBack, onOpenCalculator }: AdminPageProps) => {
+  const [showCreateForm, setShowCreateForm] = useState(true)
+
   return (
     <section className="admin">
-
-      <CreateCalculatorForm onBack={onBack} />
+      <CalculatorsList
+        onSelectCalculator={onOpenCalculator}
+        onCreateCalculator={() => setShowCreateForm(true)}
+      />
+      {showCreateForm && <CreateCalculatorForm onBack={onBack} />}
     </section>
   )
 }
