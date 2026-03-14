@@ -2,6 +2,9 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
+import { setupCsrfFetch } from './utils/csrf'
+
+setupCsrfFetch(import.meta.env.VITE_API_URL ?? 'http://localhost:8080')
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

@@ -293,6 +293,96 @@
   }
 }
 
+.login {
+  display: grid;
+  gap: 24px;
+  max-width: 1100px;
+}
+
+.login__grid {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.login__panel {
+  display: grid;
+  gap: 16px;
+}
+
+.login__eyebrow {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: var(--text-muted);
+}
+
+.login__title {
+  font-size: clamp(1.8rem, 2vw + 1.2rem, 2.6rem);
+}
+
+.login__subtitle {
+  margin: 0;
+  color: var(--detail-text);
+  font-size: 0.98rem;
+}
+
+.login__callout {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px dashed var(--panel-border);
+  background: color-mix(in srgb, var(--panel-bg) 85%, transparent);
+}
+
+.login__callout-item {
+  display: grid;
+  gap: 4px;
+}
+
+.login__callout-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--text-muted);
+}
+
+.login__callout-value {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.login__note {
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--detail-bg);
+  color: var(--detail-text);
+  font-size: 0.9rem;
+}
+
+.login__note p {
+  margin: 0;
+}
+
+.login__note-code {
+  font-family: 'JetBrains Mono', 'Fira Code', 'SFMono-Regular', Consolas, monospace;
+  font-size: 0.85rem;
+  margin-left: 4px;
+}
+
+.login__form {
+  display: grid;
+  gap: 14px;
+}
+
+.login__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: space-between;
+}
+
 .meta {
   background: var(--panel-bg);
   border: 1px solid var(--panel-border);
@@ -1077,5 +1167,10 @@ body.modal-open .page {
 
   .hero__cta {
     flex-direction: column;
+  }
+
+  .login__actions {
+    flex-direction: column;
+    align-items: stretch;
   }
 }

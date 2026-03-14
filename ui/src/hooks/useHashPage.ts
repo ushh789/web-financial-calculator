@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 
 type Page =
   | { kind: 'home' }
+  | { kind: 'login' }
   | { kind: 'admin' }
   | { kind: 'calculator'; id: string }
 
@@ -16,6 +17,10 @@ const getPageFromHash = (): Page => {
 
   if (normalizedRoute === 'admin') {
     return { kind: 'admin' }
+  }
+
+  if (normalizedRoute === 'login') {
+    return { kind: 'login' }
   }
 
   if (normalizedRoute === 'calculator' && rest.length > 0) {
@@ -49,6 +54,11 @@ export const useHashPage = () => {
 
     if (next.kind === 'admin') {
       window.location.hash = '#admin'
+      return
+    }
+
+    if (next.kind === 'login') {
+      window.location.hash = '#login'
       return
     }
 
