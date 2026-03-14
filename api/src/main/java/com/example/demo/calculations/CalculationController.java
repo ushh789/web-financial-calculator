@@ -21,18 +21,12 @@ import java.util.UUID;
 public class CalculationController implements CalculationsApiDelegate {
 
     private final CalculationService calculationService;
+    private final CalculationMapper calculationMapper;
 
     @Override
     public ResponseEntity<PageCalculationDto> getCalculations(UUID userId, Integer page, Integer size) {
         Page<CalculationDto> result = calculationService.findAllByUserId(userId, PageRequest.of(page, size));
-        
-        PageCalculationDto response = new PageCalculationDto();
-        response.setContent(result.getContent());
-        response.setTotalElements(result.getTotalElements());
-        response.setTotalPages(result.getTotalPages());
-        response.setSize(result.getSize());
-        response.setNumber(result.getNumber());
-        
+        PageCalculationDto response = calculationMapper.toPageDto(result);
         return ResponseEntity.ok(response);
     }
 

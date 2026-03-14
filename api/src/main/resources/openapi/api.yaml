@@ -5,12 +5,62 @@ info:
   description: API for Financial Calculator Platform
 
 servers:
-  - url: http://localhost:8080/api
-    description: Local Development Server
+  - url: http://localhost:8080
+    description: Local DEV server
+
+security:
+  - cookieAuth: []
 
 paths:
+  # AUTH
+  /auth/login:
+    post:
+      summary: User Login
+      operationId: login
+      tags: [Auth]
+      security: [] # This endpoint is public
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Authentication successful. Returns user info in body and tokens in HttpOnly cookies.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDto'
+        '401':
+          description: Invalid credentials
+
+  /auth/refresh:
+    post:
+      summary: Refresh access token
+      operationId: refreshToken
+      tags: [Auth]
+      responses:
+        '200':
+          description: Token refreshed successfully. Returns new user info and sets new access token cookie.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDto'
+        '401':
+          description: Invalid or expired refresh token
+
+  /auth/logout:
+    post:
+      summary: User Logout
+      operationId: logout
+      tags: [Auth]
+      responses:
+        '204':
+          description: Logout successful. Clears cookies.
+
   # USERS
-  /users:
+  /api/users:
     get:
       summary: Get all users
       operationId: getAllUsers
@@ -51,7 +101,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/UserDto'
 
-  /users/{id}:
+  /api/users/{id}:
     get:
       summary: Get user by ID
       operationId: getUserById
@@ -89,7 +139,7 @@ paths:
           description: User deleted
 
   # CALCULATORS
-  /calculators:
+  /api/calculators:
     get:
       summary: Get all calculators
       operationId: getAllCalculators
@@ -130,7 +180,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/CalculatorDto'
 
-  /calculators/{id}:
+  /api/calculators/{id}:
     get:
       summary: Get calculator by ID
       operationId: getCalculatorById
@@ -150,7 +200,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/CalculatorDto'
 
-  /calculators/{id}/versions:
+  /api/calculators/{id}/versions:
     get:
       summary: Get calculator versions
       operationId: getCalculatorVersions
@@ -197,7 +247,7 @@ paths:
                 $ref: '#/components/schemas/CalculatorVersionDto'
 
   # CALCULATIONS
-  /calculations:
+  /api/calculations:
     get:
       summary: Get user calculations
       operationId: getCalculations
@@ -244,7 +294,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/CalculationDto'
 
-  /calculations/{id}/scenarios:
+  /api/calculations/{id}/scenarios:
     get:
       summary: Get scenarios for calculation
       operationId: getScenarios
@@ -290,7 +340,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/CalculationScenarioDto'
 
-  /calculations/{id}/select-scenario/{scenarioId}:
+  /api/calculations/{id}/select-scenario/{scenarioId}:
     put:
       summary: Select active scenario
       operationId: selectScenario
@@ -313,7 +363,22 @@ paths:
           description: Scenario selected
 
 components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: accessToken
   schemas:
+    # AUTH
+    LoginRequest:
+      type: object
+      required: [username, password]
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+
     ProductType:
       type: string
       enum: [LOAN, DEPOSIT]
@@ -371,12 +436,15 @@ components:
 
     CreateUserRequest:
       type: object
-      required: [username, email]
+      required: [username, email, password]
       properties:
         username:
           type: string
           minLength: 3
           maxLength: 100
+        password:
+          type: string
+          minLength: 8
         email:
           type: string
           format: email

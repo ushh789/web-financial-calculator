@@ -38,12 +38,6 @@ public class CalculatorService {
                 .map(mapper::toDto);
     }
 
-    @Transactional(readOnly = true)
-    public Optional<CalculatorDto> findByCode(String code) {
-        return calculatorRepository.findByCode(code)
-                .map(mapper::toDto);
-    }
-
     @Transactional
     public CalculatorDto createCalculator(CreateCalculatorRequest request) {
         if (calculatorRepository.existsByCode(request.getCode())) {

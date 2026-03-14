@@ -5,8 +5,10 @@ import com.example.demo.model.UserDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -14,10 +16,9 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class UserService {
-
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
     private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional(readOnly = true)
     public Page<UserDto> findAll(Pageable pageable) {
@@ -28,18 +29,6 @@ public class UserService {
     @Transactional(readOnly = true)
     public Optional<UserDto> findById(UUID id) {
         return userRepository.findById(id)
-                .map(userMapper::toDto);
-    }
-
-    @Transactional(readOnly = true)
-    public Optional<UserDto> findByEmail(String email) {
-        return userRepository.findByEmail(email)
-                .map(userMapper::toDto);
-    }
-
-    @Transactional(readOnly = true)
-    public Optional<UserDto> findByUsername(String username) {
-        return userRepository.findByUsername(username)
                 .map(userMapper::toDto);
     }
 
@@ -54,11 +43,12 @@ public class UserService {
 
         User user = userMapper.toEntity(request);
         
-        String roleName = request.getRole() != null ? request.getRole() : "USER";
-        Role role = roleRepository.findByName(roleName)
-                .orElseThrow(() -> new IllegalArgumentException("Role not found: " + roleName));
-        
-        user.setRole(role);
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        if (StringUtils.hasText(request.getRole())) {
+            user.setRole(Role.valueOf(request.getRole().toUpperCase()));
+        } else {
+            user.setRole(Role.USER);
+        }
         
         User savedUser = userRepository.save(user);
         return userMapper.toDto(savedUser);

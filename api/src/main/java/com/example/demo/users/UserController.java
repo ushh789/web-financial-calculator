@@ -14,24 +14,18 @@ import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
-@Service // It's a delegate, not a @RestController
+@Service
 @RequiredArgsConstructor
 public class UserController implements UsersApiDelegate {
 
     private final UserService userService;
+    private final UserMapper userMapper;
 
     @Override
     public ResponseEntity<PageUserDto> getAllUsers(Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<UserDto> result = userService.findAll(pageable);
-        
-        PageUserDto response = new PageUserDto();
-        response.setContent(result.getContent());
-        response.setTotalElements(result.getTotalElements());
-        response.setTotalPages(result.getTotalPages());
-        response.setSize(result.getSize());
-        response.setNumber(result.getNumber());
-        
+        Page<UserDto> resultPage = userService.findAll(pageable);
+        PageUserDto response = userMapper.toPageDto(resultPage);
         return ResponseEntity.ok(response);
     }
 

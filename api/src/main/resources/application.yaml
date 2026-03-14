@@ -1,3 +1,12 @@
+app:
+  jwt:
+    access-token-cookie-name: "accessToken"
+    refresh-token-cookie-name: "refreshToken"
+    # 15 minutes
+    access-token-duration-ms: 900000
+    # 7 days
+    refresh-token-duration-ms: 604800000
+
 spring:
   application:
     name: financial-calc
@@ -21,4 +30,4 @@ spring:
 
 springdoc:
   swagger-ui:
-    url: /v3/api-docs
+    url: /api.yaml

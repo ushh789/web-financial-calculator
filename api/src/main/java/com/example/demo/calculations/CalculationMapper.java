@@ -5,10 +5,12 @@ import com.example.demo.common.DateTimeMapper;
 import com.example.demo.model.CalculationDto;
 import com.example.demo.model.CalculationInputDto;
 import com.example.demo.model.CalculationScenarioDto;
+import com.example.demo.model.PageCalculationDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 
 import java.util.Map;
 
@@ -23,6 +25,16 @@ public abstract class CalculationMapper {
 
     @Mapping(source = "calculation.id", target = "calculationId")
     public abstract CalculationScenarioDto toDto(CalculationScenario scenario);
+
+    public PageCalculationDto toPageDto(Page<CalculationDto> page) {
+        PageCalculationDto pageDto = new PageCalculationDto();
+        pageDto.setContent(page.getContent());
+        pageDto.setTotalElements(page.getTotalElements());
+        pageDto.setTotalPages(page.getTotalPages());
+        pageDto.setSize(page.getSize());
+        pageDto.setNumber(page.getNumber());
+        return pageDto;
+    }
 
     /**
      * Converts CalculationResult to Map for DTO.

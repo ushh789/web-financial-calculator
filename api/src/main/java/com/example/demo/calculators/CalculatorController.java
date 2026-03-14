@@ -22,19 +22,13 @@ import java.util.UUID;
 public class CalculatorController implements CalculatorsApiDelegate {
 
     private final CalculatorService calculatorService;
+    private final CalculatorMapper calculatorMapper;
 
     @Override
     public ResponseEntity<PageCalculatorDto> getAllCalculators(Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<CalculatorDto> result = calculatorService.findAll(pageable);
-        
-        PageCalculatorDto response = new PageCalculatorDto();
-        response.setContent(result.getContent());
-        response.setTotalElements(result.getTotalElements());
-        response.setTotalPages(result.getTotalPages());
-        response.setSize(result.getSize());
-        response.setNumber(result.getNumber());
-
+        PageCalculatorDto response = calculatorMapper.toPageDto(result);
         return ResponseEntity.ok(response);
     }
 

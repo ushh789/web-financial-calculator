@@ -14,7 +14,6 @@ import com.example.demo.common.PaymentBreakdown;
 import com.example.demo.model.CalculationInputDto;
 import com.example.demo.model.DayCountConvention;
 import com.example.demo.model.FinancialProductDefinitionDto;
-import com.example.demo.model.InterestMethod;
 import com.example.demo.model.ProductDefaultsDto;
 import com.example.demo.model.ProductType;
 import com.example.demo.model.RateType;

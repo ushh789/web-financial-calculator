@@ -7,30 +7,6 @@ databaseChangeLog:
             sql: 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp";'
 
   - changeSet:
-      id: 2-create-table-roles
-      author: USHH
-      changes:
-        - createTable:
-            tableName: roles
-            columns:
-              - column:
-                  name: id
-                  type: UUID
-                  constraints:
-                    primaryKey: true
-                    nullable: false
-                  defaultValueComputed: uuid_generate_v4()
-              - column:
-                  name: name
-                  type: VARCHAR(50)
-                  constraints:
-                    nullable: false
-                    unique: true
-              - column:
-                  name: description
-                  type: VARCHAR(255)
-
-  - changeSet:
       id: 3-create-table-users
       author: USHH
       changes:
@@ -57,6 +33,11 @@ databaseChangeLog:
                     nullable: false
                     unique: true
               - column:
+                  name: password
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
                   name: first_name
                   type: VARCHAR(100)
               - column:
@@ -66,12 +47,10 @@ databaseChangeLog:
                   name: profile_picture_url
                   type: TEXT
               - column:
-                  name: role_id
-                  type: UUID
+                  name: role
+                  type: VARCHAR(50)
                   constraints:
                     nullable: false
-                    foreignKeyName: fk_users_role
-                    references: roles(id)
               - column:
                   name: created_at
                   type: TIMESTAMP
@@ -286,3 +265,36 @@ databaseChangeLog:
                     references: calculation_scenarios(id)
                     deferrable: true
                     initiallyDeferred: true
+  - changeSet:
+      id: 9-create-table-refresh-tokens
+      author: USHH
+      changes:
+        - createTable:
+            tableName: refresh_tokens
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+                  defaultValueComputed: uuid_generate_v4()
+              - column:
+                  name: user_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_refresh_tokens_user
+                    references: users(id)
+                    deleteCascade: true
+              - column:
+                  name: token
+                  type: TEXT
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: expiry_date
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false

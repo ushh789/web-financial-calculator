@@ -1,25 +1,22 @@
 databaseChangeLog:
   - changeSet:
-      id: 10-insert-default-roles
-      author: USHH
-      changes:
-        - insert:
-            tableName: roles
-            columns:
-              - column: { name: name, value: "USER" }
-              - column: { name: description, value: "Default user" }
-        - insert:
-            tableName: roles
-            columns:
-              - column: { name: name, value: "ADMIN" }
-              - column: { name: description, value: "Administrator" }
-
-  - changeSet:
       id: 11-insert-test-user
       author: USHH
       changes:
-        - sql:
-            sql: "INSERT INTO users (username, email, role_id) SELECT 'testuser', 'test@example.com', id FROM roles WHERE name = 'USER';"
+        - insert:
+            tableName: users
+            columns:
+              - column: { name: username, value: "user" }
+              - column: { name: email, value: "test@example.com" }
+              - column: { name: password, value: "" }
+              - column: { name: role, value: "USER" }
+        - insert:
+            tableName: users
+            columns:
+              - column: { name: username, value: "admin" }
+              - column: { name: email, value: "admin@example.com" }
+              - column: { name: password, value: "" }
+              - column: { name: role, value: "ADMIN" }
 
   - changeSet:
       id: 12-insert-mortgage-calculator
