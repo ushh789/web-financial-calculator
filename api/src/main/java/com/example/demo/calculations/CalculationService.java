@@ -41,6 +41,13 @@ public class CalculationService {
                 .map(mapper::toDto);
     }
 
+    @Transactional(readOnly = true)
+    public CalculationDto findById(UUID id) {
+        return calculationRepository.findById(id)
+                .map(mapper::toDto)
+                .orElseThrow(() -> new IllegalArgumentException("Calculation not found: " + id));
+    }
+
     @Transactional
     public CalculationDto createCalculation(CreateCalculationRequest request) {
         CalculatorVersionDto version = calculatorService.findLatestVersion(request.getCalculatorId())

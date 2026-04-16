@@ -1,0 +1,222 @@
+{
+  "nav": {
+    "dashboard": "Дашборд",
+    "calculators": "Калькулятори",
+    "calculations": "Розрахунки",
+    "logout": "Вийти",
+    "admin": "Адмін"
+  },
+  "calculator": {
+    "catalog": "Каталог калькуляторів",
+    "active": "Активний",
+    "inactive": "Неактивний",
+    "open": "Відкрити",
+    "empty": "Калькуляторів ще немає.",
+    "form": {
+      "amount": "Сума",
+      "rate": "Ставка (%)",
+      "term": "Термін (місяців)",
+      "startDate": "Дата початку",
+      "currency": "Валюта",
+      "submit": "Розрахувати",
+      "submitting": "Розраховую..."
+    }
+  },
+  "calculation": {
+    "title": "Розрахунок",
+    "myTitle": "Мої розрахунки",
+    "notFound": "Розрахунок не знайдено.",
+    "noResults": "Результати розрахунку відсутні. Бекенд ще не обчислив Cash Flows.",
+    "empty": "Розрахунків ще немає. Перейдіть до",
+    "emptyLink": "калькуляторів",
+    "view": "Переглянути",
+    "showing": "Показано {count} з {total} розрахунків",
+    "tabs": {
+      "table": "Таблиця Cash Flows",
+      "chart": "Графік амортизації",
+      "sensitivity": "Аналіз чутливості"
+    }
+  },
+  "cashflow": {
+    "date": "Дата",
+    "description": "Опис",
+    "type": "Тип",
+    "principal": "Основний борг",
+    "interest": "Відсотки",
+    "total": "Разом",
+    "balance": "Залишок",
+    "inflow": "Надходження",
+    "outflow": "Видатки",
+    "all": "Всі",
+    "exportCsv": "Експорт CSV",
+    "showing": "Показано {shown} з {total} записів",
+    "totalPayments": "Всього платежів",
+    "totalInterest": "Сума відсотків",
+    "totalPrincipal": "Погашення тіла боргу",
+    "empty": "Немає даних",
+    "noChartData": "Немає даних для побудови графіку",
+    "amortizationTitle": "Графік амортизації"
+  },
+  "scenario": {
+    "title": "Сценарії",
+    "compareTitle": "Порівняння сценаріїв",
+    "totals": "Підсумки",
+    "active": "Активний",
+    "add": "+ Новий сценарій",
+    "cancel": "Скасувати",
+    "activate": "Активувати",
+    "compare": "Порівняти",
+    "selected": "Обрано",
+    "form": {
+      "name": "Назва сценарію",
+      "namePlaceholder": "Напр. Оптимістичний",
+      "amount": "Сума",
+      "rate": "Ставка, %",
+      "term": "Термін, міс.",
+      "startDate": "Дата початку",
+      "submit": "Створити сценарій",
+      "submitting": "Створення..."
+    }
+  },
+  "dashboard": {
+    "title": "Дашборд",
+    "greeting": "Вітаємо, {name}!",
+    "recent": "Останні розрахунки",
+    "allCalculations": "Всі розрахунки →",
+    "noCalculations": "Ви ще не виконували розрахунків.",
+    "goToCalculators": "Відкрити каталог",
+    "open": "Відкрити"
+  },
+  "auth": {
+    "hero": {
+      "headline": "Розумні фінансові розрахунки",
+      "subheadline": "Платформа для точного планування кредитів, депозитів та грошових потоків.",
+      "feature1": "Ануїтетні та лінійні моделі погашення",
+      "feature2": "Аналіз чутливості та сценарне порівняння",
+      "feature3": "Графіки амортизації та Cash Flow таблиці",
+      "feature4": "Експорт даних у форматі CSV"
+    },
+    "login": {
+      "title": "Вхід в систему",
+      "description": "Введіть логін та пароль",
+      "username": "Логін",
+      "password": "Пароль",
+      "submit": "Увійти",
+      "submitting": "Вхід...",
+      "noAccount": "Немає акаунту?",
+      "register": "Зареєструватись"
+    },
+    "register": {
+      "title": "Реєстрація",
+      "description": "Створіть новий акаунт",
+      "firstName": "Ім\u2019я",
+      "lastName": "Прізвище",
+      "email": "Email",
+      "username": "Логін",
+      "password": "Пароль",
+      "confirmPassword": "Підтвердити пароль",
+      "submit": "Зареєструватись",
+      "submitting": "Реєструю...",
+      "hasAccount": "Вже є акаунт?",
+      "login": "Увійти"
+    }
+  },
+  "admin": {
+    "title": "Адмін — калькулятори",
+    "createCalculator": "Створити калькулятор",
+    "addVersion": "Додати версію",
+    "addVersionFor": "Нова версія: {name}",
+    "creating": "Створення...",
+    "adding": "Додавання...",
+    "active": "Активний",
+    "inactive": "Неактивний",
+    "empty": "Калькуляторів ще немає.",
+    "optional": "Необов'язково",
+    "namePlaceholder": "Кредитний калькулятор",
+    "cols": {
+      "code": "Код",
+      "name": "Назва",
+      "status": "Статус",
+      "actions": "Дії"
+    },
+    "fields": {
+      "code": "Код",
+      "name": "Назва",
+      "description": "Опис",
+      "type": "Тип продукту",
+      "interestMethod": "Метод нарахування",
+      "rateType": "Тип ставки",
+      "dayCount": "Конвенція днів",
+      "accrualFreq": "Частота нарахування",
+      "compoundingFreq": "Частота капіталізації",
+      "strategy": "Стратегія погашення",
+      "repaymentFreq": "Частота виплат",
+      "minAmount": "Мін. сума",
+      "maxAmount": "Макс. сума",
+      "minRate": "Мін. ставка",
+      "maxRate": "Макс. ставка",
+      "minTerm": "Мін. термін",
+      "maxTerm": "Макс. термін",
+      "currency": "Валюта",
+      "fixedRate": "Фіксована ставка"
+    },
+    "sections": {
+      "interest": "Нарахування відсотків",
+      "repayment": "Погашення",
+      "constraints": "Обмеження",
+      "defaults": "Значення за замовчуванням"
+    },
+    "productType": {
+      "LOAN": "Кредит",
+      "DEPOSIT": "Депозит"
+    },
+    "interestMethod": {
+      "SIMPLE": "Простий",
+      "COMPOUND": "Складний"
+    },
+    "rateType": {
+      "FIXED": "Фіксована",
+      "FLOATING": "Плаваюча"
+    },
+    "amortization": {
+      "ANNUITY": "Ануїтет",
+      "LINEAR": "Лінійний",
+      "BULLET": "Bullet",
+      "ZERO_COUPON": "Zero Coupon"
+    },
+    "frequency": {
+      "ONCE": "Одноразово",
+      "DAILY": "Щодня",
+      "WEEKLY": "Щотижня",
+      "BI_WEEKLY": "Раз на два тижні",
+      "MONTHLY": "Щомісяця",
+      "QUARTERLY": "Щоквартально",
+      "SEMI_ANNUALLY": "Раз на пів року",
+      "ANNUALLY": "Щорічно"
+    }
+  },
+  "sensitivity": {
+    "axis": {
+      "rate": "Відсоткова ставка",
+      "term": "Термін",
+      "amount": "Сума"
+    },
+    "months": "міс.",
+    "current": "Поточне",
+    "totalPayment": "Всього платежів",
+    "totalInterest": "Відсотки",
+    "disclaimer": "Спрощена ануїтетна формула — реальні результати залежать від стратегії погашення"
+  },
+  "summary": {
+    "totalPayments": "Всього платежів",
+    "totalPrincipal": "Погашено тіло",
+    "totalInterest": "Сплачено відсотків",
+    "interestRatio": "Відсотки / тіло",
+    "overpayment": "Переплата",
+    "paymentPeriod": "Термін виплат"
+  },
+  "common": {
+    "loading": "Завантаження...",
+    "error": "Щось пішло не так"
+  }
+}

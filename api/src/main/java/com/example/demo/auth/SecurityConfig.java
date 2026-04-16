@@ -37,7 +37,7 @@ class SecurityConfig {
             .csrf(csrf -> csrf
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                 .csrfTokenRequestHandler(requestHandler)
-                .ignoringRequestMatchers("/auth/login", "/auth/refresh")
+                .ignoringRequestMatchers("/auth/login", "/auth/refresh", "/auth/register", "/auth/logout")
             )
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", "/api.yaml").permitAll()

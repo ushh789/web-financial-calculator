@@ -24,6 +24,12 @@ public class CalculationController implements CalculationsApiDelegate {
     private final CalculationMapper calculationMapper;
 
     @Override
+    public ResponseEntity<CalculationDto> getCalculationById(UUID id) {
+        CalculationDto dto = calculationService.findById(id);
+        return ResponseEntity.ok(dto);
+    }
+
+    @Override
     public ResponseEntity<PageCalculationDto> getCalculations(UUID userId, Integer page, Integer size) {
         Page<CalculationDto> result = calculationService.findAllByUserId(userId, PageRequest.of(page, size));
         PageCalculationDto response = calculationMapper.toPageDto(result);

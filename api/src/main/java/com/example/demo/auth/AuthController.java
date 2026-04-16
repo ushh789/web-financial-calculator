@@ -1,14 +1,17 @@
 package com.example.demo.auth;
 
 import com.example.demo.api.AuthApiDelegate;
+import com.example.demo.model.CreateUserRequest;
 import com.example.demo.model.LoginRequest;
 import com.example.demo.model.UserDto;
 import com.example.demo.users.User;
 import com.example.demo.users.UserMapper;
+import com.example.demo.users.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -31,6 +34,7 @@ public class AuthController implements AuthApiDelegate {
     private final RefreshTokenService refreshTokenService;
     private final CookieService cookieService;
     private final UserMapper userMapper;
+    private final UserService userService;
     private final HttpServletRequest request;
 
     @Value("${app.jwt.access-token-duration-ms}")
@@ -76,6 +80,12 @@ public class AuthController implements AuthApiDelegate {
                     return ResponseEntity.ok().headers(headers).body(userMapper.toDto(user));
                 })
                 .orElseThrow(() -> new RuntimeException("Refresh token is not in database!"));
+    }
+
+    @Override
+    public ResponseEntity<UserDto> register(CreateUserRequest createUserRequest) {
+        UserDto created = userService.createUser(createUserRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @Override

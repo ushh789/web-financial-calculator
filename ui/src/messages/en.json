@@ -1,0 +1,222 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "calculators": "Calculators",
+    "calculations": "Calculations",
+    "logout": "Log out",
+    "admin": "Admin"
+  },
+  "calculator": {
+    "catalog": "Calculator catalog",
+    "active": "Active",
+    "inactive": "Inactive",
+    "open": "Open",
+    "empty": "No calculators yet.",
+    "form": {
+      "amount": "Amount",
+      "rate": "Rate (%)",
+      "term": "Term (months)",
+      "startDate": "Start date",
+      "currency": "Currency",
+      "submit": "Calculate",
+      "submitting": "Calculating..."
+    }
+  },
+  "calculation": {
+    "title": "Calculation",
+    "myTitle": "My calculations",
+    "notFound": "Calculation not found.",
+    "noResults": "No calculation results available. The backend has not computed Cash Flows yet.",
+    "empty": "No calculations yet. Go to",
+    "emptyLink": "calculators",
+    "view": "View",
+    "showing": "Showing {count} of {total} calculations",
+    "tabs": {
+      "table": "Cash Flow Table",
+      "chart": "Amortization Chart",
+      "sensitivity": "Sensitivity Analysis"
+    }
+  },
+  "cashflow": {
+    "date": "Date",
+    "description": "Description",
+    "type": "Type",
+    "principal": "Principal",
+    "interest": "Interest",
+    "total": "Total",
+    "balance": "Balance",
+    "inflow": "Inflow",
+    "outflow": "Outflow",
+    "all": "All",
+    "exportCsv": "Export CSV",
+    "showing": "Showing {shown} of {total} entries",
+    "totalPayments": "Total payments",
+    "totalInterest": "Total interest",
+    "totalPrincipal": "Principal repaid",
+    "empty": "No data",
+    "noChartData": "No data to build the chart",
+    "amortizationTitle": "Amortization Chart"
+  },
+  "scenario": {
+    "title": "Scenarios",
+    "compareTitle": "Scenario comparison",
+    "totals": "Totals",
+    "active": "Active",
+    "add": "+ New scenario",
+    "cancel": "Cancel",
+    "activate": "Activate",
+    "compare": "Compare",
+    "selected": "Selected",
+    "form": {
+      "name": "Scenario name",
+      "namePlaceholder": "E.g. Optimistic",
+      "amount": "Amount",
+      "rate": "Rate, %",
+      "term": "Term, mo.",
+      "startDate": "Start date",
+      "submit": "Create scenario",
+      "submitting": "Creating..."
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "greeting": "Welcome, {name}!",
+    "recent": "Recent calculations",
+    "allCalculations": "All calculations →",
+    "noCalculations": "You have no calculations yet.",
+    "goToCalculators": "Open catalog",
+    "open": "Open"
+  },
+  "auth": {
+    "hero": {
+      "headline": "Smart financial calculations",
+      "subheadline": "A platform for precise loan, deposit, and cash flow planning.",
+      "feature1": "Annuity and linear repayment models",
+      "feature2": "Sensitivity analysis and scenario comparison",
+      "feature3": "Amortization charts and Cash Flow tables",
+      "feature4": "Export data in CSV format"
+    },
+    "login": {
+      "title": "Sign in",
+      "description": "Enter your username and password",
+      "username": "Username",
+      "password": "Password",
+      "submit": "Sign in",
+      "submitting": "Signing in...",
+      "noAccount": "No account?",
+      "register": "Register"
+    },
+    "register": {
+      "title": "Register",
+      "description": "Create a new account",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "email": "Email",
+      "username": "Username",
+      "password": "Password",
+      "confirmPassword": "Confirm password",
+      "submit": "Register",
+      "submitting": "Registering...",
+      "hasAccount": "Already have an account?",
+      "login": "Sign in"
+    }
+  },
+  "admin": {
+    "title": "Admin — Calculators",
+    "createCalculator": "Create calculator",
+    "addVersion": "Add version",
+    "addVersionFor": "New version: {name}",
+    "creating": "Creating...",
+    "adding": "Adding...",
+    "active": "Active",
+    "inactive": "Inactive",
+    "empty": "No calculators yet.",
+    "optional": "Optional",
+    "namePlaceholder": "Loan calculator",
+    "cols": {
+      "code": "Code",
+      "name": "Name",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "fields": {
+      "code": "Code",
+      "name": "Name",
+      "description": "Description",
+      "type": "Product type",
+      "interestMethod": "Interest method",
+      "rateType": "Rate type",
+      "dayCount": "Day count convention",
+      "accrualFreq": "Accrual frequency",
+      "compoundingFreq": "Compounding frequency",
+      "strategy": "Repayment strategy",
+      "repaymentFreq": "Payment frequency",
+      "minAmount": "Min amount",
+      "maxAmount": "Max amount",
+      "minRate": "Min rate",
+      "maxRate": "Max rate",
+      "minTerm": "Min term",
+      "maxTerm": "Max term",
+      "currency": "Currency",
+      "fixedRate": "Fixed rate"
+    },
+    "sections": {
+      "interest": "Interest accrual",
+      "repayment": "Repayment",
+      "constraints": "Constraints",
+      "defaults": "Defaults"
+    },
+    "productType": {
+      "LOAN": "Loan",
+      "DEPOSIT": "Deposit"
+    },
+    "interestMethod": {
+      "SIMPLE": "Simple",
+      "COMPOUND": "Compound"
+    },
+    "rateType": {
+      "FIXED": "Fixed",
+      "FLOATING": "Floating"
+    },
+    "amortization": {
+      "ANNUITY": "Annuity",
+      "LINEAR": "Linear",
+      "BULLET": "Bullet",
+      "ZERO_COUPON": "Zero coupon"
+    },
+    "frequency": {
+      "ONCE": "Once",
+      "DAILY": "Daily",
+      "WEEKLY": "Weekly",
+      "BI_WEEKLY": "Bi-weekly",
+      "MONTHLY": "Monthly",
+      "QUARTERLY": "Quarterly",
+      "SEMI_ANNUALLY": "Semi-annually",
+      "ANNUALLY": "Annually"
+    }
+  },
+  "sensitivity": {
+    "axis": {
+      "rate": "Interest rate",
+      "term": "Term",
+      "amount": "Amount"
+    },
+    "months": "mo.",
+    "current": "Current",
+    "totalPayment": "Total payments",
+    "totalInterest": "Interest",
+    "disclaimer": "Simplified annuity formula — actual results depend on repayment strategy"
+  },
+  "summary": {
+    "totalPayments": "Total payments",
+    "totalPrincipal": "Principal repaid",
+    "totalInterest": "Interest paid",
+    "interestRatio": "Interest / principal",
+    "overpayment": "Overpayment",
+    "paymentPeriod": "Payment period"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Something went wrong"
+  }
+}
