@@ -19,7 +19,32 @@
       "startDate": "Start date",
       "currency": "Currency",
       "submit": "Calculate",
-      "submitting": "Calculating..."
+      "submitting": "Calculating...",
+      "inputs": "Inputs",
+      "loanTerms": "Loan terms"
+    },
+    "live": {
+      "fillTheForm": "Fill in the form to see a live preview",
+      "title": "Live preview",
+      "monthlyPayment": "Monthly payment",
+      "totalPayments": "Total payments",
+      "totalInterest": "Total interest",
+      "principalAmount": "Principal",
+      "interestRatio": "Interest ratio",
+      "principalVsInterest": "Principal vs interest",
+      "emptyValue": "?",
+      "monthlyPaymentApprox": "Estimated monthly payment",
+      "approxDisclaimer": "Final value after Submit may differ due to calculator version rules and rounding.",
+      "nextPayment": "Next payment",
+      "endDate": "End date",
+      "versionInfo": "About this calculator"
+    },
+    "title": "Calculator",
+    "loanCalculator": "Loan calculator",
+    "version": {
+      "label": "Calculator version",
+      "placeholder": "Select a version",
+      "item": "Version {version}"
     }
   },
   "calculation": {
@@ -57,7 +82,11 @@
     "totalPrincipal": "Principal repaid",
     "empty": "No data",
     "noChartData": "No data to build the chart",
-    "amortizationTitle": "Amortization Chart"
+    "amortizationTitle": "Amortization Chart",
+    "descriptions": {
+      "disbursement": "Disbursement",
+      "monthlyPayment": "Monthly payment"
+    }
   },
   "scenario": {
     "title": "Scenarios",
@@ -77,8 +106,21 @@
       "term": "Term, mo.",
       "startDate": "Start date",
       "submit": "Create scenario",
-      "submitting": "Creating..."
-    }
+      "submitting": "Creating...",
+      "validation": {
+        "nameRequired": "Enter scenario name",
+        "amountRequired": "Enter amount",
+        "mustBePositive": "Must be > 0",
+        "integer": "Integer number"
+      }
+    },
+    "count": "{count} scenarios",
+    "defaultName": "Scenario {index}",
+    "defaultNameShort": "Scenario {id}",
+    "winner": "Winner",
+    "winnerSaves": "{name} saves you {amount} in interest",
+    "versus": "vs {name}",
+    "interestBreakdownTitle": "{compareTitle} - Interest breakdown"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -87,7 +129,10 @@
     "allCalculations": "All calculations →",
     "noCalculations": "You have no calculations yet.",
     "goToCalculators": "Open catalog",
-    "open": "Open"
+    "open": "Open",
+    "totalCalculations": "Total calculations",
+    "startCalculation": "Start a calculation",
+    "viewAll": "View all"
   },
   "auth": {
     "hero": {
@@ -213,7 +258,8 @@
     "current": "Current",
     "totalPayment": "Total payments",
     "totalInterest": "Interest",
-    "disclaimer": "Simplified annuity formula — actual results depend on repayment strategy"
+    "disclaimer": "Simplified annuity formula — actual results depend on repayment strategy",
+    "totalPrincipal": "Principal"
   },
   "summary": {
     "totalPayments": "Total payments",
@@ -221,10 +267,45 @@
     "totalInterest": "Interest paid",
     "interestRatio": "Interest / principal",
     "overpayment": "Overpayment",
-    "paymentPeriod": "Payment period"
+    "paymentPeriod": "Payment period",
+    "monthlyPayment": "Monthly payment",
+    "principal": "Principal",
+    "interest": "Interest",
+    "termYears": "{value}-year",
+    "termMonths": "{value}-month",
+    "emptyValue": "?"
   },
   "common": {
     "loading": "Loading...",
-    "error": "Something went wrong"
+    "error": "Something went wrong",
+    "home": "Home",
+    "breadcrumb": "Breadcrumb",
+    "searchPlaceholder": "Search...",
+    "searchShortcut": "Ctrl+K",
+    "toggleTheme": "Toggle theme",
+    "monthsShort": "mo.",
+    "infinity": "?"
+  },
+  "sidebar": {
+    "brand": "Financial Calculator",
+    "workspace": "Workspace",
+    "account": "Account",
+    "settings": "Settings"
+  },
+  "ui": {
+    "pagination": {
+      "navLabel": "Pagination",
+      "previous": "Previous",
+      "next": "Next",
+      "morePages": "More pages",
+      "goToPreviousPage": "Go to previous page",
+      "goToNextPage": "Go to next page"
+    },
+    "dialog": {
+      "close": "Close"
+    },
+    "sheet": {
+      "close": "Close"
+    }
   }
 }

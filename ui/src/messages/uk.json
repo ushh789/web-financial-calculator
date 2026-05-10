@@ -7,6 +7,8 @@
     "admin": "Адмін"
   },
   "calculator": {
+    "title": "Калькулятор",
+    "loanCalculator": "Кредитний калькулятор",
     "catalog": "Каталог калькуляторів",
     "active": "Активний",
     "inactive": "Неактивний",
@@ -19,7 +21,30 @@
       "startDate": "Дата початку",
       "currency": "Валюта",
       "submit": "Розрахувати",
-      "submitting": "Розраховую..."
+      "submitting": "Розрахунок...",
+      "inputs": "Параметри",
+      "loanTerms": "Умови кредиту"
+    },
+    "live": {
+      "fillTheForm": "Заповніть форму, щоб побачити попередній перегляд у реальному часі",
+      "title": "Попередній перегляд",
+      "monthlyPayment": "Щомісячний платіж",
+      "totalPayments": "Усього платежів",
+      "totalInterest": "Усього відсотків",
+      "principalAmount": "Тіло кредиту",
+      "interestRatio": "Частка відсотків",
+      "principalVsInterest": "Тіло проти відсотків",
+      "emptyValue": "—",
+      "monthlyPaymentApprox": "Орієнтовний щомісячний платіж",
+      "approxDisclaimer": "Фінальне значення після обрахунку може відрізнятися через правила версії калькулятора та округлення.",
+      "nextPayment": "Наступний платіж",
+      "endDate": "Дата закінчення",
+      "versionInfo": "Про цей калькулятор"
+    },
+    "version": {
+      "label": "Версія калькулятора",
+      "placeholder": "Оберіть версію",
+      "item": "Версія {version}"
     }
   },
   "calculation": {
@@ -52,23 +77,34 @@
     "prev": "← Назад",
     "next": "Далі →",
     "showing": "Показано {shown} з {total} записів",
-    "totalPayments": "Всього платежів",
+    "totalPayments": "Усього платежів",
     "totalInterest": "Сума відсотків",
     "totalPrincipal": "Погашення тіла боргу",
     "empty": "Немає даних",
     "noChartData": "Немає даних для побудови графіку",
-    "amortizationTitle": "Графік амортизації"
+    "amortizationTitle": "Графік амортизації",
+    "descriptions": {
+      "disbursement": "Видача коштів",
+      "monthlyPayment": "Щомісячний платіж"
+    }
   },
   "scenario": {
     "title": "Сценарії",
     "compareTitle": "Порівняння сценаріїв",
     "totals": "Підсумки",
     "active": "Активний",
-    "add": "+ Новий сценарій",
+    "add": "Новий сценарій",
     "cancel": "Скасувати",
     "activate": "Активувати",
     "compare": "Порівняти",
     "selected": "Обрано",
+    "count": "{count} сценаріїв",
+    "defaultName": "Сценарій {index}",
+    "defaultNameShort": "Сценарій {id}",
+    "winner": "Кращий",
+    "winnerSaves": "{name} заощаджує вам {amount} на відсотках",
+    "versus": "проти {name}",
+    "interestBreakdownTitle": "{compareTitle} - структура відсотків",
     "form": {
       "name": "Назва сценарію",
       "namePlaceholder": "Напр. Оптимістичний",
@@ -77,13 +113,22 @@
       "term": "Термін, міс.",
       "startDate": "Дата початку",
       "submit": "Створити сценарій",
-      "submitting": "Створення..."
+      "submitting": "Створення...",
+      "validation": {
+        "nameRequired": "Введіть назву сценарію",
+        "amountRequired": "Введіть суму",
+        "mustBePositive": "Має бути > 0",
+        "integer": "Ціле число"
+      }
     }
   },
   "dashboard": {
     "title": "Дашборд",
     "greeting": "Вітаємо, {name}!",
+    "totalCalculations": "Усього розрахунків",
     "recent": "Останні розрахунки",
+    "startCalculation": "Почати розрахунок",
+    "viewAll": "Переглянути всі",
     "allCalculations": "Всі розрахунки →",
     "noCalculations": "Ви ще не виконували розрахунків.",
     "goToCalculators": "Відкрити каталог",
@@ -111,14 +156,14 @@
     "register": {
       "title": "Реєстрація",
       "description": "Створіть новий акаунт",
-      "firstName": "Ім\u2019я",
+      "firstName": "Ім'я",
       "lastName": "Прізвище",
       "email": "Email",
       "username": "Логін",
       "password": "Пароль",
       "confirmPassword": "Підтвердити пароль",
       "submit": "Зареєструватись",
-      "submitting": "Реєструю...",
+      "submitting": "Реєстрація...",
       "hasAccount": "Вже є акаунт?",
       "login": "Увійти"
     }
@@ -187,10 +232,10 @@
       "ZERO_COUPON": "Нульовий купон"
     },
     "dayCount": {
-      "ACTUAL_365": "Actual/365",
-      "ACTUAL_360": "Actual/360",
+      "ACTUAL_365": "Актуальна/365",
+      "ACTUAL_360": "Актуальна/360",
       "THIRTY_360": "30/360",
-      "ACTUAL_ACTUAL": "Actual/Actual"
+      "ACTUAL_ACTUAL": "Актуальна/Актуальна"
     },
     "frequency": {
       "ONCE": "Одноразово",
@@ -211,20 +256,57 @@
     },
     "months": "міс.",
     "current": "Поточне",
-    "totalPayment": "Всього платежів",
+    "totalPayment": "Усього платежів",
     "totalInterest": "Відсотки",
-    "disclaimer": "Спрощена ануїтетна формула — реальні результати залежать від стратегії погашення"
+    "disclaimer": "Спрощена ануїтетна формула — реальні результати залежать від стратегії погашення",
+    "totalPrincipal": "Тіло кредиту"
   },
   "summary": {
-    "totalPayments": "Всього платежів",
+    "totalPayments": "Усього платежів",
     "totalPrincipal": "Погашено тіло",
     "totalInterest": "Сплачено відсотків",
     "interestRatio": "Відсотки / тіло",
     "overpayment": "Переплата",
-    "paymentPeriod": "Термін виплат"
+    "paymentPeriod": "Термін виплат",
+    "monthlyPayment": "Щомісячний платіж",
+    "principal": "Тіло",
+    "interest": "Відсотки",
+    "termYears": "{value} р.",
+    "termMonths": "{value} міс.",
+    "emptyValue": "—"
   },
   "common": {
     "loading": "Завантаження...",
-    "error": "Щось пішло не так"
+    "error": "Щось пішло не так",
+    "home": "Головна",
+    "breadcrumb": "Навігаційний ланцюжок",
+    "searchPlaceholder": "Пошук...",
+    "searchShortcut": "Ctrl+K",
+    "toggleTheme": "Перемкнути тему",
+    "monthsShort": "міс.",
+    "infinity": "∞",
+    "emptyValue": "—"
+  },
+  "sidebar": {
+    "brand": "Фінансовий калькулятор",
+    "workspace": "Робочий простір",
+    "account": "Акаунт",
+    "settings": "Налаштування"
+  },
+  "ui": {
+    "pagination": {
+      "navLabel": "Пагінація",
+      "previous": "Назад",
+      "next": "Далі",
+      "morePages": "Більше сторінок",
+      "goToPreviousPage": "Перейти на попередню сторінку",
+      "goToNextPage": "Перейти на наступну сторінку"
+    },
+    "dialog": {
+      "close": "Закрити"
+    },
+    "sheet": {
+      "close": "Закрити"
+    }
   }
 }
