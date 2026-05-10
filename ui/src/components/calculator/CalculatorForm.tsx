@@ -57,10 +57,18 @@ function computeNextPaymentDate(startDate: string, frequency: Frequency): string
   return d.toLocaleDateString("uk-UA", { year: "numeric", month: "short", day: "numeric" });
 }
 
-function computeEndDate(startDate: string, termMonths: number): string | null {
-  if (!startDate || !termMonths || termMonths <= 0) return null;
+function computeEndDate(startDate: string, term: number, frequency: Frequency | undefined): string | null {
+  if (!startDate || !term || term <= 0) return null;
   const d = new Date(startDate);
-  d.setMonth(d.getMonth() + termMonths);
+  switch (frequency) {
+    case "DAILY":         d.setDate(d.getDate() + term); break;
+    case "WEEKLY":        d.setDate(d.getDate() + term * 7); break;
+    case "BI_WEEKLY":     d.setDate(d.getDate() + term * 14); break;
+    case "QUARTERLY":     d.setMonth(d.getMonth() + term * 3); break;
+    case "SEMI_ANNUALLY": d.setMonth(d.getMonth() + term * 6); break;
+    case "ANNUALLY":      d.setFullYear(d.getFullYear() + term); break;
+    default:              d.setMonth(d.getMonth() + term); break;
+  }
   return d.toLocaleDateString("uk-UA", { year: "numeric", month: "short", day: "numeric" });
 }
 
@@ -107,7 +115,7 @@ function LiveSummary({
     ? computeNextPaymentDate(startDate, frequency)
     : null;
   const endDate = startDate && term > 0
-    ? computeEndDate(startDate, term)
+    ? computeEndDate(startDate, term, frequency)
     : null;
   const hasDateData = !!(nextPaymentDate || endDate);
 
@@ -375,7 +383,7 @@ export function CalculatorForm({
               {t("term")}
               {(constraints?.minTerm != null || constraints?.maxTerm != null) && (
                 <span className="ml-1 text-xs text-text-3 font-normal">
-                  {constraints?.minTerm ?? 0} - {constraints?.maxTerm ?? tCommon("infinity")} {tCommon("monthsShort")}
+                  {constraints?.minTerm ?? 0} - {constraints?.maxTerm ?? tCommon("infinity")} {tCommon("periodsShort")}
                 </span>
               )}
             </Label>

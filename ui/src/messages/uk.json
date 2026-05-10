@@ -17,7 +17,7 @@
     "form": {
       "amount": "Сума",
       "rate": "Ставка (%)",
-      "term": "Термін (місяців)",
+      "term": "Термін (періодів)",
       "startDate": "Дата початку",
       "currency": "Валюта",
       "submit": "Розрахувати",
@@ -284,6 +284,7 @@
     "searchShortcut": "Ctrl+K",
     "toggleTheme": "Перемкнути тему",
     "monthsShort": "міс.",
+    "periodsShort": "пер.",
     "infinity": "∞",
     "emptyValue": "—"
   },

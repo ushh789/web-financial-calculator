@@ -15,7 +15,7 @@
     "form": {
       "amount": "Amount",
       "rate": "Rate (%)",
-      "term": "Term (months)",
+      "term": "Term (periods)",
       "startDate": "Start date",
       "currency": "Currency",
       "submit": "Calculate",
@@ -284,6 +284,7 @@
     "searchShortcut": "Ctrl+K",
     "toggleTheme": "Toggle theme",
     "monthsShort": "mo.",
+    "periodsShort": "per.",
     "infinity": "?"
   },
   "sidebar": {
