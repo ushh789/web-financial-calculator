@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -22,13 +22,13 @@ function parseCashFlows(result?: Record<string, unknown> | null): CashFlow[] {
   return result.cashFlows as CashFlow[];
 }
 
-function getScenarioSummary(scenario: CalculationScenarioDto, currency: string) {
+function getScenarioSummary(scenario: CalculationScenarioDto, currency: string, monthsShort: string) {
   const inp = scenario.scenarioInput;
   if (!inp) return null;
   const parts = [
     inp.amount ? formatCurrency(inp.amount, currency) : null,
     inp.rate != null ? `${inp.rate}%` : null,
-    inp.term != null ? `${inp.term}mo.` : null,
+    inp.term != null ? `${inp.term} ${monthsShort}` : null,
   ].filter(Boolean);
   return parts.join(" · ");
 }
@@ -45,10 +45,9 @@ interface Props {
 
 export function ScenarioPanel({ calculation }: Props) {
   const t = useTranslations("scenario");
+  const tCommon = useTranslations("common");
   const { data: scenarios = [], isLoading } = useScenarios(calculation.id!);
-  const { mutate: selectScenario, isPending: isSelecting } = useSelectScenario(
-    calculation.id!,
-  );
+  const { mutate: selectScenario, isPending: isSelecting } = useSelectScenario(calculation.id!);
   const [showAddForm, setShowAddForm] = useState(false);
   const [compareIds, setCompareIds] = useState<string[]>([]);
 
@@ -64,8 +63,7 @@ export function ScenarioPanel({ calculation }: Props) {
     );
   };
 
-  const activeScenario =
-    scenarios.find((s) => s.id === calculation.selectedScenarioId) ?? scenarios[0];
+  const activeScenario = scenarios.find((s) => s.id === calculation.selectedScenarioId) ?? scenarios[0];
 
   if (isLoading) {
     return (
@@ -78,20 +76,16 @@ export function ScenarioPanel({ calculation }: Props) {
 
   const baseMetrics =
     activeScenario
-      ? computeCashFlowMetrics(
-          parseCashFlows(activeScenario.scenarioResult as Record<string, unknown> | null),
-        )
+      ? computeCashFlowMetrics(parseCashFlows(activeScenario.scenarioResult as Record<string, unknown> | null))
       : null;
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-[11px] uppercase tracking-[0.08em] text-text-3 font-medium">
-            {t("title")}
-          </p>
+          <p className="text-[11px] uppercase tracking-[0.08em] text-text-3 font-medium">{t("title")}</p>
           {scenarios.length > 0 && (
-            <p className="text-xs text-text-3 mt-0.5">{scenarios.length} scenario{scenarios.length !== 1 ? "s" : ""}</p>
+            <p className="text-xs text-text-3 mt-0.5">{t("count", { count: scenarios.length })}</p>
           )}
         </div>
         <Button
@@ -111,7 +105,6 @@ export function ScenarioPanel({ calculation }: Props) {
         </Button>
       </div>
 
-      {/* Add scenario form */}
       <AnimatePresence>
         {showAddForm && (
           <motion.div
@@ -131,16 +124,13 @@ export function ScenarioPanel({ calculation }: Props) {
         )}
       </AnimatePresence>
 
-      {/* Scenario list */}
       {scenarios.length > 0 && (
         <div className="divide-y divide-hairline border border-border rounded-lg overflow-hidden">
           {scenarios.map((scenario, idx) => {
             const isActive = scenario.id === calculation.selectedScenarioId;
             const isInCompare = compareIds.includes(scenario.id!);
-            const summary = getScenarioSummary(scenario, currency);
-            const metrics = computeCashFlowMetrics(
-              parseCashFlows(scenario.scenarioResult as Record<string, unknown> | null),
-            );
+            const summary = getScenarioSummary(scenario, currency, tCommon("monthsShort"));
+            const metrics = computeCashFlowMetrics(parseCashFlows(scenario.scenarioResult as Record<string, unknown> | null));
             const hasResults = metrics.totalPayments > 0;
 
             let delta: { label: string; positive: boolean } | null = null;
@@ -153,28 +143,15 @@ export function ScenarioPanel({ calculation }: Props) {
             }
 
             return (
-              <div
-                key={scenario.id}
-                className={`flex items-center gap-3 px-4 py-3 ${isActive ? "bg-accent-soft-2" : "bg-surface"}`}
-              >
-                {/* Index marker */}
-                <div
-                  className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium shrink-0 ${
-                    isActive
-                      ? "bg-accent text-accent-fg"
-                      : "bg-accent-soft text-accent"
-                  }`}
-                >
+              <div key={scenario.id} className={`flex items-center gap-3 px-4 py-3 ${isActive ? "bg-accent-soft-2" : "bg-surface"}`}>
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium shrink-0 ${isActive ? "bg-accent text-accent-fg" : "bg-accent-soft text-accent"}`}>
                   {idx + 1}
                 </div>
 
-                {/* Info */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span
-                      className={`text-sm font-medium truncate ${isActive ? "text-accent" : "text-text"}`}
-                    >
-                      {scenario.scenarioName ?? `Scenario ${idx + 1}`}
+                    <span className={`text-sm font-medium truncate ${isActive ? "text-accent" : "text-text"}`}>
+                      {scenario.scenarioName ?? t("defaultName", { index: idx + 1 })}
                     </span>
                     {isActive && (
                       <span className="text-[10px] uppercase tracking-[0.06em] font-semibold text-positive bg-positive-soft border border-positive-line rounded-full px-1.5 py-0.5">
@@ -182,38 +159,26 @@ export function ScenarioPanel({ calculation }: Props) {
                       </span>
                     )}
                   </div>
-                  {summary && (
-                    <p className="text-xs text-text-3 font-mono mt-0.5">{summary}</p>
-                  )}
+                  {summary && <p className="text-xs text-text-3 font-mono mt-0.5">{summary}</p>}
                 </div>
 
-                {/* Totals + delta */}
                 {hasResults && (
                   <div className="text-right shrink-0">
-                    <p className="font-mono text-sm font-medium text-text tabular-nums">
-                      {formatCurrencyCompact(metrics.totalPayments, currency)}
-                    </p>
+                    <p className="font-mono text-sm font-medium text-text tabular-nums">{formatCurrencyCompact(metrics.totalPayments, currency)}</p>
                     {delta && (
-                      <p
-                        className={`text-xs font-mono tabular-nums ${delta.positive ? "text-positive" : "text-warn"}`}
-                      >
+                      <p className={`text-xs font-mono tabular-nums ${delta.positive ? "text-positive" : "text-warn"}`}>
                         {delta.label}
                       </p>
                     )}
                   </div>
                 )}
 
-                {/* Actions */}
                 <div className="flex gap-1.5 shrink-0">
                   <Button
                     size="sm"
                     variant={isInCompare ? "default" : "outline"}
                     onClick={() => toggleCompare(scenario.id!)}
-                    className={`h-7 text-xs px-2 ${
-                      isInCompare
-                        ? "bg-accent text-accent-fg hover:bg-accent-strong"
-                        : "border-border text-text-2 hover:bg-surface-sunken"
-                    }`}
+                    className={`h-7 text-xs px-2 ${isInCompare ? "bg-accent text-accent-fg hover:bg-accent-strong" : "border-border text-text-2 hover:bg-surface-sunken"}`}
                   >
                     {isInCompare ? t("selected") : t("compare")}
                   </Button>
@@ -235,14 +200,9 @@ export function ScenarioPanel({ calculation }: Props) {
         </div>
       )}
 
-      {/* Comparison view */}
       {compareIds.length === 2 && (
-        <ScenarioCompare
-          scenarios={scenarios.filter((s) => compareIds.includes(s.id!))}
-          currency={currency}
-        />
+        <ScenarioCompare scenarios={scenarios.filter((s) => compareIds.includes(s.id!))} currency={currency} />
       )}
     </div>
   );
 }
-

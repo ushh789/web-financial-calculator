@@ -1,13 +1,16 @@
-"use client";
+﻿"use client";
 
-import { useSyncExternalStore } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
-import { Sun, Moon, Search } from "lucide-react";
+import { Sun, Moon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { calculatorsApi } from "@/lib/api/calculators";
 import { LocaleSwitcher } from "./LocaleSwitcher";
 
 function ThemeToggle() {
+  const tCommon = useTranslations("common");
   const { theme, setTheme } = useTheme();
   const mounted = useSyncExternalStore(
     () => () => {},
@@ -19,7 +22,7 @@ function ThemeToggle() {
     <Button
       variant="ghost"
       size="icon"
-      aria-label="Toggle theme"
+      aria-label={tCommon("toggleTheme")}
       onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
     >
       {mounted ? (
@@ -36,13 +39,52 @@ function ThemeToggle() {
 }
 
 function Breadcrumb() {
+  const tNav = useTranslations("nav");
+  const tCommon = useTranslations("common");
   const pathname = usePathname();
   const segments = pathname.split("/").filter(Boolean);
-  const crumbs = segments.map((seg) => seg.charAt(0).toUpperCase() + seg.slice(1));
-  const label = crumbs.join(" › ") || "Home";
+  const [calculatorName, setCalculatorName] = useState<string | null>(null);
+
+  useEffect(() => {
+    const isCalculatorDetailsPage = segments.length === 2 && segments[0] === "calculators";
+    if (!isCalculatorDetailsPage) {
+      setCalculatorName(null);
+      return;
+    }
+
+    const calculatorId = segments[1];
+    if (!calculatorId) return;
+
+    let isActive = true;
+    calculatorsApi
+      .getById(calculatorId)
+      .then((calculator) => {
+        if (isActive) setCalculatorName(calculator.name ?? null);
+      })
+      .catch(() => {
+        if (isActive) setCalculatorName(null);
+      });
+
+    return () => {
+      isActive = false;
+    };
+  }, [pathname]);
+
+  const crumbs = segments.map((seg, idx) => {
+    if (segments[0] === "calculators" && idx === 1 && calculatorName) {
+      return calculatorName;
+    }
+    if (seg === "dashboard") return tNav("dashboard");
+    if (seg === "calculators") return tNav("calculators");
+    if (seg === "calculations") return tNav("calculations");
+    if (seg === "admin") return tNav("admin");
+    return seg;
+  });
+
+  const label = crumbs.join(" > ") || tCommon("home");
 
   return (
-    <nav aria-label="Breadcrumb">
+    <nav aria-label={tCommon("breadcrumb")}>
       <span className="text-sm text-text-2">{label}</span>
     </nav>
   );
@@ -51,23 +93,10 @@ function Breadcrumb() {
 export function Header() {
   return (
     <header className="h-14 bg-bg/80 backdrop-blur-sm border-b border-border flex items-center justify-between px-6 gap-4">
-      {/* Left: Breadcrumb */}
       <div className="flex-1 min-w-0">
         <Breadcrumb />
       </div>
 
-      {/* Center: Search pill */}
-      <div className="shrink-0">
-        <div className="bg-surface-sunken rounded-full px-3 h-8 flex items-center gap-2 text-sm text-text-3 min-w-50">
-          <Search className="h-3.5 w-3.5 shrink-0" />
-          <span className="flex-1">Search...</span>
-          <kbd className="ml-auto text-[10px] bg-surface border border-border rounded px-1.5 py-0.5 text-text-3">
-            ⌘K
-          </kbd>
-        </div>
-      </div>
-
-      {/* Right: Actions */}
       <div className="flex items-center gap-2 shrink-0">
         <ThemeToggle />
         <LocaleSwitcher />
@@ -75,4 +104,3 @@ export function Header() {
     </header>
   );
 }
-

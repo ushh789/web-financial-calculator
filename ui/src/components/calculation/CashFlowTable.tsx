@@ -70,6 +70,13 @@ export function CashFlowTable({ cashFlows, currency = "USD" }: Props) {
     };
   }, [filteredData]);
 
+  const localizeDescription = (description: string) => {
+    const normalized = description.trim().toLowerCase();
+    if (normalized === "disbursement") return t("descriptions.disbursement");
+    if (normalized === "monthly payment") return t("descriptions.monthlyPayment");
+    return description;
+  };
+
   const columns = useMemo<ColumnDef<CashFlow>[]>(
     () => [
       {
@@ -85,7 +92,7 @@ export function CashFlowTable({ cashFlows, currency = "USD" }: Props) {
         accessorKey: "description",
         header: t("description"),
         cell: ({ getValue }) => (
-          <span className="text-sm text-text-2">{getValue<string>()}</span>
+          <span className="text-sm text-text-2">{localizeDescription(getValue<string>())}</span>
         ),
       },
       {
@@ -166,7 +173,7 @@ export function CashFlowTable({ cashFlows, currency = "USD" }: Props) {
     const headers = [t("date"), t("description"), t("type"), t("principal"), t("interest"), t("total")];
     const rows = filteredData.map((cf) => [
       formatDate(cf.date),
-      cf.description,
+      localizeDescription(cf.description),
       cf.type,
       cf.breakdown.principal.amount.toFixed(2),
       cf.breakdown.interest.amount.toFixed(2),
@@ -329,4 +336,3 @@ export function CashFlowTable({ cashFlows, currency = "USD" }: Props) {
     </div>
   );
 }
-

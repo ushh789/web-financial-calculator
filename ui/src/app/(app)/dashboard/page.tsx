@@ -38,7 +38,7 @@ export default function DashboardPage() {
           <span className="font-serif text-[44px] font-medium text-text leading-none tabular-nums">
             {totalCalculations}
           </span>
-          <span className="text-sm text-text-3 mt-1">Total calculations</span>
+          <span className="text-sm text-text-3 mt-1">{t("totalCalculations")}</span>
         </div>
       </div>
 
@@ -116,12 +116,12 @@ export default function DashboardPage() {
         {(calcLoading || activeCalculators.length > 0) && (
           <div>
             <div className="flex items-center justify-between mb-3">
-              <h2 className="text-sm font-semibold text-text">Start a calculation</h2>
+              <h2 className="text-sm font-semibold text-text">{t("startCalculation")}</h2>
               <Link
                 href="/calculators"
                 className="text-xs text-accent hover:underline underline-offset-4"
               >
-                View all
+                {t("viewAll")}
               </Link>
             </div>
 

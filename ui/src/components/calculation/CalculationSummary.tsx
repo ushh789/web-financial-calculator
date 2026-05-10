@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useMemo } from "react";
 import { useTranslations } from "next-intl";
@@ -23,7 +23,11 @@ export function CalculationSummary({ cashFlows, currency, amount, rate, term }: 
   const monthlyPayment = outflows.length > 0 ? m.totalPayments / outflows.length : 0;
 
   const subtitleParts = [
-    term ? `${term >= 12 ? `${Math.round(term / 12)}-year` : `${term}-month`}` : null,
+    term
+      ? term >= 12
+        ? t("termYears", { value: Math.round(term / 12) })
+        : t("termMonths", { value: term })
+      : null,
     rate ? `${rate}%` : null,
     amount ? formatCurrency(amount, currency) : null,
   ].filter(Boolean);
@@ -33,10 +37,9 @@ export function CalculationSummary({ cashFlows, currency, amount, rate, term }: 
 
   return (
     <div className="bg-surface rounded-lg border border-border shadow-1 overflow-hidden">
-      {/* Hero section */}
       <div className="p-(--density-pad) border-b border-hairline">
         <p className="text-[11px] uppercase tracking-[0.08em] text-text-3 font-medium mb-2">
-          Monthly payment
+          {t("monthlyPayment")}
         </p>
         <div className="flex items-baseline gap-1.5">
           <span className="text-text-3 font-serif text-2xl">{currency}</span>
@@ -52,7 +55,6 @@ export function CalculationSummary({ cashFlows, currency, amount, rate, term }: 
         )}
       </div>
 
-      {/* Support KPI grid */}
       <div className="grid grid-cols-2 sm:grid-cols-4 divide-x divide-y sm:divide-y-0 divide-hairline">
         {[
           {
@@ -72,43 +74,35 @@ export function CalculationSummary({ cashFlows, currency, amount, rate, term }: 
             label: t("paymentPeriod"),
             value:
               m.firstPaymentDate && m.lastPaymentDate
-                ? `${formatDate(m.firstPaymentDate)} – ${formatDate(m.lastPaymentDate)}`
-                : "—",
+                ? `${formatDate(m.firstPaymentDate)} - ${formatDate(m.lastPaymentDate)}`
+                : t("emptyValue"),
           },
         ].map(({ label, value, warn }) => (
           <div key={label} className="p-4">
             <p className="text-[11px] uppercase tracking-[0.06em] text-text-3 font-medium mb-1">
               {label}
             </p>
-            <p
-              className={`font-mono text-sm font-medium tabular-nums ${warn ? "text-warn" : "text-text"}`}
-            >
+            <p className={`font-mono text-sm font-medium tabular-nums ${warn ? "text-warn" : "text-text"}`}>
               {value}
             </p>
           </div>
         ))}
       </div>
 
-      {/* Interest ratio bar */}
       {m.totalPayments > 0 && (
         <div className="px-(--density-pad) py-3 border-t border-hairline flex items-center gap-3">
           <div className="flex-1 flex h-1.5 rounded-full overflow-hidden bg-surface-sunken">
-            <div
-              className="bg-chart-principal rounded-l-full"
-              style={{ width: `${principalPct}%` }}
-            />
-            <div
-              className="bg-chart-interest flex-1 rounded-r-full"
-            />
+            <div className="bg-chart-principal rounded-l-full" style={{ width: `${principalPct}%` }} />
+            <div className="bg-chart-interest flex-1 rounded-r-full" />
           </div>
           <div className="flex items-center gap-3 text-[11px] text-text-3 shrink-0">
             <span className="flex items-center gap-1">
               <span className="w-2 h-2 rounded-full bg-chart-principal inline-block" />
-              Principal {principalPct.toFixed(0)}%
+              {t("principal")} {principalPct.toFixed(0)}%
             </span>
             <span className="flex items-center gap-1">
               <span className="w-2 h-2 rounded-full bg-chart-interest inline-block" />
-              Interest {interestPct.toFixed(0)}%
+              {t("interest")} {interestPct.toFixed(0)}%
             </span>
           </div>
         </div>
@@ -116,4 +110,3 @@ export function CalculationSummary({ cashFlows, currency, amount, rate, term }: 
     </div>
   );
 }
-

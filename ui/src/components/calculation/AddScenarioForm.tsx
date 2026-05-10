@@ -1,5 +1,6 @@
-"use client";
+﻿"use client";
 
+import { useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -13,15 +14,13 @@ import type { components } from "@/lib/types/api.types";
 
 type CalculationInputDto = components["schemas"]["CalculationInputDto"];
 
-const schema = z.object({
-  scenarioName: z.string().min(1, "Введіть назву сценарію"),
-  amount: z.number({ message: "Введіть суму" }).positive("Має бути > 0"),
-  rate: z.number().positive("Має бути > 0").optional(),
-  term: z.number().int("Ціле число").positive("Має бути > 0").optional(),
-  startDate: z.string().optional(),
-});
-
-type FormData = z.infer<typeof schema>;
+type FormData = {
+  scenarioName: string;
+  amount: number;
+  rate?: number;
+  term?: number;
+  startDate?: string;
+};
 
 interface Props {
   calculationId: string;
@@ -32,6 +31,22 @@ interface Props {
 export function AddScenarioForm({ calculationId, initialInput, onSuccess }: Props) {
   const t = useTranslations("scenario.form");
   const { mutate: addScenario, isPending } = useAddScenario(calculationId);
+
+  const schema = useMemo(
+    () =>
+      z.object({
+        scenarioName: z.string().min(1, t("validation.nameRequired")),
+        amount: z.number({ message: t("validation.amountRequired") }).positive(t("validation.mustBePositive")),
+        rate: z.number().positive(t("validation.mustBePositive")).optional(),
+        term: z
+          .number()
+          .int(t("validation.integer"))
+          .positive(t("validation.mustBePositive"))
+          .optional(),
+        startDate: z.string().optional(),
+      }),
+    [t],
+  );
 
   const form = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -65,79 +80,32 @@ export function AddScenarioForm({ calculationId, initialInput, onSuccess }: Prop
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
           <div className="space-y-1">
             <Label htmlFor="scenarioName">{t("name")}</Label>
-            <Input
-              id="scenarioName"
-              placeholder={t("namePlaceholder")}
-              disabled={isPending}
-              {...form.register("scenarioName")}
-            />
-            {form.formState.errors.scenarioName && (
-              <p className="text-xs text-destructive">
-                {form.formState.errors.scenarioName.message}
-              </p>
-            )}
+            <Input id="scenarioName" placeholder={t("namePlaceholder")} disabled={isPending} {...form.register("scenarioName")} />
+            {form.formState.errors.scenarioName && <p className="text-xs text-destructive">{form.formState.errors.scenarioName.message}</p>}
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1">
               <Label htmlFor="amount">{t("amount")}</Label>
-              <Input
-                id="amount"
-                type="number"
-                step="any"
-                placeholder="0"
-                disabled={isPending}
-                {...form.register("amount", { valueAsNumber: true })}
-              />
-              {form.formState.errors.amount && (
-                <p className="text-xs text-destructive">
-                  {form.formState.errors.amount.message}
-                </p>
-              )}
+              <Input id="amount" type="number" step="any" placeholder="0" disabled={isPending} {...form.register("amount", { valueAsNumber: true })} />
+              {form.formState.errors.amount && <p className="text-xs text-destructive">{form.formState.errors.amount.message}</p>}
             </div>
 
             <div className="space-y-1">
               <Label htmlFor="rate">{t("rate")}</Label>
-              <Input
-                id="rate"
-                type="number"
-                step="any"
-                placeholder="0"
-                disabled={isPending}
-                {...form.register("rate", { valueAsNumber: true })}
-              />
-              {form.formState.errors.rate && (
-                <p className="text-xs text-destructive">
-                  {form.formState.errors.rate.message}
-                </p>
-              )}
+              <Input id="rate" type="number" step="any" placeholder="0" disabled={isPending} {...form.register("rate", { valueAsNumber: true })} />
+              {form.formState.errors.rate && <p className="text-xs text-destructive">{form.formState.errors.rate.message}</p>}
             </div>
 
             <div className="space-y-1">
               <Label htmlFor="term">{t("term")}</Label>
-              <Input
-                id="term"
-                type="number"
-                step="1"
-                placeholder="0"
-                disabled={isPending}
-                {...form.register("term", { valueAsNumber: true })}
-              />
-              {form.formState.errors.term && (
-                <p className="text-xs text-destructive">
-                  {form.formState.errors.term.message}
-                </p>
-              )}
+              <Input id="term" type="number" step="1" placeholder="0" disabled={isPending} {...form.register("term", { valueAsNumber: true })} />
+              {form.formState.errors.term && <p className="text-xs text-destructive">{form.formState.errors.term.message}</p>}
             </div>
 
             <div className="space-y-1">
               <Label htmlFor="startDate">{t("startDate")}</Label>
-              <Input
-                id="startDate"
-                type="date"
-                disabled={isPending}
-                {...form.register("startDate")}
-              />
+              <Input id="startDate" type="date" disabled={isPending} {...form.register("startDate")} />
             </div>
           </div>
 

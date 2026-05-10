@@ -53,6 +53,7 @@ function NavItem({
 
 export function Sidebar() {
   const t = useTranslations("nav");
+  const tSidebar = useTranslations("sidebar");
   const pathname = usePathname();
   const user = useAuthStore((s) => s.user);
   const { mutate: logout, isPending: isLoggingOut } = useLogout();
@@ -67,7 +68,7 @@ export function Sidebar() {
     ...(user?.role === "ADMIN"
       ? [{ href: "/admin/calculators", label: t("admin"), icon: ShieldCheck }]
       : []),
-    { href: "/settings", label: "Settings", icon: Settings },
+    { href: "/settings", label: tSidebar("settings"), icon: Settings },
   ];
 
   return (
@@ -78,7 +79,7 @@ export function Sidebar() {
           <span className="font-serif font-medium text-[13px] text-accent-fg leading-none">FL</span>
         </div>
         <div className="flex flex-col min-w-0">
-          <span className="text-sm font-medium text-text leading-tight">Financial Calculator</span>
+          <span className="text-sm font-medium text-text leading-tight">{tSidebar("brand")}</span>
         </div>
       </div>
 
@@ -87,7 +88,7 @@ export function Sidebar() {
         {/* Workspace section */}
         <div>
           <p className="uppercase text-text-3 text-[10px] tracking-[0.08em] font-medium px-3 mb-1">
-            Workspace
+            {tSidebar("workspace")}
           </p>
           <div className="space-y-0.5">
             {WORKSPACE_ITEMS.map((item) => (
@@ -99,7 +100,7 @@ export function Sidebar() {
         {/* Account section */}
         <div>
           <p className="uppercase text-text-3 text-[10px] tracking-[0.08em] font-medium px-3 mb-1">
-            Account
+            {tSidebar("account")}
           </p>
           <div className="space-y-0.5">
             {ACCOUNT_ITEMS.map((item) => (

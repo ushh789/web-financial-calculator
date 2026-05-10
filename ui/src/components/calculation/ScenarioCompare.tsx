@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useMemo } from "react";
 import { useTranslations } from "next-intl";
@@ -23,15 +23,15 @@ interface Props {
 export function ScenarioCompare({ scenarios, currency = "USD" }: Props) {
   const t = useTranslations("scenario");
   const tc = useTranslations("cashflow");
+  const tSummary = useTranslations("summary");
+  const tCommon = useTranslations("common");
 
   const metrics = useMemo(
     () =>
       scenarios.map((s) => {
-        const cf = computeCashFlowMetrics(
-          parseCashFlows(s.scenarioResult as Record<string, unknown> | null),
-        );
+        const cf = computeCashFlowMetrics(parseCashFlows(s.scenarioResult as Record<string, unknown> | null));
         return {
-          name: s.scenarioName ?? `Scenario ${s.id?.slice(0, 6)}`,
+          name: s.scenarioName ?? t("defaultNameShort", { id: s.id?.slice(0, 6) ?? "" }),
           input: s.scenarioInput,
           totalPayments: cf.totalPayments,
           totalInterest: cf.totalInterest,
@@ -39,15 +39,13 @@ export function ScenarioCompare({ scenarios, currency = "USD" }: Props) {
           interestRatio: cf.interestRatio,
         };
       }),
-    [scenarios],
+    [scenarios, t],
   );
 
   const [m0, m1] = metrics;
   if (!m0 || !m1) return null;
 
   const hasResults = m0.totalPayments > 0 || m1.totalPayments > 0;
-
-  // Winner = lower total interest
   const winnerIdx = m0.totalInterest <= m1.totalInterest ? 0 : 1;
   const interestSavings = Math.abs(m0.totalInterest - m1.totalInterest);
   const winner = winnerIdx === 0 ? m0 : m1;
@@ -57,38 +55,26 @@ export function ScenarioCompare({ scenarios, currency = "USD" }: Props) {
 
   return (
     <div className="space-y-4">
-      {/* Winner banner */}
       {hasResults && (
         <div className="bg-positive-soft border border-positive-line rounded-lg p-4 flex items-start gap-3">
           <Check className="w-5 h-5 text-positive shrink-0 mt-0.5" />
           <div>
             <p className="font-serif text-[22px] font-medium text-positive leading-tight">
-              {winner.name} saves you {formatCurrency(interestSavings, currency)} in interest
+              {t("winnerSaves", { name: winner.name, amount: formatCurrency(interestSavings, currency) })}
             </p>
-            <p className="text-sm text-positive mt-1 opacity-80">
-              vs {loser.name}
-            </p>
+            <p className="text-sm text-positive mt-1 opacity-80">{t("versus", { name: loser.name })}</p>
           </div>
         </div>
       )}
 
-      {/* Comparison cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {cards.map((m, i) => {
           const isWinner = i === winnerIdx;
           return (
-            <div
-              key={m.name}
-              className={`relative bg-surface rounded-lg border overflow-hidden ${
-                isWinner
-                  ? "ring-2 ring-positive ring-offset-2 border-positive-line"
-                  : "border-border"
-              }`}
-            >
-              {/* Winner ribbon */}
+            <div key={m.name} className={`relative bg-surface rounded-lg border overflow-hidden ${isWinner ? "ring-2 ring-positive ring-offset-2 border-positive-line" : "border-border"}`}>
               {isWinner && (
                 <div className="absolute top-3 right-3 bg-positive text-positive-soft text-[10px] font-semibold px-2 py-0.5 rounded-full uppercase tracking-[0.06em]">
-                  Winner
+                  {t("winner")}
                 </div>
               )}
 
@@ -96,9 +82,9 @@ export function ScenarioCompare({ scenarios, currency = "USD" }: Props) {
                 <p className="text-base font-semibold text-text">{m.name}</p>
                 {m.input && (
                   <p className="text-xs text-text-3 mt-0.5 font-mono">
-                    {m.input.amount ? formatCurrency(m.input.amount, currency) : "—"}
+                    {m.input.amount ? formatCurrency(m.input.amount, currency) : tCommon("emptyValue")}
                     {m.input.rate != null ? ` · ${m.input.rate}%` : ""}
-                    {m.input.term != null ? ` · ${m.input.term}mo.` : ""}
+                    {m.input.term != null ? ` · ${m.input.term} ${tCommon("monthsShort")}` : ""}
                   </p>
                 )}
               </div>
@@ -107,10 +93,8 @@ export function ScenarioCompare({ scenarios, currency = "USD" }: Props) {
                 <div className="p-5 space-y-3">
                   {[
                     {
-                      label: "Monthly payment",
-                      value: m.totalPayments > 0
-                        ? formatCurrency(m.totalPayments / (m.input?.term ?? 1), currency)
-                        : "—",
+                      label: tSummary("monthlyPayment"),
+                      value: m.totalPayments > 0 ? formatCurrency(m.totalPayments / (m.input?.term ?? 1), currency) : tCommon("emptyValue"),
                     },
                     {
                       label: tc("totalPayments"),
@@ -122,18 +106,14 @@ export function ScenarioCompare({ scenarios, currency = "USD" }: Props) {
                       winning: isWinner && hasResults,
                     },
                     {
-                      label: "Interest ratio",
+                      label: tSummary("interestRatio"),
                       value: `${m.interestRatio}%`,
                       winning: isWinner && hasResults,
                     },
                   ].map(({ label, value, winning }) => (
                     <div key={label} className="flex items-center justify-between">
                       <span className="text-sm text-text-3">{label}</span>
-                      <span
-                        className={`text-sm font-mono font-medium tabular-nums ${winning ? "text-positive" : "text-text"}`}
-                      >
-                        {value}
-                      </span>
+                      <span className={`text-sm font-mono font-medium tabular-nums ${winning ? "text-positive" : "text-text"}`}>{value}</span>
                     </div>
                   ))}
                 </div>
@@ -143,11 +123,10 @@ export function ScenarioCompare({ scenarios, currency = "USD" }: Props) {
         })}
       </div>
 
-      {/* Cost breakdown bar */}
       {hasResults && (
         <div className="bg-surface rounded-lg border border-border p-5">
           <p className="text-[11px] uppercase tracking-[0.06em] text-text-3 font-medium mb-3">
-            {t("compareTitle")} — Interest breakdown
+            {t("interestBreakdownTitle", { compareTitle: t("compareTitle") })}
           </p>
           <div className="space-y-3">
             {cards.map((m, i) => {
@@ -157,18 +136,11 @@ export function ScenarioCompare({ scenarios, currency = "USD" }: Props) {
               return (
                 <div key={m.name} className="space-y-1">
                   <div className="flex justify-between text-sm">
-                    <span className={`font-medium ${isWinner ? "text-positive" : "text-text-2"}`}>
-                      {m.name}
-                    </span>
-                    <span className={`font-mono tabular-nums ${isWinner ? "text-positive" : "text-text"}`}>
-                      {formatCurrency(m.totalInterest, currency)}
-                    </span>
+                    <span className={`font-medium ${isWinner ? "text-positive" : "text-text-2"}`}>{m.name}</span>
+                    <span className={`font-mono tabular-nums ${isWinner ? "text-positive" : "text-text"}`}>{formatCurrency(m.totalInterest, currency)}</span>
                   </div>
                   <div className="h-2 bg-surface-sunken rounded-full overflow-hidden">
-                    <div
-                      className={`h-full rounded-full ${isWinner ? "bg-positive" : "bg-chart-interest"}`}
-                      style={{ width: `${pct}%` }}
-                    />
+                    <div className={`h-full rounded-full ${isWinner ? "bg-positive" : "bg-chart-interest"}`} style={{ width: `${pct}%` }} />
                   </div>
                 </div>
               );
@@ -179,4 +151,3 @@ export function ScenarioCompare({ scenarios, currency = "USD" }: Props) {
     </div>
   );
 }
-

@@ -120,7 +120,7 @@ export function AddVersionForm({ calculatorId, onSuccess }: Props) {
               render={({ field }) => (
                 <Select onValueChange={field.onChange} value={field.value}>
                   <SelectTrigger className="h-11 bg-surface border-border text-text">
-                    <SelectValue />
+                    <SelectValue>{field.value ? t(`interestMethod.${field.value}`) : undefined}</SelectValue>
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="SIMPLE">{t("interestMethod.SIMPLE")}</SelectItem>
@@ -139,7 +139,7 @@ export function AddVersionForm({ calculatorId, onSuccess }: Props) {
               render={({ field }) => (
                 <Select onValueChange={field.onChange} value={field.value}>
                   <SelectTrigger className="h-11 bg-surface border-border text-text">
-                    <SelectValue />
+                    <SelectValue>{field.value ? t(`rateType.${field.value}`) : undefined}</SelectValue>
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="FIXED">{t("rateType.FIXED")}</SelectItem>
@@ -158,7 +158,7 @@ export function AddVersionForm({ calculatorId, onSuccess }: Props) {
               render={({ field }) => (
                 <Select onValueChange={field.onChange} value={field.value}>
                   <SelectTrigger className="h-11 bg-surface border-border text-text">
-                    <SelectValue />
+                    <SelectValue>{field.value ? t(`dayCount.${field.value}`) : undefined}</SelectValue>
                   </SelectTrigger>
                   <SelectContent>
                     {(["ACTUAL_365", "ACTUAL_360", "THIRTY_360", "ACTUAL_ACTUAL"] as const).map(
@@ -178,7 +178,9 @@ export function AddVersionForm({ calculatorId, onSuccess }: Props) {
               render={({ field }) => (
                 <Select onValueChange={field.onChange} value={field.value ?? ""}>
                   <SelectTrigger className="h-11 bg-surface border-border text-text">
-                    <SelectValue placeholder={t("optional")} />
+                    <SelectValue placeholder={t("optional")}>
+                      {field.value ? t(`frequency.${field.value}`) : undefined}
+                    </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
                     {FREQUENCIES.map((f) => (
@@ -199,7 +201,9 @@ export function AddVersionForm({ calculatorId, onSuccess }: Props) {
                 render={({ field }) => (
                   <Select onValueChange={field.onChange} value={field.value ?? ""}>
                     <SelectTrigger className="h-11 bg-surface border-border text-text">
-                      <SelectValue placeholder={t("optional")} />
+                      <SelectValue placeholder={t("optional")}>
+                        {field.value ? t(`frequency.${field.value}`) : undefined}
+                      </SelectValue>
                     </SelectTrigger>
                     <SelectContent>
                       {FREQUENCIES.map((f) => (
@@ -228,7 +232,7 @@ export function AddVersionForm({ calculatorId, onSuccess }: Props) {
               render={({ field }) => (
                 <Select onValueChange={field.onChange} value={field.value}>
                   <SelectTrigger className="h-11 bg-surface border-border text-text">
-                    <SelectValue />
+                    <SelectValue>{field.value ? t(`amortization.${field.value}`) : undefined}</SelectValue>
                   </SelectTrigger>
                   <SelectContent>
                     {(["ANNUITY", "LINEAR", "BULLET", "ZERO_COUPON"] as const).map((v) => (
@@ -248,7 +252,7 @@ export function AddVersionForm({ calculatorId, onSuccess }: Props) {
               render={({ field }) => (
                 <Select onValueChange={field.onChange} value={field.value}>
                   <SelectTrigger className="h-11 bg-surface border-border text-text">
-                    <SelectValue />
+                    <SelectValue>{field.value ? t(`frequency.${field.value}`) : undefined}</SelectValue>
                   </SelectTrigger>
                   <SelectContent>
                     {FREQUENCIES.map((f) => (
@@ -316,7 +320,7 @@ export function AddVersionForm({ calculatorId, onSuccess }: Props) {
               render={({ field }) => (
                 <Select onValueChange={field.onChange} value={field.value ?? "USD"}>
                   <SelectTrigger className="h-11 bg-surface border-border text-text">
-                    <SelectValue />
+                    <SelectValue>{field.value ?? "USD"}</SelectValue>
                   </SelectTrigger>
                   <SelectContent>
                     {(["USD", "EUR", "UAH", "GBP"] as const).map((c) => (
