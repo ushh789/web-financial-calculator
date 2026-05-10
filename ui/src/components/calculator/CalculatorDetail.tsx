@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Badge } from "@/components/ui/badge";
 import { VersionSelector } from "./VersionSelector";
 import { CalculatorForm } from "./CalculatorForm";
@@ -15,6 +16,7 @@ interface CalculatorDetailProps {
 }
 
 export function CalculatorDetail({ calculator, versions }: CalculatorDetailProps) {
+  const t = useTranslations("calculator");
   const latestVersion = versions.at(-1);
   const [selectedVersionId, setSelectedVersionId] = useState<string>(
     latestVersion?.id ?? "",
@@ -30,7 +32,9 @@ export function CalculatorDetail({ calculator, versions }: CalculatorDetailProps
       <div className="flex items-start gap-3">
         <div className="flex-1">
           <p className="text-[11px] uppercase tracking-[0.08em] text-text-3 font-medium mb-1">
-            {selectedVersion?.algorithmMetadata?.type === "LOAN" ? "Loan calculator" : "Calculator"}
+            {selectedVersion?.algorithmMetadata?.type === "LOAN"
+              ? t("loanCalculator")
+              : t("title")}
           </p>
           <h1 className="text-2xl font-semibold text-text leading-tight">{calculator.name}</h1>
           {calculator.description && (
@@ -43,7 +47,7 @@ export function CalculatorDetail({ calculator, versions }: CalculatorDetailProps
             ? "bg-positive-soft text-positive border-positive-line hover:bg-positive-soft"
             : ""}
         >
-          {calculator.active ? "Active" : "Inactive"}
+          {calculator.active ? t("active") : t("inactive")}
         </Badge>
       </div>
 
@@ -64,6 +68,9 @@ export function CalculatorDetail({ calculator, versions }: CalculatorDetailProps
           calculatorVersionId={selectedVersion.id}
           constraints={constraints}
           defaults={defaults}
+          productType={selectedVersion.algorithmMetadata?.type}
+          repayment={selectedVersion.algorithmMetadata?.repayment}
+          interest={selectedVersion.algorithmMetadata?.interest}
         />
       ) : null}
     </div>

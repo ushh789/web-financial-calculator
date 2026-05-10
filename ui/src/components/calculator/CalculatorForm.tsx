@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,6 +23,9 @@ interface CalculatorFormProps {
   calculatorVersionId: string;
   constraints?: ProductConstraintsDto;
   defaults?: ProductDefaultsDto;
+  productType?: ProductType;
+  repayment?: RepaymentConfigDto;
+  interest?: InterestConfigDto;
 }
 
 function formatCurrency(value: number, currency = "USD"): string {
@@ -32,6 +35,33 @@ function formatCurrency(value: number, currency = "USD"): string {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(value);
+}
+
+type Frequency = components["schemas"]["Frequency"];
+type InterestConfigDto = components["schemas"]["InterestConfigDto"];
+type RepaymentConfigDto = components["schemas"]["RepaymentConfigDto"];
+type ProductType = components["schemas"]["ProductType"];
+
+function computeNextPaymentDate(startDate: string, frequency: Frequency): string | null {
+  if (!startDate || frequency === "ONCE") return null;
+  const d = new Date(startDate);
+  switch (frequency) {
+    case "DAILY":         d.setDate(d.getDate() + 1); break;
+    case "WEEKLY":        d.setDate(d.getDate() + 7); break;
+    case "BI_WEEKLY":     d.setDate(d.getDate() + 14); break;
+    case "MONTHLY":       d.setMonth(d.getMonth() + 1); break;
+    case "QUARTERLY":     d.setMonth(d.getMonth() + 3); break;
+    case "SEMI_ANNUALLY": d.setMonth(d.getMonth() + 6); break;
+    case "ANNUALLY":      d.setFullYear(d.getFullYear() + 1); break;
+  }
+  return d.toLocaleDateString("uk-UA", { year: "numeric", month: "short", day: "numeric" });
+}
+
+function computeEndDate(startDate: string, termMonths: number): string | null {
+  if (!startDate || !termMonths || termMonths <= 0) return null;
+  const d = new Date(startDate);
+  d.setMonth(d.getMonth() + termMonths);
+  return d.toLocaleDateString("uk-UA", { year: "numeric", month: "short", day: "numeric" });
 }
 
 function computePreview(amount: number, rate: number, term: number) {
@@ -55,31 +85,41 @@ function LiveSummary({
   rate,
   term,
   currency,
+  startDate,
+  frequency,
 }: {
   amount: number;
   rate: number;
   term: number;
   currency: string;
+  startDate: string;
+  frequency: Frequency | undefined;
 }) {
+  const t = useTranslations("calculator.live");
+  const tSensitivity = useTranslations("sensitivity");
   const preview = useMemo(
     () => computePreview(amount, rate, term),
     [amount, rate, term],
   );
 
   const hasData = !!preview;
+  const nextPaymentDate = frequency && startDate
+    ? computeNextPaymentDate(startDate, frequency)
+    : null;
+  const endDate = startDate && term > 0
+    ? computeEndDate(startDate, term)
+    : null;
+  const hasDateData = !!(nextPaymentDate || endDate);
 
   return (
     <div className="space-y-5">
-      {/* Hero monthly payment */}
       <div>
         <p className="text-[11px] uppercase tracking-[0.08em] text-text-3 font-medium mb-2">
-          Monthly payment
+          {t("monthlyPaymentApprox")}
         </p>
         {hasData ? (
           <div className="flex items-baseline gap-1">
-            <span className="text-text-3 text-2xl font-serif">
-              {currency}
-            </span>
+            <span className="text-text-3 text-2xl font-serif">{currency}</span>
             <span className="font-serif text-[52px] font-medium text-text leading-none">
               {preview.payment.toLocaleString("en-US", {
                 minimumFractionDigits: 2,
@@ -89,54 +129,66 @@ function LiveSummary({
           </div>
         ) : (
           <div className="font-serif text-[52px] font-medium text-text-4 leading-none">
-            —
+            {t("emptyValue")}
           </div>
         )}
       </div>
 
-      {/* 2×2 grid */}
       <div className="grid grid-cols-2 gap-3">
         {[
           {
-            label: "Total payments",
-            value: hasData ? formatCurrency(preview.totalPaid, currency) : "—",
+            label: t("totalPayments"),
+            value: hasData ? formatCurrency(preview.totalPaid, currency) : t("emptyValue"),
           },
           {
-            label: "Total interest",
-            value: hasData ? formatCurrency(preview.totalInterest, currency) : "—",
+            label: t("totalInterest"),
+            value: hasData ? formatCurrency(preview.totalInterest, currency) : t("emptyValue"),
             warn: hasData,
           },
           {
-            label: "Principal",
-            value: hasData ? formatCurrency(amount, currency) : "—",
+            label: t("principalAmount"),
+            value: hasData ? formatCurrency(amount, currency) : t("emptyValue"),
           },
           {
-            label: "Interest ratio",
-            value: hasData ? `${preview.interestRatio.toFixed(1)}%` : "—",
+            label: t("interestRatio"),
+            value: hasData ? `${preview.interestRatio.toFixed(1)}%` : t("emptyValue"),
             warn: hasData,
           },
         ].map(({ label, value, warn }) => (
-          <div
-            key={label}
-            className="bg-surface-sunken rounded-lg p-3"
-          >
-            <p className="text-[11px] uppercase tracking-[0.06em] text-text-3 mb-1">
-              {label}
-            </p>
-            <p
-              className={`font-mono text-sm font-medium tabular-nums ${warn ? "text-warn" : "text-text"}`}
-            >
+          <div key={label} className="bg-surface-sunken rounded-lg p-3">
+            <p className="text-[11px] uppercase tracking-[0.06em] text-text-3 mb-1">{label}</p>
+            <p className={`font-mono text-sm font-medium tabular-nums ${warn ? "text-warn" : "text-text"}`}>
               {value}
             </p>
           </div>
         ))}
       </div>
 
-      {/* Split bar */}
+      {hasDateData && (
+        <div className="grid grid-cols-2 gap-3">
+          <div className="bg-surface-sunken rounded-lg p-3">
+            <p className="text-[11px] uppercase tracking-[0.06em] text-text-3 mb-1">
+              {t("nextPayment")}
+            </p>
+            <p className="font-mono text-sm font-medium tabular-nums text-text">
+              {nextPaymentDate ?? t("emptyValue")}
+            </p>
+          </div>
+          <div className="bg-surface-sunken rounded-lg p-3">
+            <p className="text-[11px] uppercase tracking-[0.06em] text-text-3 mb-1">
+              {t("endDate")}
+            </p>
+            <p className="font-mono text-sm font-medium tabular-nums text-text">
+              {endDate ?? t("emptyValue")}
+            </p>
+          </div>
+        </div>
+      )}
+
       {hasData && (
         <div>
           <p className="text-[11px] uppercase tracking-[0.06em] text-text-3 mb-2">
-            Principal vs interest
+            {t("principalVsInterest")}
           </p>
           <div className="flex h-2 rounded-full overflow-hidden">
             <div
@@ -145,22 +197,73 @@ function LiveSummary({
                 width: `${(amount / preview.totalPaid) * 100}%`,
               }}
             />
-            <div
-              className="bg-chart-interest flex-1"
-            />
+            <div className="bg-chart-interest flex-1" />
           </div>
           <div className="flex justify-between mt-1 text-[11px] text-text-3">
-            <span>Principal {((amount / preview.totalPaid) * 100).toFixed(0)}%</span>
-            <span>Interest {((preview.totalInterest / preview.totalPaid) * 100).toFixed(0)}%</span>
+            <span>{tSensitivity("totalPrincipal")} {((amount / preview.totalPaid) * 100).toFixed(0)}%</span>
+            <span>{tSensitivity("totalInterest")} {((preview.totalInterest / preview.totalPaid) * 100).toFixed(0)}%</span>
           </div>
         </div>
       )}
 
       {!hasData && (
-        <p className="text-sm text-text-3 text-center py-4">
-          Fill in the form to see a live preview
-        </p>
+        <p className="text-sm text-text-3 text-center py-4">{t("fillTheForm")}</p>
       )}
+      {hasData && (
+        <p className="text-xs text-text-3">{t("approxDisclaimer")}</p>
+      )}
+    </div>
+  );
+}
+
+function VersionInfoCard({
+  productType,
+  repayment,
+  interest,
+}: {
+  productType: ProductType | undefined;
+  repayment: RepaymentConfigDto | undefined;
+  interest: InterestConfigDto | undefined;
+}) {
+  const t = useTranslations("calculator.live");
+  const tAdmin = useTranslations("admin");
+
+  const fields = [
+    {
+      label: tAdmin("fields.type"),
+      value: productType ? tAdmin(`productType.${productType}`) : "—",
+    },
+    {
+      label: tAdmin("fields.repaymentFreq"),
+      value: repayment?.frequency ? tAdmin(`frequency.${repayment.frequency}`) : "—",
+    },
+    {
+      label: tAdmin("fields.strategy"),
+      value: repayment?.strategy ? tAdmin(`amortization.${repayment.strategy}`) : "—",
+    },
+    {
+      label: tAdmin("fields.interestMethod"),
+      value: interest?.method ? tAdmin(`interestMethod.${interest.method}`) : "—",
+    },
+    {
+      label: tAdmin("fields.rateType"),
+      value: interest?.rateType ? tAdmin(`rateType.${interest.rateType}`) : "—",
+    },
+  ];
+
+  return (
+    <div className="bg-surface rounded-lg border border-border shadow-1 p-6">
+      <p className="text-[11px] uppercase tracking-[0.08em] text-text-3 font-medium mb-4">
+        {t("versionInfo")}
+      </p>
+      <div className="grid grid-cols-2 gap-3">
+        {fields.map(({ label, value }) => (
+          <div key={label} className="bg-surface-sunken rounded-lg p-3">
+            <p className="text-[11px] uppercase tracking-[0.06em] text-text-3 mb-1">{label}</p>
+            <p className="text-sm font-medium text-text">{value}</p>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -169,8 +272,13 @@ export function CalculatorForm({
   calculatorId,
   constraints,
   defaults,
+  productType,
+  repayment,
+  interest,
 }: CalculatorFormProps) {
   const t = useTranslations("calculator.form");
+  const tLive = useTranslations("calculator.live");
+  const tCommon = useTranslations("common");
   const user = useAuthStore((s) => s.user);
   const { mutate: createCalculation, isPending } = useCreateCalculation();
 
@@ -187,9 +295,9 @@ export function CalculatorForm({
     },
   });
 
-  const [watchedAmount, watchedRate, watchedTerm, watchedCurrency] = useWatch({
+  const [watchedAmount, watchedRate, watchedTerm, watchedCurrency, watchedStartDate] = useWatch({
     control: form.control,
-    name: ["amount", "rate", "term", "currency"],
+    name: ["amount", "rate", "term", "currency", "startDate"],
   });
 
   function onSubmit(data: CalculationFormData) {
@@ -209,25 +317,19 @@ export function CalculatorForm({
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1.05fr_1fr]">
-      {/* Left: Form */}
       <div className="bg-surface rounded-lg border border-border shadow-1">
         <div className="px-6 py-4 border-b border-border">
-          <p className="text-[11px] uppercase tracking-[0.08em] text-text-3 font-medium">
-            Inputs
-          </p>
-          <h2 className="text-base font-semibold text-text mt-0.5">
-            Loan terms
-          </h2>
+          <p className="text-[11px] uppercase tracking-[0.08em] text-text-3 font-medium">{t("inputs")}</p>
+          <h2 className="text-base font-semibold text-text mt-0.5">{t("loanTerms")}</h2>
         </div>
 
         <form onSubmit={form.handleSubmit(onSubmit)} className="p-6 space-y-5">
-          {/* Amount */}
           <div className="space-y-1.5">
             <Label htmlFor="amount" className="text-sm font-medium text-text">
               {t("amount")}
               {(constraints?.minAmount != null || constraints?.maxAmount != null) && (
                 <span className="ml-1 text-xs text-text-3 font-normal">
-                  {constraints?.minAmount ?? 0} – {constraints?.maxAmount ?? "∞"}
+                  {constraints?.minAmount ?? 0} - {constraints?.maxAmount ?? tCommon("infinity")}
                 </span>
               )}
             </Label>
@@ -245,13 +347,12 @@ export function CalculatorForm({
             )}
           </div>
 
-          {/* Rate */}
           <div className="space-y-1.5">
             <Label htmlFor="rate" className="text-sm font-medium text-text">
               {t("rate")}
               {(constraints?.minRate != null || constraints?.maxRate != null) && (
                 <span className="ml-1 text-xs text-text-3 font-normal">
-                  {constraints?.minRate ?? 0}% – {constraints?.maxRate ?? "∞"}%
+                  {constraints?.minRate ?? 0}% - {constraints?.maxRate ?? tCommon("infinity")}%
                 </span>
               )}
             </Label>
@@ -269,13 +370,12 @@ export function CalculatorForm({
             )}
           </div>
 
-          {/* Term */}
           <div className="space-y-1.5">
             <Label htmlFor="term" className="text-sm font-medium text-text">
               {t("term")}
               {(constraints?.minTerm != null || constraints?.maxTerm != null) && (
                 <span className="ml-1 text-xs text-text-3 font-normal">
-                  {constraints?.minTerm ?? 0} – {constraints?.maxTerm ?? "∞"} mo.
+                  {constraints?.minTerm ?? 0} - {constraints?.maxTerm ?? tCommon("infinity")} {tCommon("monthsShort")}
                 </span>
               )}
             </Label>
@@ -293,11 +393,8 @@ export function CalculatorForm({
             )}
           </div>
 
-          {/* Start date */}
           <div className="space-y-1.5">
-            <Label htmlFor="startDate" className="text-sm font-medium text-text">
-              {t("startDate")}
-            </Label>
+            <Label htmlFor="startDate" className="text-sm font-medium text-text">{t("startDate")}</Label>
             <Input
               id="startDate"
               type="date"
@@ -307,11 +404,8 @@ export function CalculatorForm({
             />
           </div>
 
-          {/* Currency */}
           <div className="space-y-1.5">
-            <Label htmlFor="currency" className="text-sm font-medium text-text">
-              {t("currency")}
-            </Label>
+            <Label htmlFor="currency" className="text-sm font-medium text-text">{t("currency")}</Label>
             <Input
               id="currency"
               maxLength={3}
@@ -335,21 +429,26 @@ export function CalculatorForm({
         </form>
       </div>
 
-      {/* Right: Live summary */}
-      <div className="sticky top-20 self-start">
-        <div className="bg-surface rounded-lg border border-border shadow-1 p-6">
-          <p className="text-[11px] uppercase tracking-[0.08em] text-text-3 font-medium mb-4">
-            Live preview
-          </p>
-          <LiveSummary
-            amount={Number(watchedAmount) || 0}
-            rate={Number(watchedRate) || 0}
-            term={Number(watchedTerm) || 0}
-            currency={watchedCurrency || defaults?.currency || "USD"}
-          />
+      <div className="space-y-4">
+        <VersionInfoCard
+          productType={productType}
+          repayment={repayment}
+          interest={interest}
+        />
+        <div className="sticky top-20">
+          <div className="bg-surface rounded-lg border border-border shadow-1 p-6">
+            <p className="text-[11px] uppercase tracking-[0.08em] text-text-3 font-medium mb-4">{tLive("title")}</p>
+            <LiveSummary
+              amount={Number(watchedAmount) || 0}
+              rate={Number(watchedRate) || 0}
+              term={Number(watchedTerm) || 0}
+              currency={watchedCurrency || defaults?.currency || "USD"}
+              startDate={watchedStartDate ?? ""}
+              frequency={repayment?.frequency}
+            />
+          </div>
         </div>
       </div>
     </div>
   );
 }
-
