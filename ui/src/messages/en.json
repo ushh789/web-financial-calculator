@@ -34,7 +34,7 @@
       "principalVsInterest": "Principal vs interest",
       "emptyValue": "?",
       "monthlyPaymentApprox": "Estimated monthly payment",
-      "approxDisclaimer": "Final value after Submit may differ due to calculator version rules and rounding.",
+      "approxDisclaimer": "Final value after calculation may differ due to calculator version rules and rounding.",
       "nextPayment": "Next payment",
       "endDate": "End date",
       "versionInfo": "About this calculator"
