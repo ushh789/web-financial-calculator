@@ -5,6 +5,7 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  /* ── Shadcn / Tailwind semantic aliases ─────────────────────────── */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
@@ -47,6 +48,49 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* ── Aurelius design-token aliases → canonical Tailwind classes ─── */
+  /* Surface */
+  --color-bg: var(--bg);
+  --color-bg-tint: var(--bg-tint);
+  --color-surface: var(--surface);
+  --color-surface-sunken: var(--surface-sunken);
+
+  /* Text hierarchy */
+  --color-text: var(--text);
+  --color-text-2: var(--text-2);
+  --color-text-3: var(--text-3);
+  --color-text-4: var(--text-4);
+
+  /* Borders */
+  --color-border-strong: var(--border-strong);
+  --color-hairline: var(--hairline);
+
+  /* Accent */
+  --color-accent-strong: var(--accent-strong);
+  --color-accent-fg: var(--accent-fg);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-soft-2: var(--accent-soft-2);
+
+  /* Semantic */
+  --color-positive: var(--positive);
+  --color-positive-soft: var(--positive-soft);
+  --color-positive-line: var(--positive-line);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --color-warn-line: var(--warn-line);
+  --color-negative: var(--negative);
+  --color-negative-soft: var(--negative-soft);
+
+  /* Shadows */
+  --shadow-1: var(--shadow-1);
+  --shadow-2: var(--shadow-2);
+  --shadow-3: var(--shadow-3);
+
+  /* Chart palette */
+  --color-chart-principal: var(--color-chart-principal);
+  --color-chart-interest: var(--color-chart-interest);
+  --color-chart-balance: var(--color-chart-balance);
 }
 
 :root {
@@ -309,4 +353,12 @@
   font-weight: 700;
   letter-spacing: -0.025em;
   line-height: var(--leading-tight);
+}
+
+@utility scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }

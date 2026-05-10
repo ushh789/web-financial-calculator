@@ -49,6 +49,8 @@
     "outflow": "Outflow",
     "all": "All",
     "exportCsv": "Export CSV",
+    "prev": "← Prev",
+    "next": "Next →",
     "showing": "Showing {shown} of {total} entries",
     "totalPayments": "Total payments",
     "totalInterest": "Total interest",
@@ -62,7 +64,7 @@
     "compareTitle": "Scenario comparison",
     "totals": "Totals",
     "active": "Active",
-    "add": "+ New scenario",
+    "add": "New scenario",
     "cancel": "Cancel",
     "activate": "Activate",
     "compare": "Compare",
@@ -183,6 +185,12 @@
       "LINEAR": "Linear",
       "BULLET": "Bullet",
       "ZERO_COUPON": "Zero coupon"
+    },
+    "dayCount": {
+      "ACTUAL_365": "Actual/365",
+      "ACTUAL_360": "Actual/360",
+      "THIRTY_360": "30/360",
+      "ACTUAL_ACTUAL": "Actual/Actual"
     },
     "frequency": {
       "ONCE": "Once",

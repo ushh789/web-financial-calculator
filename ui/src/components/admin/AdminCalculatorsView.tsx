@@ -49,7 +49,7 @@ export function AdminCalculatorsView() {
           <SheetTrigger render={<Button />}>
             {t("createCalculator")}
           </SheetTrigger>
-          <SheetContent className="w-full sm:max-w-2xl overflow-y-auto">
+          <SheetContent className="w-full sm:max-w-2xl overflow-y-auto scrollbar-hide">
             <SheetHeader className="mb-6">
               <SheetTitle>{t("createCalculator")}</SheetTitle>
             </SheetHeader>
@@ -99,7 +99,7 @@ export function AdminCalculatorsView() {
                       <DialogTrigger render={<Button variant="outline" size="sm" />}>
                         {t("addVersion")}
                       </DialogTrigger>
-                      <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+                      <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto scrollbar-hide">
                         <DialogHeader>
                           <DialogTitle>
                             {t("addVersionFor", { name: calc.name ?? "" })}

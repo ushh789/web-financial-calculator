@@ -72,15 +72,15 @@ function LiveSummary({
     <div className="space-y-5">
       {/* Hero monthly payment */}
       <div>
-        <p className="text-[11px] uppercase tracking-[0.08em] text-[--text-3] font-medium mb-2">
+        <p className="text-[11px] uppercase tracking-[0.08em] text-text-3 font-medium mb-2">
           Monthly payment
         </p>
         {hasData ? (
           <div className="flex items-baseline gap-1">
-            <span className="text-[--text-3] text-2xl font-serif">
+            <span className="text-text-3 text-2xl font-serif">
               {currency}
             </span>
-            <span className="font-serif text-[52px] font-medium text-[--text] leading-none">
+            <span className="font-serif text-[52px] font-medium text-text leading-none">
               {preview.payment.toLocaleString("en-US", {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
@@ -88,7 +88,7 @@ function LiveSummary({
             </span>
           </div>
         ) : (
-          <div className="font-serif text-[52px] font-medium text-[--text-4] leading-none">
+          <div className="font-serif text-[52px] font-medium text-text-4 leading-none">
             —
           </div>
         )}
@@ -118,13 +118,13 @@ function LiveSummary({
         ].map(({ label, value, warn }) => (
           <div
             key={label}
-            className="bg-[--surface-sunken] rounded-[--radius] p-3"
+            className="bg-surface-sunken rounded-lg p-3"
           >
-            <p className="text-[11px] uppercase tracking-[0.06em] text-[--text-3] mb-1">
+            <p className="text-[11px] uppercase tracking-[0.06em] text-text-3 mb-1">
               {label}
             </p>
             <p
-              className={`font-mono text-sm font-medium tabular-nums ${warn ? "text-[--warn]" : "text-[--text]"}`}
+              className={`font-mono text-sm font-medium tabular-nums ${warn ? "text-warn" : "text-text"}`}
             >
               {value}
             </p>
@@ -135,21 +135,21 @@ function LiveSummary({
       {/* Split bar */}
       {hasData && (
         <div>
-          <p className="text-[11px] uppercase tracking-[0.06em] text-[--text-3] mb-2">
+          <p className="text-[11px] uppercase tracking-[0.06em] text-text-3 mb-2">
             Principal vs interest
           </p>
           <div className="flex h-2 rounded-full overflow-hidden">
             <div
-              className="bg-[--chart-principal]"
+              className="bg-chart-principal"
               style={{
                 width: `${(amount / preview.totalPaid) * 100}%`,
               }}
             />
             <div
-              className="bg-[--chart-interest] flex-1"
+              className="bg-chart-interest flex-1"
             />
           </div>
-          <div className="flex justify-between mt-1 text-[11px] text-[--text-3]">
+          <div className="flex justify-between mt-1 text-[11px] text-text-3">
             <span>Principal {((amount / preview.totalPaid) * 100).toFixed(0)}%</span>
             <span>Interest {((preview.totalInterest / preview.totalPaid) * 100).toFixed(0)}%</span>
           </div>
@@ -157,7 +157,7 @@ function LiveSummary({
       )}
 
       {!hasData && (
-        <p className="text-sm text-[--text-3] text-center py-4">
+        <p className="text-sm text-text-3 text-center py-4">
           Fill in the form to see a live preview
         </p>
       )}
@@ -210,12 +210,12 @@ export function CalculatorForm({
   return (
     <div className="grid gap-6 lg:grid-cols-[1.05fr_1fr]">
       {/* Left: Form */}
-      <div className="bg-[--surface] rounded-[--radius-lg] border border-[--border] shadow-[--shadow-1]">
-        <div className="px-6 py-4 border-b border-[--border]">
-          <p className="text-[11px] uppercase tracking-[0.08em] text-[--text-3] font-medium">
+      <div className="bg-surface rounded-lg border border-border shadow-1">
+        <div className="px-6 py-4 border-b border-border">
+          <p className="text-[11px] uppercase tracking-[0.08em] text-text-3 font-medium">
             Inputs
           </p>
-          <h2 className="text-base font-semibold text-[--text] mt-0.5">
+          <h2 className="text-base font-semibold text-text mt-0.5">
             Loan terms
           </h2>
         </div>
@@ -223,10 +223,10 @@ export function CalculatorForm({
         <form onSubmit={form.handleSubmit(onSubmit)} className="p-6 space-y-5">
           {/* Amount */}
           <div className="space-y-1.5">
-            <Label htmlFor="amount" className="text-sm font-medium text-[--text]">
+            <Label htmlFor="amount" className="text-sm font-medium text-text">
               {t("amount")}
               {(constraints?.minAmount != null || constraints?.maxAmount != null) && (
-                <span className="ml-1 text-xs text-[--text-3] font-normal">
+                <span className="ml-1 text-xs text-text-3 font-normal">
                   {constraints?.minAmount ?? 0} – {constraints?.maxAmount ?? "∞"}
                 </span>
               )}
@@ -237,20 +237,20 @@ export function CalculatorForm({
               step="any"
               placeholder="0"
               disabled={isPending}
-              className="h-[44px] font-mono text-[--text] bg-[--surface] border-[--border] focus:border-[--accent] focus:ring-[--accent]"
+              className="h-11 font-mono text-text bg-surface border-border focus:border-accent focus:ring-accent"
               {...form.register("amount", { valueAsNumber: true })}
             />
             {form.formState.errors.amount && (
-              <p className="text-xs text-[--negative]">{form.formState.errors.amount.message}</p>
+              <p className="text-xs text-negative">{form.formState.errors.amount.message}</p>
             )}
           </div>
 
           {/* Rate */}
           <div className="space-y-1.5">
-            <Label htmlFor="rate" className="text-sm font-medium text-[--text]">
+            <Label htmlFor="rate" className="text-sm font-medium text-text">
               {t("rate")}
               {(constraints?.minRate != null || constraints?.maxRate != null) && (
-                <span className="ml-1 text-xs text-[--text-3] font-normal">
+                <span className="ml-1 text-xs text-text-3 font-normal">
                   {constraints?.minRate ?? 0}% – {constraints?.maxRate ?? "∞"}%
                 </span>
               )}
@@ -261,20 +261,20 @@ export function CalculatorForm({
               step="any"
               placeholder="0"
               disabled={isPending}
-              className="h-[44px] font-mono text-[--text] bg-[--surface] border-[--border] focus:border-[--accent] focus:ring-[--accent]"
+              className="h-11 font-mono text-text bg-surface border-border focus:border-accent focus:ring-accent"
               {...form.register("rate", { valueAsNumber: true })}
             />
             {form.formState.errors.rate && (
-              <p className="text-xs text-[--negative]">{form.formState.errors.rate.message}</p>
+              <p className="text-xs text-negative">{form.formState.errors.rate.message}</p>
             )}
           </div>
 
           {/* Term */}
           <div className="space-y-1.5">
-            <Label htmlFor="term" className="text-sm font-medium text-[--text]">
+            <Label htmlFor="term" className="text-sm font-medium text-text">
               {t("term")}
               {(constraints?.minTerm != null || constraints?.maxTerm != null) && (
-                <span className="ml-1 text-xs text-[--text-3] font-normal">
+                <span className="ml-1 text-xs text-text-3 font-normal">
                   {constraints?.minTerm ?? 0} – {constraints?.maxTerm ?? "∞"} mo.
                 </span>
               )}
@@ -285,31 +285,31 @@ export function CalculatorForm({
               step="1"
               placeholder="0"
               disabled={isPending}
-              className="h-[44px] font-mono text-[--text] bg-[--surface] border-[--border] focus:border-[--accent] focus:ring-[--accent]"
+              className="h-11 font-mono text-text bg-surface border-border focus:border-accent focus:ring-accent"
               {...form.register("term", { valueAsNumber: true })}
             />
             {form.formState.errors.term && (
-              <p className="text-xs text-[--negative]">{form.formState.errors.term.message}</p>
+              <p className="text-xs text-negative">{form.formState.errors.term.message}</p>
             )}
           </div>
 
           {/* Start date */}
           <div className="space-y-1.5">
-            <Label htmlFor="startDate" className="text-sm font-medium text-[--text]">
+            <Label htmlFor="startDate" className="text-sm font-medium text-text">
               {t("startDate")}
             </Label>
             <Input
               id="startDate"
               type="date"
               disabled={isPending}
-              className="h-[44px] text-[--text] bg-[--surface] border-[--border] focus:border-[--accent] focus:ring-[--accent]"
+              className="h-11 text-text bg-surface border-border focus:border-accent focus:ring-accent"
               {...form.register("startDate")}
             />
           </div>
 
           {/* Currency */}
           <div className="space-y-1.5">
-            <Label htmlFor="currency" className="text-sm font-medium text-[--text]">
+            <Label htmlFor="currency" className="text-sm font-medium text-text">
               {t("currency")}
             </Label>
             <Input
@@ -317,18 +317,18 @@ export function CalculatorForm({
               maxLength={3}
               placeholder="USD"
               disabled={isPending}
-              className="h-[44px] font-mono uppercase text-[--text] bg-[--surface] border-[--border] focus:border-[--accent] focus:ring-[--accent]"
+              className="h-11 font-mono uppercase text-text bg-surface border-border focus:border-accent focus:ring-accent"
               {...form.register("currency")}
             />
             {form.formState.errors.currency && (
-              <p className="text-xs text-[--negative]">{form.formState.errors.currency.message}</p>
+              <p className="text-xs text-negative">{form.formState.errors.currency.message}</p>
             )}
           </div>
 
           <Button
             type="submit"
             disabled={isPending}
-            className="w-full h-[44px] bg-[--accent] text-[--accent-fg] hover:bg-[--accent-strong] font-medium"
+            className="w-full h-11 bg-accent text-accent-fg hover:bg-accent-strong font-medium"
           >
             {isPending ? t("submitting") : t("submit")}
           </Button>
@@ -336,9 +336,9 @@ export function CalculatorForm({
       </div>
 
       {/* Right: Live summary */}
-      <div className="sticky top-[80px] self-start">
-        <div className="bg-[--surface] rounded-[--radius-lg] border border-[--border] shadow-[--shadow-1] p-6">
-          <p className="text-[11px] uppercase tracking-[0.08em] text-[--text-3] font-medium mb-4">
+      <div className="sticky top-20 self-start">
+        <div className="bg-surface rounded-lg border border-border shadow-1 p-6">
+          <p className="text-[11px] uppercase tracking-[0.08em] text-text-3 font-medium mb-4">
             Live preview
           </p>
           <LiveSummary
@@ -352,3 +352,4 @@ export function CalculatorForm({
     </div>
   );
 }
+

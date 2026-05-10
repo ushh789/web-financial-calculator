@@ -49,6 +49,8 @@
     "outflow": "Видатки",
     "all": "Всі",
     "exportCsv": "Експорт CSV",
+    "prev": "← Назад",
+    "next": "Далі →",
     "showing": "Показано {shown} з {total} записів",
     "totalPayments": "Всього платежів",
     "totalInterest": "Сума відсотків",
@@ -181,8 +183,14 @@
     "amortization": {
       "ANNUITY": "Ануїтет",
       "LINEAR": "Лінійний",
-      "BULLET": "Bullet",
-      "ZERO_COUPON": "Zero Coupon"
+      "BULLET": "Буллет",
+      "ZERO_COUPON": "Нульовий купон"
+    },
+    "dayCount": {
+      "ACTUAL_365": "Actual/365",
+      "ACTUAL_360": "Actual/360",
+      "THIRTY_360": "30/360",
+      "ACTUAL_ACTUAL": "Actual/Actual"
     },
     "frequency": {
       "ONCE": "Одноразово",

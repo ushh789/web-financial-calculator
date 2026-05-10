@@ -35,6 +35,8 @@ interface Props {
 type TypeFilter = "ALL" | "INFLOW" | "OUTFLOW";
 
 const PAGE_SIZE = 20;
+const coreRowModel = getCoreRowModel();
+const sortedRowModel = getSortedRowModel();
 
 export function CashFlowTable({ cashFlows, currency = "USD" }: Props) {
   "use no memo";
@@ -54,7 +56,10 @@ export function CashFlowTable({ cashFlows, currency = "USD" }: Props) {
   }, [cashFlows, typeFilter]);
 
   const totalPages = Math.ceil(filteredData.length / PAGE_SIZE);
-  const pageData = filteredData.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
+  const pageData = useMemo(
+    () => filteredData.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE),
+    [filteredData, page],
+  );
 
   const totals = useMemo(() => {
     const rows = filteredData;
@@ -71,7 +76,7 @@ export function CashFlowTable({ cashFlows, currency = "USD" }: Props) {
         accessorKey: "date",
         header: t("date"),
         cell: ({ getValue }) => (
-          <span className="font-mono text-xs text-[--text-2]">
+          <span className="font-mono text-xs text-text-2">
             {formatDate(getValue<string>())}
           </span>
         ),
@@ -80,7 +85,7 @@ export function CashFlowTable({ cashFlows, currency = "USD" }: Props) {
         accessorKey: "description",
         header: t("description"),
         cell: ({ getValue }) => (
-          <span className="text-sm text-[--text-2]">{getValue<string>()}</span>
+          <span className="text-sm text-text-2">{getValue<string>()}</span>
         ),
       },
       {
@@ -90,13 +95,13 @@ export function CashFlowTable({ cashFlows, currency = "USD" }: Props) {
           const type = getValue<string>();
           if (type === "INFLOW") {
             return (
-              <span className="inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold bg-[--positive-soft] text-[--positive] border border-[--positive-line]">
+              <span className="inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold bg-positive-soft text-positive border border-positive-line">
                 {t("inflow")}
               </span>
             );
           }
           return (
-            <span className="inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold bg-[--warn-soft] text-[--warn] border border-[--warn-line]">
+            <span className="inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold bg-warn-soft text-warn border border-warn-line">
               {t("outflow")}
             </span>
           );
@@ -112,10 +117,10 @@ export function CashFlowTable({ cashFlows, currency = "USD" }: Props) {
           return (
             <div className="relative">
               <div
-                className="absolute inset-0 rounded bg-[--chart-principal]/10"
+                className="absolute inset-0 rounded bg-chart-principal/10"
                 style={{ width: `${pct}%` }}
               />
-              <span className="relative font-mono text-xs tabular-nums text-[--text]">
+              <span className="relative font-mono text-xs tabular-nums text-text">
                 {formatCurrency(val, currency)}
               </span>
             </div>
@@ -127,7 +132,7 @@ export function CashFlowTable({ cashFlows, currency = "USD" }: Props) {
         header: t("interest"),
         accessorFn: (row) => row.breakdown.interest.amount,
         cell: ({ getValue }) => (
-          <span className="font-mono text-xs tabular-nums text-[--text]">
+          <span className="font-mono text-xs tabular-nums text-text">
             {formatCurrency(getValue<number>(), currency)}
           </span>
         ),
@@ -137,7 +142,7 @@ export function CashFlowTable({ cashFlows, currency = "USD" }: Props) {
         header: t("total"),
         accessorFn: (row) => row.totalAmount.amount,
         cell: ({ getValue }) => (
-          <span className="font-mono text-xs font-medium tabular-nums text-[--text]">
+          <span className="font-mono text-xs font-medium tabular-nums text-text">
             {formatCurrency(getValue<number>(), currency)}
           </span>
         ),
@@ -152,8 +157,9 @@ export function CashFlowTable({ cashFlows, currency = "USD" }: Props) {
     columns,
     state: { sorting },
     onSortingChange: setSorting,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
+    getCoreRowModel: coreRowModel,
+    getSortedRowModel: sortedRowModel,
+    manualPagination: true,
   });
 
   const exportToCsv = () => {
@@ -175,10 +181,10 @@ export function CashFlowTable({ cashFlows, currency = "USD" }: Props) {
   };
 
   return (
-    <div className="bg-[--surface] rounded-[--radius-lg] border border-[--border] shadow-[--shadow-1] overflow-hidden">
+    <div className="bg-surface rounded-lg border border-border shadow-1 overflow-hidden">
       {/* Toolbar */}
-      <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-[--border]">
-        <div className="flex items-center gap-1 bg-[--surface-sunken] rounded-[--radius-sm] p-1">
+      <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-border">
+        <div className="flex items-center gap-1 bg-surface-sunken rounded-sm p-1">
           {(["ALL", "OUTFLOW", "INFLOW"] as const).map((type) => (
             <button
               key={type}
@@ -186,8 +192,8 @@ export function CashFlowTable({ cashFlows, currency = "USD" }: Props) {
               className={clsx(
                 "px-3 py-1 rounded text-xs font-medium transition-colors",
                 typeFilter === type
-                  ? "bg-[--surface] text-[--text] shadow-[--shadow-1]"
-                  : "text-[--text-3] hover:text-[--text-2]",
+                  ? "bg-surface text-text shadow-1"
+                  : "text-text-3 hover:text-text-2",
               )}
             >
               {type === "ALL" ? t("all") : type === "INFLOW" ? t("inflow") : t("outflow")}
@@ -198,7 +204,7 @@ export function CashFlowTable({ cashFlows, currency = "USD" }: Props) {
           variant="ghost"
           size="sm"
           onClick={exportToCsv}
-          className="h-8 gap-1.5 text-xs text-[--text-2] hover:text-[--text] hover:bg-[--surface-sunken]"
+          className="h-8 gap-1.5 text-xs text-text-2 hover:text-text hover:bg-surface-sunken"
         >
           <Download className="w-3.5 h-3.5" />
           {t("exportCsv")}
@@ -210,17 +216,17 @@ export function CashFlowTable({ cashFlows, currency = "USD" }: Props) {
         <table className="w-full text-sm">
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id} className="bg-[--bg-tint] border-b border-[--border]">
+              <tr key={headerGroup.id} className="bg-bg-tint border-b border-border">
                 {headerGroup.headers.map((header) => (
                   <th
                     key={header.id}
-                    className="h-10 px-4 text-left text-[11px] font-medium uppercase tracking-[0.06em] text-[--text-3] cursor-pointer select-none whitespace-nowrap"
+                    className="h-10 px-4 text-left text-[11px] font-medium uppercase tracking-[0.06em] text-text-3 cursor-pointer select-none whitespace-nowrap"
                     onClick={header.column.getToggleSortingHandler()}
                   >
                     <span className="inline-flex items-center gap-1">
                       {flexRender(header.column.columnDef.header, header.getContext())}
                       {header.column.getCanSort() && (
-                        <span className="text-[--text-4]">
+                        <span className="text-text-4">
                           {header.column.getIsSorted() === "asc" ? (
                             <ArrowUp className="h-3 w-3" />
                           ) : header.column.getIsSorted() === "desc" ? (
@@ -236,12 +242,12 @@ export function CashFlowTable({ cashFlows, currency = "USD" }: Props) {
               </tr>
             ))}
           </thead>
-          <tbody className="divide-y divide-[--hairline]">
+          <tbody className="divide-y divide-hairline">
             {table.getRowModel().rows.length === 0 ? (
               <tr>
                 <td
                   colSpan={columns.length}
-                  className="px-4 py-8 text-center text-[--text-3] text-sm"
+                  className="px-4 py-8 text-center text-text-3 text-sm"
                 >
                   {t("empty")}
                 </td>
@@ -250,7 +256,7 @@ export function CashFlowTable({ cashFlows, currency = "USD" }: Props) {
               table.getRowModel().rows.map((row) => (
                 <tr
                   key={row.id}
-                  className="hover:bg-[--surface-sunken] transition-colors"
+                  className="hover:bg-surface-sunken transition-colors"
                   style={{ height: "var(--density-row)" }}
                 >
                   {row.getVisibleCells().map((cell) => (
@@ -265,17 +271,17 @@ export function CashFlowTable({ cashFlows, currency = "USD" }: Props) {
           {/* Totals row */}
           {filteredData.length > 0 && (
             <tfoot>
-              <tr className="bg-[--surface-sunken] border-t-2 border-[--border-strong]">
-                <td className="px-4 py-3 text-xs font-medium text-[--text-3] uppercase tracking-[0.06em]" colSpan={3}>
-                  Total
+              <tr className="bg-surface-sunken border-t-2 border-border-strong">
+                <td className="px-4 py-3 text-xs font-medium text-text-3 uppercase tracking-[0.06em]" colSpan={3}>
+                  {t("total")}
                 </td>
-                <td className="px-4 py-3 font-mono text-xs font-medium tabular-nums text-[--text]">
+                <td className="px-4 py-3 font-mono text-xs font-medium tabular-nums text-text">
                   {formatCurrency(totals.principal, currency)}
                 </td>
-                <td className="px-4 py-3 font-mono text-xs font-medium tabular-nums text-[--text]">
+                <td className="px-4 py-3 font-mono text-xs font-medium tabular-nums text-text">
                   {formatCurrency(totals.interest, currency)}
                 </td>
-                <td className="px-4 py-3 font-mono text-xs font-medium tabular-nums text-[--text]">
+                <td className="px-4 py-3 font-mono text-xs font-medium tabular-nums text-text">
                   {formatCurrency(totals.total, currency)}
                 </td>
               </tr>
@@ -286,8 +292,8 @@ export function CashFlowTable({ cashFlows, currency = "USD" }: Props) {
 
       {/* Pagination footer */}
       {filteredData.length > 0 && (
-        <div className="flex items-center justify-between px-4 py-3 border-t border-[--hairline]">
-          <p className="text-xs text-[--text-3]">
+        <div className="flex items-center justify-between px-4 py-3 border-t border-hairline">
+          <p className="text-xs text-text-3">
             {t("showing", {
               shown: Math.min((page + 1) * PAGE_SIZE, filteredData.length),
               total: filteredData.length,
@@ -300,11 +306,11 @@ export function CashFlowTable({ cashFlows, currency = "USD" }: Props) {
                 size="sm"
                 disabled={page === 0}
                 onClick={() => setPage((p) => p - 1)}
-                className="h-7 px-2 text-xs text-[--text-2] hover:bg-[--surface-sunken]"
+                className="h-7 px-2 text-xs text-text-2 hover:bg-surface-sunken"
               >
-                ← Prev
+                {t("prev")}
               </Button>
-              <span className="text-xs text-[--text-3] px-2">
+              <span className="text-xs text-text-3 px-2">
                 {page + 1} / {totalPages}
               </span>
               <Button
@@ -312,9 +318,9 @@ export function CashFlowTable({ cashFlows, currency = "USD" }: Props) {
                 size="sm"
                 disabled={page >= totalPages - 1}
                 onClick={() => setPage((p) => p + 1)}
-                className="h-7 px-2 text-xs text-[--text-2] hover:bg-[--surface-sunken]"
+                className="h-7 px-2 text-xs text-text-2 hover:bg-surface-sunken"
               >
-                Next →
+                {t("next")}
               </Button>
             </div>
           )}
@@ -323,3 +329,4 @@ export function CashFlowTable({ cashFlows, currency = "USD" }: Props) {
     </div>
   );
 }
+

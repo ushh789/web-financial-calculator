@@ -60,7 +60,7 @@ export function CalculationView({ calculationId }: Props) {
   }
 
   if (!calculation) {
-    return <p className="text-[--text-3]">{t("notFound")}</p>;
+    return <p className="text-text-3">{t("notFound")}</p>;
   }
 
   const activeScenario =
@@ -88,23 +88,23 @@ export function CalculationView({ calculationId }: Props) {
       {/* Page header */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-[11px] uppercase tracking-[0.08em] text-[--text-3] font-medium mb-1">
+          <p className="text-[11px] uppercase tracking-[0.08em] text-text-3 font-medium mb-1">
             {t("title")}
           </p>
-          <h1 className="text-2xl font-semibold text-[--text]">
+          <h1 className="text-2xl font-semibold text-text">
             {formatDate(calculation.createdAt)}
           </h1>
         </div>
         <Badge
           variant="outline"
-          className="font-mono text-sm mt-1 shrink-0 text-[--text-2] border-[--border]"
+          className="font-mono text-sm mt-1 shrink-0 text-text-2 border-border"
         >
           {currency}
         </Badge>
       </div>
 
       {/* Scenario panel */}
-      <div className="bg-[--surface] rounded-[--radius-lg] border border-[--border] shadow-[--shadow-1] p-5">
+      <div className="bg-surface rounded-lg border border-border shadow-1 p-5">
         <ScenarioPanel calculation={calculation} />
       </div>
 
@@ -121,13 +121,13 @@ export function CalculationView({ calculationId }: Props) {
 
       {/* Tabs + content */}
       {cashFlows.length === 0 ? (
-        <div className="bg-[--surface] rounded-[--radius-lg] border border-[--border] py-12 text-center text-[--text-3] text-sm">
+        <div className="bg-surface rounded-lg border border-border py-12 text-center text-text-3 text-sm">
           {t("noResults")}
         </div>
       ) : (
         <div>
           {/* Aurelius tab bar */}
-          <div className="border-b border-[--border] flex gap-0">
+          <div className="border-b border-border flex gap-0">
             {TABS.map(({ key, label }) => (
               <button
                 key={key}
@@ -135,8 +135,8 @@ export function CalculationView({ calculationId }: Props) {
                 className={clsx(
                   "px-4 py-2.5 text-sm font-medium border-b-2 -mb-px transition-colors",
                   activeTab === key
-                    ? "border-[--accent] text-[--text]"
-                    : "border-transparent text-[--text-3] hover:text-[--text-2]",
+                    ? "border-accent text-text"
+                    : "border-transparent text-text-3 hover:text-text-2",
                 )}
               >
                 {label}
@@ -156,7 +156,7 @@ export function CalculationView({ calculationId }: Props) {
               <CashFlowTable cashFlows={cashFlows} currency={currency} />
             )}
             {activeTab === "sensitivity" && (
-              <div className="bg-[--surface] rounded-[--radius-lg] border border-[--border] shadow-[--shadow-1] p-6">
+              <div className="bg-surface rounded-lg border border-border shadow-1 p-6">
                 <SensitivityPanel
                   baseAmount={activeScenario?.scenarioInput?.amount ?? 0}
                   baseRate={activeScenario?.scenarioInput?.rate ?? 5}
@@ -173,3 +173,4 @@ export function CalculationView({ calculationId }: Props) {
     </div>
   );
 }
+

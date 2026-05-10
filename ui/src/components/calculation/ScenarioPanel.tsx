@@ -87,18 +87,18 @@ export function ScenarioPanel({ calculation }: Props) {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-[11px] uppercase tracking-[0.08em] text-[--text-3] font-medium">
+          <p className="text-[11px] uppercase tracking-[0.08em] text-text-3 font-medium">
             {t("title")}
           </p>
           {scenarios.length > 0 && (
-            <p className="text-xs text-[--text-3] mt-0.5">{scenarios.length} scenario{scenarios.length !== 1 ? "s" : ""}</p>
+            <p className="text-xs text-text-3 mt-0.5">{scenarios.length} scenario{scenarios.length !== 1 ? "s" : ""}</p>
           )}
         </div>
         <Button
           size="sm"
           variant="ghost"
           onClick={() => setShowAddForm((v) => !v)}
-          className="text-[--text-2] hover:text-[--text] hover:bg-[--surface-sunken] h-8 gap-1.5"
+          className="text-text-2 hover:text-text hover:bg-surface-sunken h-8 gap-1.5"
         >
           {showAddForm ? (
             t("cancel")
@@ -120,7 +120,7 @@ export function ScenarioPanel({ calculation }: Props) {
             exit={{ opacity: 0, height: 0 }}
             style={{ overflow: "hidden" }}
           >
-            <div className="border border-[--border] rounded-[--radius-lg] p-4 bg-[--surface-sunken]">
+            <div className="border border-border rounded-lg p-4 bg-surface-sunken">
               <AddScenarioForm
                 calculationId={calculation.id!}
                 initialInput={activeScenario?.scenarioInput ?? undefined}
@@ -133,7 +133,7 @@ export function ScenarioPanel({ calculation }: Props) {
 
       {/* Scenario list */}
       {scenarios.length > 0 && (
-        <div className="divide-y divide-[--hairline] border border-[--border] rounded-[--radius-lg] overflow-hidden">
+        <div className="divide-y divide-hairline border border-border rounded-lg overflow-hidden">
           {scenarios.map((scenario, idx) => {
             const isActive = scenario.id === calculation.selectedScenarioId;
             const isInCompare = compareIds.includes(scenario.id!);
@@ -155,14 +155,14 @@ export function ScenarioPanel({ calculation }: Props) {
             return (
               <div
                 key={scenario.id}
-                className={`flex items-center gap-3 px-4 py-3 ${isActive ? "bg-[--accent-soft-2]" : "bg-[--surface]"}`}
+                className={`flex items-center gap-3 px-4 py-3 ${isActive ? "bg-accent-soft-2" : "bg-surface"}`}
               >
                 {/* Index marker */}
                 <div
                   className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium shrink-0 ${
                     isActive
-                      ? "bg-[--accent] text-[--accent-fg]"
-                      : "bg-[--accent-soft] text-[--accent]"
+                      ? "bg-accent text-accent-fg"
+                      : "bg-accent-soft text-accent"
                   }`}
                 >
                   {idx + 1}
@@ -172,30 +172,30 @@ export function ScenarioPanel({ calculation }: Props) {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <span
-                      className={`text-sm font-medium truncate ${isActive ? "text-[--accent]" : "text-[--text]"}`}
+                      className={`text-sm font-medium truncate ${isActive ? "text-accent" : "text-text"}`}
                     >
                       {scenario.scenarioName ?? `Scenario ${idx + 1}`}
                     </span>
                     {isActive && (
-                      <span className="text-[10px] uppercase tracking-[0.06em] font-semibold text-[--positive] bg-[--positive-soft] border border-[--positive-line] rounded-full px-1.5 py-0.5">
+                      <span className="text-[10px] uppercase tracking-[0.06em] font-semibold text-positive bg-positive-soft border border-positive-line rounded-full px-1.5 py-0.5">
                         {t("active")}
                       </span>
                     )}
                   </div>
                   {summary && (
-                    <p className="text-xs text-[--text-3] font-mono mt-0.5">{summary}</p>
+                    <p className="text-xs text-text-3 font-mono mt-0.5">{summary}</p>
                   )}
                 </div>
 
                 {/* Totals + delta */}
                 {hasResults && (
                   <div className="text-right shrink-0">
-                    <p className="font-mono text-sm font-medium text-[--text] tabular-nums">
+                    <p className="font-mono text-sm font-medium text-text tabular-nums">
                       {formatCurrencyCompact(metrics.totalPayments, currency)}
                     </p>
                     {delta && (
                       <p
-                        className={`text-xs font-mono tabular-nums ${delta.positive ? "text-[--positive]" : "text-[--warn]"}`}
+                        className={`text-xs font-mono tabular-nums ${delta.positive ? "text-positive" : "text-warn"}`}
                       >
                         {delta.label}
                       </p>
@@ -211,8 +211,8 @@ export function ScenarioPanel({ calculation }: Props) {
                     onClick={() => toggleCompare(scenario.id!)}
                     className={`h-7 text-xs px-2 ${
                       isInCompare
-                        ? "bg-[--accent] text-[--accent-fg] hover:bg-[--accent-strong]"
-                        : "border-[--border] text-[--text-2] hover:bg-[--surface-sunken]"
+                        ? "bg-accent text-accent-fg hover:bg-accent-strong"
+                        : "border-border text-text-2 hover:bg-surface-sunken"
                     }`}
                   >
                     {isInCompare ? t("selected") : t("compare")}
@@ -223,7 +223,7 @@ export function ScenarioPanel({ calculation }: Props) {
                       variant="outline"
                       disabled={isSelecting}
                       onClick={() => selectScenario(scenario.id!)}
-                      className="h-7 text-xs px-2 border-[--border] text-[--text-2] hover:bg-[--surface-sunken]"
+                      className="h-7 text-xs px-2 border-border text-text-2 hover:bg-surface-sunken"
                     >
                       {t("activate")}
                     </Button>
@@ -245,3 +245,4 @@ export function ScenarioPanel({ calculation }: Props) {
     </div>
   );
 }
+

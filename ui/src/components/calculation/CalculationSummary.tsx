@@ -32,15 +32,15 @@ export function CalculationSummary({ cashFlows, currency, amount, rate, term }: 
   const interestPct = 100 - principalPct;
 
   return (
-    <div className="bg-[--surface] rounded-[--radius-lg] border border-[--border] shadow-[--shadow-1] overflow-hidden">
+    <div className="bg-surface rounded-lg border border-border shadow-1 overflow-hidden">
       {/* Hero section */}
-      <div className="p-[--density-pad] border-b border-[--hairline]">
-        <p className="text-[11px] uppercase tracking-[0.08em] text-[--text-3] font-medium mb-2">
+      <div className="p-(--density-pad) border-b border-hairline">
+        <p className="text-[11px] uppercase tracking-[0.08em] text-text-3 font-medium mb-2">
           Monthly payment
         </p>
         <div className="flex items-baseline gap-1.5">
-          <span className="text-[--text-3] font-serif text-2xl">{currency}</span>
-          <span className="font-serif text-[56px] font-medium text-[--text] leading-none tabular-nums">
+          <span className="text-text-3 font-serif text-2xl">{currency}</span>
+          <span className="font-serif text-[56px] font-medium text-text leading-none tabular-nums">
             {monthlyPayment.toLocaleString("en-US", {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
@@ -48,12 +48,12 @@ export function CalculationSummary({ cashFlows, currency, amount, rate, term }: 
           </span>
         </div>
         {subtitleParts.length > 0 && (
-          <p className="text-sm text-[--text-3] mt-2">{subtitleParts.join(" · ")}</p>
+          <p className="text-sm text-text-3 mt-2">{subtitleParts.join(" · ")}</p>
         )}
       </div>
 
       {/* Support KPI grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 divide-x divide-y sm:divide-y-0 divide-[--hairline]">
+      <div className="grid grid-cols-2 sm:grid-cols-4 divide-x divide-y sm:divide-y-0 divide-hairline">
         {[
           {
             label: t("totalPayments"),
@@ -77,11 +77,11 @@ export function CalculationSummary({ cashFlows, currency, amount, rate, term }: 
           },
         ].map(({ label, value, warn }) => (
           <div key={label} className="p-4">
-            <p className="text-[11px] uppercase tracking-[0.06em] text-[--text-3] font-medium mb-1">
+            <p className="text-[11px] uppercase tracking-[0.06em] text-text-3 font-medium mb-1">
               {label}
             </p>
             <p
-              className={`font-mono text-sm font-medium tabular-nums ${warn ? "text-[--warn]" : "text-[--text]"}`}
+              className={`font-mono text-sm font-medium tabular-nums ${warn ? "text-warn" : "text-text"}`}
             >
               {value}
             </p>
@@ -91,23 +91,23 @@ export function CalculationSummary({ cashFlows, currency, amount, rate, term }: 
 
       {/* Interest ratio bar */}
       {m.totalPayments > 0 && (
-        <div className="px-[--density-pad] py-3 border-t border-[--hairline] flex items-center gap-3">
-          <div className="flex-1 flex h-1.5 rounded-full overflow-hidden bg-[--surface-sunken]">
+        <div className="px-(--density-pad) py-3 border-t border-hairline flex items-center gap-3">
+          <div className="flex-1 flex h-1.5 rounded-full overflow-hidden bg-surface-sunken">
             <div
-              className="bg-[--chart-principal] rounded-l-full"
+              className="bg-chart-principal rounded-l-full"
               style={{ width: `${principalPct}%` }}
             />
             <div
-              className="bg-[--chart-interest] flex-1 rounded-r-full"
+              className="bg-chart-interest flex-1 rounded-r-full"
             />
           </div>
-          <div className="flex items-center gap-3 text-[11px] text-[--text-3] shrink-0">
+          <div className="flex items-center gap-3 text-[11px] text-text-3 shrink-0">
             <span className="flex items-center gap-1">
-              <span className="w-2 h-2 rounded-full bg-[--chart-principal] inline-block" />
+              <span className="w-2 h-2 rounded-full bg-chart-principal inline-block" />
               Principal {principalPct.toFixed(0)}%
             </span>
             <span className="flex items-center gap-1">
-              <span className="w-2 h-2 rounded-full bg-[--chart-interest] inline-block" />
+              <span className="w-2 h-2 rounded-full bg-chart-interest inline-block" />
               Interest {interestPct.toFixed(0)}%
             </span>
           </div>
@@ -116,3 +116,4 @@ export function CalculationSummary({ cashFlows, currency, amount, rate, term }: 
     </div>
   );
 }
+

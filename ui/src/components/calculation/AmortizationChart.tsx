@@ -60,15 +60,15 @@ export function AmortizationChart({
 
   if (chartData.length === 0) {
     return (
-      <div className="bg-[--surface] rounded-[--radius-lg] border border-[--border] py-12 text-center text-[--text-3] text-sm">
+      <div className="bg-surface rounded-lg border border-border py-12 text-center text-text-3 text-sm">
         {t("noChartData")}
       </div>
     );
   }
 
   return (
-    <div className="bg-[--surface] rounded-[--radius-lg] border border-[--border] shadow-[--shadow-1] p-6">
-      <p className="text-[11px] uppercase tracking-[0.08em] text-[--text-3] font-medium mb-4">
+    <div className="bg-surface rounded-lg border border-border shadow-1 p-6">
+      <p className="text-[11px] uppercase tracking-[0.08em] text-text-3 font-medium mb-4">
         {t("amortizationTitle")}
       </p>
       <ResponsiveContainer width="100%" height={300}>
@@ -187,3 +187,4 @@ export function AmortizationChart({
     </div>
   );
 }
+

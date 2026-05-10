@@ -112,7 +112,7 @@ export function SensitivityPanel({
   return (
     <div className="space-y-5">
       {/* Axis selector */}
-      <div className="flex items-center gap-1 bg-[--surface-sunken] rounded-[--radius-sm] p-1 w-fit">
+      <div className="flex items-center gap-1 bg-surface-sunken rounded-sm p-1 w-fit">
         {AXES.map((a) => (
           <button
             key={a}
@@ -120,8 +120,8 @@ export function SensitivityPanel({
             className={clsx(
               "px-3 py-1.5 rounded text-xs font-medium transition-colors",
               axis === a
-                ? "bg-[--surface] text-[--text] shadow-[--shadow-1]"
-                : "text-[--text-3] hover:text-[--text-2]",
+                ? "bg-surface text-text shadow-1"
+                : "text-text-3 hover:text-text-2",
             )}
           >
             {t(`axis.${a}`)}
@@ -132,8 +132,8 @@ export function SensitivityPanel({
       {/* Slider */}
       <div className="space-y-2">
         <div className="flex justify-between text-sm">
-          <span className="text-[--text-3]">{t(`axis.${axis}`)}</span>
-          <span className="font-medium text-[--text]">{formatAxisValue(sliderValue)}</span>
+          <span className="text-text-3">{t(`axis.${axis}`)}</span>
+          <span className="font-medium text-text">{formatAxisValue(sliderValue)}</span>
         </div>
         <Slider
           min={cfg.min}
@@ -141,9 +141,9 @@ export function SensitivityPanel({
           step={cfg.step}
           value={[sliderValue]}
           onValueChange={(values) => setSliderValue((values as number[])[0] ?? sliderValue)}
-          className="accent-[--accent]"
+          className="accent-accent"
         />
-        <div className="flex justify-between text-xs text-[--text-3]">
+        <div className="flex justify-between text-xs text-text-3">
           <span>{formatAxisValue(cfg.min)}</span>
           <span>{formatAxisValue(cfg.max)}</span>
         </div>
@@ -151,21 +151,21 @@ export function SensitivityPanel({
 
       {/* Probe summary */}
       {probePoint && (
-        <div className="bg-[--surface-sunken] rounded-[--radius] p-3 flex items-center gap-6">
+        <div className="bg-surface-sunken rounded-lg p-3 flex items-center gap-6">
           <div>
-            <p className="text-[11px] uppercase tracking-[0.06em] text-[--text-3] font-medium mb-0.5">
+            <p className="text-[11px] uppercase tracking-[0.06em] text-text-3 font-medium mb-0.5">
               {t("totalPayment")}
             </p>
-            <p className="font-mono text-sm font-medium text-[--text] tabular-nums">
+            <p className="font-mono text-sm font-medium text-text tabular-nums">
               {formatCurrency(probePoint.totalPayment, currency)}
             </p>
           </div>
-          <div className="w-px h-8 bg-[--border]" />
+          <div className="w-px h-8 bg-border" />
           <div>
-            <p className="text-[11px] uppercase tracking-[0.06em] text-[--text-3] font-medium mb-0.5">
+            <p className="text-[11px] uppercase tracking-[0.06em] text-text-3 font-medium mb-0.5">
               {t("totalInterest")}
             </p>
-            <p className="font-mono text-sm font-medium text-[--warn] tabular-nums">
+            <p className="font-mono text-sm font-medium text-warn tabular-nums">
               {formatCurrency(probePoint.totalInterest, currency)}
             </p>
           </div>
@@ -242,7 +242,8 @@ export function SensitivityPanel({
         </LineChart>
       </ResponsiveContainer>
 
-      <p className="text-xs text-[--text-3] italic">{t("disclaimer")}</p>
+      <p className="text-xs text-text-3 italic">{t("disclaimer")}</p>
     </div>
   );
 }
+
