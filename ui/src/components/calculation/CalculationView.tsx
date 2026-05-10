@@ -1,8 +1,8 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent } from "@/components/ui/card";
+import { clsx } from "clsx";
+import { useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CashFlowTable, type CashFlow } from "./CashFlowTable";
 import { AmortizationChart } from "./AmortizationChart";
@@ -26,6 +26,8 @@ function parseResult(
   return raw as unknown as CalculationResult;
 }
 
+type Tab = "chart" | "table" | "sensitivity";
+
 interface Props {
   calculationId: string;
 }
@@ -34,6 +36,7 @@ export function CalculationView({ calculationId }: Props) {
   const t = useTranslations("calculation");
   const user = useAuthStore((s) => s.user);
   const userId = user?.id ?? "";
+  const [activeTab, setActiveTab] = useState<Tab>("chart");
 
   const { data: calculation, isLoading: calcLoading } = useCalculation(
     calculationId,
@@ -57,7 +60,7 @@ export function CalculationView({ calculationId }: Props) {
   }
 
   if (!calculation) {
-    return <p className="text-muted-foreground">{t("notFound")}</p>;
+    return <p className="text-[--text-3]">{t("notFound")}</p>;
   }
 
   const activeScenario =
@@ -71,66 +74,89 @@ export function CalculationView({ calculationId }: Props) {
   const initialAmount = activeScenario?.scenarioInput?.amount ?? 0;
   const currency = calculation.currency ?? "USD";
 
-  // derive constraints from the latest version
   const activeVersion = versions[versions.length - 1];
   const constraints = activeVersion?.algorithmMetadata?.constraints ?? null;
 
+  const TABS: { key: Tab; label: string }[] = [
+    { key: "chart", label: t("tabs.chart") },
+    { key: "table", label: t("tabs.table") },
+    { key: "sensitivity", label: t("tabs.sensitivity") },
+  ];
+
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {/* Page header */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="page-title">{t("title")}</h1>
-          <p className="text-muted-foreground text-sm mt-1.5">
-            {formatDate(calculation.createdAt)}
+          <p className="text-[11px] uppercase tracking-[0.08em] text-[--text-3] font-medium mb-1">
+            {t("title")}
           </p>
+          <h1 className="text-2xl font-semibold text-[--text]">
+            {formatDate(calculation.createdAt)}
+          </h1>
         </div>
-        <Badge variant="outline" className="font-mono text-sm mt-1 shrink-0">
+        <Badge
+          variant="outline"
+          className="font-mono text-sm mt-1 shrink-0 text-[--text-2] border-[--border]"
+        >
           {currency}
         </Badge>
       </div>
 
       {/* Scenario panel */}
-      <Card>
-        <CardContent className="pt-4">
-          <ScenarioPanel calculation={calculation} />
-        </CardContent>
-      </Card>
+      <div className="bg-[--surface] rounded-[--radius-lg] border border-[--border] shadow-[--shadow-1] p-5">
+        <ScenarioPanel calculation={calculation} />
+      </div>
 
-      {/* KPI summary */}
+      {/* KPI hero */}
       {cashFlows.length > 0 && (
-        <CalculationSummary cashFlows={cashFlows} currency={currency} />
+        <CalculationSummary
+          cashFlows={cashFlows}
+          currency={currency}
+          amount={activeScenario?.scenarioInput?.amount}
+          rate={activeScenario?.scenarioInput?.rate}
+          term={activeScenario?.scenarioInput?.term}
+        />
       )}
 
-      {/* Results */}
+      {/* Tabs + content */}
       {cashFlows.length === 0 ? (
-        <Card>
-          <CardContent className="py-12 text-center text-muted-foreground">
-            {t("noResults")}
-          </CardContent>
-        </Card>
+        <div className="bg-[--surface] rounded-[--radius-lg] border border-[--border] py-12 text-center text-[--text-3] text-sm">
+          {t("noResults")}
+        </div>
       ) : (
-        <Tabs defaultValue="table">
-          <TabsList>
-            <TabsTrigger value="table">{t("tabs.table")}</TabsTrigger>
-            <TabsTrigger value="chart">{t("tabs.chart")}</TabsTrigger>
-            <TabsTrigger value="sensitivity">
-              {t("tabs.sensitivity")}
-            </TabsTrigger>
-          </TabsList>
-          <TabsContent value="table" className="mt-4">
-            <CashFlowTable cashFlows={cashFlows} currency={currency} />
-          </TabsContent>
-          <TabsContent value="chart" className="mt-4">
-            <AmortizationChart
-              cashFlows={cashFlows}
-              initialAmount={initialAmount}
-              currency={currency}
-            />
-          </TabsContent>
-          <TabsContent value="sensitivity" className="mt-4">
-            <Card>
-              <CardContent className="pt-6">
+        <div>
+          {/* Aurelius tab bar */}
+          <div className="border-b border-[--border] flex gap-0">
+            {TABS.map(({ key, label }) => (
+              <button
+                key={key}
+                onClick={() => setActiveTab(key)}
+                className={clsx(
+                  "px-4 py-2.5 text-sm font-medium border-b-2 -mb-px transition-colors",
+                  activeTab === key
+                    ? "border-[--accent] text-[--text]"
+                    : "border-transparent text-[--text-3] hover:text-[--text-2]",
+                )}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+
+          <div className="mt-4">
+            {activeTab === "chart" && (
+              <AmortizationChart
+                cashFlows={cashFlows}
+                initialAmount={initialAmount}
+                currency={currency}
+              />
+            )}
+            {activeTab === "table" && (
+              <CashFlowTable cashFlows={cashFlows} currency={currency} />
+            )}
+            {activeTab === "sensitivity" && (
+              <div className="bg-[--surface] rounded-[--radius-lg] border border-[--border] shadow-[--shadow-1] p-6">
                 <SensitivityPanel
                   baseAmount={activeScenario?.scenarioInput?.amount ?? 0}
                   baseRate={activeScenario?.scenarioInput?.rate ?? 5}
@@ -139,10 +165,10 @@ export function CalculationView({ calculationId }: Props) {
                   currency={currency}
                   isLoading={versionsLoading}
                 />
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+              </div>
+            )}
+          </div>
+        </div>
       )}
     </div>
   );

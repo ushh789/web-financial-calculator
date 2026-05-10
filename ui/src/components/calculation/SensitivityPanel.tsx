@@ -13,8 +13,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { useTranslations } from "next-intl";
-import { useTheme } from "next-themes";
-import { Button } from "@/components/ui/button";
+import { clsx } from "clsx";
 import { Slider } from "@/components/ui/slider";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatCurrency } from "@/lib/utils/format";
@@ -46,10 +45,6 @@ export function SensitivityPanel({
   isLoading,
 }: Props) {
   const t = useTranslations("sensitivity");
-  const { resolvedTheme } = useTheme();
-  const chartColors = resolvedTheme === "dark"
-    ? { payment: "#7E9EFF", interest: "#F59560" }
-    : { payment: "#4F6EF5", interest: "#E87040" };
 
   const [axis, setAxis] = useState<SensitivityAxis>("rate");
 
@@ -96,6 +91,15 @@ export function SensitivityPanel({
 
   const cfg = axisConfig[axis];
 
+  const probePoint = series.find((s) => Math.abs(s.x - sliderValue) < cfg.step * 0.6) ?? series[Math.floor(series.length / 2)];
+
+  const formatAxisValue = (v: number) =>
+    axis === "amount"
+      ? formatCurrency(v, currency)
+      : axis === "rate"
+        ? `${v.toFixed(1)}%`
+        : `${Math.round(v)} ${t("months")}`;
+
   if (isLoading) {
     return (
       <div className="space-y-4">
@@ -108,30 +112,28 @@ export function SensitivityPanel({
   return (
     <div className="space-y-5">
       {/* Axis selector */}
-      <div className="flex gap-2 flex-wrap">
+      <div className="flex items-center gap-1 bg-[--surface-sunken] rounded-[--radius-sm] p-1 w-fit">
         {AXES.map((a) => (
-          <Button
+          <button
             key={a}
-            variant={axis === a ? "default" : "outline"}
-            size="sm"
             onClick={() => setAxis(a)}
+            className={clsx(
+              "px-3 py-1.5 rounded text-xs font-medium transition-colors",
+              axis === a
+                ? "bg-[--surface] text-[--text] shadow-[--shadow-1]"
+                : "text-[--text-3] hover:text-[--text-2]",
+            )}
           >
             {t(`axis.${a}`)}
-          </Button>
+          </button>
         ))}
       </div>
 
       {/* Slider */}
       <div className="space-y-2">
-        <div className="flex justify-between text-sm text-muted-foreground">
-          <span>{t(`axis.${axis}`)}</span>
-          <span className="font-medium text-foreground">
-            {axis === "amount"
-              ? formatCurrency(sliderValue, currency)
-              : axis === "rate"
-                ? `${sliderValue.toFixed(1)}%`
-                : `${Math.round(sliderValue)} ${t("months")}`}
-          </span>
+        <div className="flex justify-between text-sm">
+          <span className="text-[--text-3]">{t(`axis.${axis}`)}</span>
+          <span className="font-medium text-[--text]">{formatAxisValue(sliderValue)}</span>
         </div>
         <Slider
           min={cfg.min}
@@ -139,24 +141,36 @@ export function SensitivityPanel({
           step={cfg.step}
           value={[sliderValue]}
           onValueChange={(values) => setSliderValue((values as number[])[0] ?? sliderValue)}
+          className="accent-[--accent]"
         />
-        <div className="flex justify-between text-xs text-muted-foreground">
-          <span>
-            {axis === "amount"
-              ? formatCurrency(cfg.min, currency)
-              : axis === "rate"
-                ? `${cfg.min}%`
-                : `${cfg.min} ${t("months")}`}
-          </span>
-          <span>
-            {axis === "amount"
-              ? formatCurrency(cfg.max, currency)
-              : axis === "rate"
-                ? `${cfg.max}%`
-                : `${cfg.max} ${t("months")}`}
-          </span>
+        <div className="flex justify-between text-xs text-[--text-3]">
+          <span>{formatAxisValue(cfg.min)}</span>
+          <span>{formatAxisValue(cfg.max)}</span>
         </div>
       </div>
+
+      {/* Probe summary */}
+      {probePoint && (
+        <div className="bg-[--surface-sunken] rounded-[--radius] p-3 flex items-center gap-6">
+          <div>
+            <p className="text-[11px] uppercase tracking-[0.06em] text-[--text-3] font-medium mb-0.5">
+              {t("totalPayment")}
+            </p>
+            <p className="font-mono text-sm font-medium text-[--text] tabular-nums">
+              {formatCurrency(probePoint.totalPayment, currency)}
+            </p>
+          </div>
+          <div className="w-px h-8 bg-[--border]" />
+          <div>
+            <p className="text-[11px] uppercase tracking-[0.06em] text-[--text-3] font-medium mb-0.5">
+              {t("totalInterest")}
+            </p>
+            <p className="font-mono text-sm font-medium text-[--warn] tabular-nums">
+              {formatCurrency(probePoint.totalInterest, currency)}
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Chart */}
       <ResponsiveContainer width="100%" height={280}>
@@ -164,49 +178,56 @@ export function SensitivityPanel({
           data={series}
           margin={{ top: 5, right: 20, left: 0, bottom: 5 }}
         >
-          <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
           <XAxis
             dataKey="x"
             tickFormatter={(v: number) =>
               axis === "amount"
-                ? formatCurrency(v, currency)
+                ? new Intl.NumberFormat("en-US", { notation: "compact" }).format(v)
                 : axis === "rate"
                   ? `${v.toFixed(1)}%`
                   : `${Math.round(v)}`
             }
-            tick={{ fontSize: 11 }}
+            tick={{ fontSize: 11, fill: "var(--text-3)" }}
+            axisLine={{ stroke: "var(--border)" }}
+            tickLine={false}
           />
           <YAxis
-            tickFormatter={(v: number) => formatCurrency(v, currency)}
-            tick={{ fontSize: 11 }}
-            width={90}
+            tickFormatter={(v: number) =>
+              new Intl.NumberFormat("en-US", { notation: "compact" }).format(v)
+            }
+            tick={{ fontSize: 11, fill: "var(--text-3)" }}
+            width={70}
+            axisLine={false}
+            tickLine={false}
           />
           <Tooltip
             formatter={(value, name) => [
               formatCurrency(value as number, currency),
               name,
             ]}
-            labelFormatter={(label) => {
-              const n = label as number;
-              return axis === "amount"
-                ? formatCurrency(n, currency)
-                : axis === "rate"
-                  ? `${n.toFixed(1)}%`
-                  : `${Math.round(n)} ${t("months")}`;
+            labelFormatter={(label) => formatAxisValue(label as number)}
+            contentStyle={{
+              backgroundColor: "var(--surface)",
+              border: "1px solid var(--border)",
+              borderRadius: "var(--radius)",
+              boxShadow: "var(--shadow-2)",
+              fontSize: "12px",
+              color: "var(--text)",
             }}
           />
-          <Legend />
+          <Legend wrapperStyle={{ fontSize: "12px", color: "var(--text-2)" }} />
           <ReferenceLine
             x={cfg.base}
-            stroke="hsl(var(--muted-foreground))"
+            stroke="var(--text-4)"
             strokeDasharray="4 2"
-            label={{ value: t("current"), fontSize: 11 }}
+            label={{ value: t("current"), fontSize: 11, fill: "var(--text-3)" }}
           />
           <Line
             type="monotone"
             dataKey="totalPayment"
             name={t("totalPayment")}
-            stroke={chartColors.payment}
+            stroke="var(--chart-principal)"
             dot={false}
             strokeWidth={2}
           />
@@ -214,14 +235,14 @@ export function SensitivityPanel({
             type="monotone"
             dataKey="totalInterest"
             name={t("totalInterest")}
-            stroke={chartColors.interest}
+            stroke="var(--chart-interest)"
             dot={false}
             strokeWidth={2}
           />
         </LineChart>
       </ResponsiveContainer>
 
-      <p className="text-xs text-muted-foreground">{t("disclaimer")}</p>
+      <p className="text-xs text-[--text-3] italic">{t("disclaimer")}</p>
     </div>
   );
 }

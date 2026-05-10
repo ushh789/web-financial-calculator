@@ -2,8 +2,6 @@
 
 import { useMemo } from "react";
 import { useTranslations } from "next-intl";
-import { cn } from "@/lib/utils";
-import { Card, CardContent } from "@/components/ui/card";
 import { formatCurrency, formatDate } from "@/lib/utils/format";
 import { computeCashFlowMetrics } from "@/lib/utils/cashflow.utils";
 import type { CashFlow } from "./CashFlowTable";
@@ -11,71 +9,110 @@ import type { CashFlow } from "./CashFlowTable";
 interface Props {
   cashFlows: CashFlow[];
   currency: string;
+  amount?: number;
+  rate?: number;
+  term?: number;
 }
 
-interface KpiTileProps {
-  label: string;
-  value: string;
-  variant?: "default" | "amber" | "destructive";
-}
-
-function KpiTile({ label, value, variant = "default" }: KpiTileProps) {
-  const valueClass = cn(
-    "text-xl font-bold tabular-nums",
-    variant === "amber" && "text-amber-600 dark:text-amber-400",
-    variant === "destructive" && "text-destructive",
-  );
-
-  return (
-    <Card>
-      <CardContent className="pt-4 pb-4">
-        <p className="text-xs uppercase tracking-wider text-muted-foreground mb-1.5 leading-none">
-          {label}
-        </p>
-        <p className={valueClass}>{value}</p>
-      </CardContent>
-    </Card>
-  );
-}
-
-export function CalculationSummary({ cashFlows, currency }: Props) {
+export function CalculationSummary({ cashFlows, currency, amount, rate, term }: Props) {
   const t = useTranslations("summary");
 
   const m = useMemo(() => computeCashFlowMetrics(cashFlows), [cashFlows]);
 
+  const outflows = cashFlows.filter((cf) => cf.type === "OUTFLOW");
+  const monthlyPayment = outflows.length > 0 ? m.totalPayments / outflows.length : 0;
+
+  const subtitleParts = [
+    term ? `${term >= 12 ? `${Math.round(term / 12)}-year` : `${term}-month`}` : null,
+    rate ? `${rate}%` : null,
+    amount ? formatCurrency(amount, currency) : null,
+  ].filter(Boolean);
+
+  const principalPct = m.totalPayments > 0 ? (m.totalPrincipal / m.totalPayments) * 100 : 0;
+  const interestPct = 100 - principalPct;
+
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3">
-      <KpiTile
-        label={t("totalPayments")}
-        value={formatCurrency(m.totalPayments, currency)}
-      />
-      <KpiTile
-        label={t("totalPrincipal")}
-        value={formatCurrency(m.totalPrincipal, currency)}
-      />
-      <KpiTile
-        label={t("totalInterest")}
-        value={formatCurrency(m.totalInterest, currency)}
-        variant="amber"
-      />
-      <KpiTile
-        label={t("interestRatio")}
-        value={`${m.interestRatio}%`}
-        variant="amber"
-      />
-      <KpiTile
-        label={t("overpayment")}
-        value={formatCurrency(m.overpayment, currency)}
-        variant="destructive"
-      />
-      <KpiTile
-        label={t("paymentPeriod")}
-        value={
-          m.firstPaymentDate && m.lastPaymentDate
-            ? `${formatDate(m.firstPaymentDate)} – ${formatDate(m.lastPaymentDate)}`
-            : "—"
-        }
-      />
+    <div className="bg-[--surface] rounded-[--radius-lg] border border-[--border] shadow-[--shadow-1] overflow-hidden">
+      {/* Hero section */}
+      <div className="p-[--density-pad] border-b border-[--hairline]">
+        <p className="text-[11px] uppercase tracking-[0.08em] text-[--text-3] font-medium mb-2">
+          Monthly payment
+        </p>
+        <div className="flex items-baseline gap-1.5">
+          <span className="text-[--text-3] font-serif text-2xl">{currency}</span>
+          <span className="font-serif text-[56px] font-medium text-[--text] leading-none tabular-nums">
+            {monthlyPayment.toLocaleString("en-US", {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}
+          </span>
+        </div>
+        {subtitleParts.length > 0 && (
+          <p className="text-sm text-[--text-3] mt-2">{subtitleParts.join(" · ")}</p>
+        )}
+      </div>
+
+      {/* Support KPI grid */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 divide-x divide-y sm:divide-y-0 divide-[--hairline]">
+        {[
+          {
+            label: t("totalPayments"),
+            value: formatCurrency(m.totalPayments, currency),
+          },
+          {
+            label: t("totalInterest"),
+            value: formatCurrency(m.totalInterest, currency),
+            warn: true,
+          },
+          {
+            label: t("totalPrincipal"),
+            value: formatCurrency(m.totalPrincipal, currency),
+          },
+          {
+            label: t("paymentPeriod"),
+            value:
+              m.firstPaymentDate && m.lastPaymentDate
+                ? `${formatDate(m.firstPaymentDate)} – ${formatDate(m.lastPaymentDate)}`
+                : "—",
+          },
+        ].map(({ label, value, warn }) => (
+          <div key={label} className="p-4">
+            <p className="text-[11px] uppercase tracking-[0.06em] text-[--text-3] font-medium mb-1">
+              {label}
+            </p>
+            <p
+              className={`font-mono text-sm font-medium tabular-nums ${warn ? "text-[--warn]" : "text-[--text]"}`}
+            >
+              {value}
+            </p>
+          </div>
+        ))}
+      </div>
+
+      {/* Interest ratio bar */}
+      {m.totalPayments > 0 && (
+        <div className="px-[--density-pad] py-3 border-t border-[--hairline] flex items-center gap-3">
+          <div className="flex-1 flex h-1.5 rounded-full overflow-hidden bg-[--surface-sunken]">
+            <div
+              className="bg-[--chart-principal] rounded-l-full"
+              style={{ width: `${principalPct}%` }}
+            />
+            <div
+              className="bg-[--chart-interest] flex-1 rounded-r-full"
+            />
+          </div>
+          <div className="flex items-center gap-3 text-[11px] text-[--text-3] shrink-0">
+            <span className="flex items-center gap-1">
+              <span className="w-2 h-2 rounded-full bg-[--chart-principal] inline-block" />
+              Principal {principalPct.toFixed(0)}%
+            </span>
+            <span className="flex items-center gap-1">
+              <span className="w-2 h-2 rounded-full bg-[--chart-interest] inline-block" />
+              Interest {interestPct.toFixed(0)}%
+            </span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
