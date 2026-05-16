@@ -171,3 +171,56 @@ export async function mockCreateCalculation(
     return route.continue();
   });
 }
+
+type ScenarioFixture = typeof defaultCalculationScenarios[number];
+
+// Stub POST /api/calculations/:id/scenarios - adds a scenario and returns the created one.
+export async function mockAddScenario(
+  page: Page,
+  fixture: ScenarioFixture = defaultCalculationScenarios[0]!
+) {
+  await page.route(/\/api\/calculations\/[^/]+\/scenarios$/, route => {
+    if (route.request().method() === 'POST') {
+      return route.fulfill({
+        status: 201,
+        contentType: 'application/json',
+        body: JSON.stringify(fixture),
+      });
+    }
+    return route.continue();
+  });
+}
+
+// Stub POST /api/calculators - creates a new calculator.
+export async function mockCreateCalculator(
+  page: Page,
+  fixture: CalculatorsFixture['content'][number] = defaultCalculators.content[0]!
+) {
+  await page.route('**/api/calculators', route => {
+    if (route.request().method() === 'POST') {
+      return route.fulfill({
+        status: 201,
+        contentType: 'application/json',
+        body: JSON.stringify(fixture),
+      });
+    }
+    return route.continue();
+  });
+}
+
+// Stub POST /api/calculators/:id/versions - adds a new version to a calculator.
+export async function mockAddCalculatorVersion(
+  page: Page,
+  fixture: typeof defaultCalculatorVersions[number] = defaultCalculatorVersions[0]!
+) {
+  await page.route(/\/api\/calculators\/[^/]+\/versions$/, route => {
+    if (route.request().method() === 'POST') {
+      return route.fulfill({
+        status: 201,
+        contentType: 'application/json',
+        body: JSON.stringify(fixture),
+      });
+    }
+    return route.continue();
+  });
+}
