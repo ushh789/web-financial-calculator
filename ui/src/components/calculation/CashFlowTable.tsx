@@ -188,7 +188,7 @@ export function CashFlowTable({ cashFlows, currency = "USD" }: Props) {
   };
 
   return (
-    <div className="bg-surface rounded-lg border border-border shadow-1 overflow-hidden">
+    <div data-testid="cashflow-table" className="bg-surface rounded-lg border border-border shadow-1 overflow-hidden">
       {/* Toolbar */}
       <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-border">
         <div className="flex items-center gap-1 bg-surface-sunken rounded-sm p-1">
@@ -299,7 +299,7 @@ export function CashFlowTable({ cashFlows, currency = "USD" }: Props) {
 
       {/* Pagination footer */}
       {filteredData.length > 0 && (
-        <div className="flex items-center justify-between px-4 py-3 border-t border-hairline">
+        <div data-testid="cashflow-pagination" className="flex items-center justify-between px-4 py-3 border-t border-hairline">
           <p className="text-xs text-text-3">
             {t("showing", {
               shown: Math.min((page + 1) * PAGE_SIZE, filteredData.length),

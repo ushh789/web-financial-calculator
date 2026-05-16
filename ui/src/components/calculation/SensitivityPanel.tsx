@@ -110,12 +110,13 @@ export function SensitivityPanel({
   }
 
   return (
-    <div className="space-y-5">
+    <div data-testid="sensitivity-panel" className="space-y-5">
       {/* Axis selector */}
       <div className="flex items-center gap-1 bg-surface-sunken rounded-sm p-1 w-fit">
         {AXES.map((a) => (
           <button
             key={a}
+            data-testid={`sensitivity-axis-${a}`}
             onClick={() => setAxis(a)}
             className={clsx(
               "px-3 py-1.5 rounded text-xs font-medium transition-colors",
@@ -173,6 +174,7 @@ export function SensitivityPanel({
       )}
 
       {/* Chart */}
+      <div data-testid="sensitivity-chart">
       <ResponsiveContainer width="100%" height={280}>
         <LineChart
           data={series}
@@ -241,6 +243,7 @@ export function SensitivityPanel({
           />
         </LineChart>
       </ResponsiveContainer>
+      </div>
 
       <p className="text-xs text-text-3 italic">{t("disclaimer")}</p>
     </div>
