@@ -1,0 +1,60 @@
+[
+  {
+    "id": "cccccccc-cccc-cccc-cccc-cccccccccccc",
+    "calculatorId": "11111111-1111-1111-1111-111111111111",
+    "version": 1,
+    "active": true,
+    "createdAt": "2024-01-01T00:00:00Z",
+    "algorithmMetadata": {
+      "type": "LOAN",
+      "constraints": {
+        "minAmount": 1000,
+        "maxAmount": 1000000,
+        "minRate": 1,
+        "maxRate": 50,
+        "minTerm": 1,
+        "maxTerm": 360
+      },
+      "defaults": {
+        "currency": "USD"
+      },
+      "repayment": {
+        "frequency": "MONTHLY",
+        "strategy": "ANNUITY"
+      },
+      "interest": {
+        "method": "COMPOUND",
+        "rateType": "FIXED"
+      }
+    }
+  },
+  {
+    "id": "dddddddd-dddd-dddd-dddd-dddddddddddd",
+    "calculatorId": "11111111-1111-1111-1111-111111111111",
+    "version": 2,
+    "active": true,
+    "createdAt": "2024-03-01T00:00:00Z",
+    "algorithmMetadata": {
+      "type": "LOAN",
+      "constraints": {
+        "minAmount": 500,
+        "maxAmount": 2000000,
+        "minRate": 0.5,
+        "maxRate": 40,
+        "minTerm": 1,
+        "maxTerm": 480
+      },
+      "defaults": {
+        "currency": "USD"
+      },
+      "repayment": {
+        "frequency": "MONTHLY",
+        "strategy": "ANNUITY"
+      },
+      "interest": {
+        "method": "COMPOUND",
+        "rateType": "FIXED"
+      }
+    }
+  }
+]

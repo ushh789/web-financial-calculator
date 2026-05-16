@@ -3,6 +3,8 @@ import defaultUser from './data/user.json';
 import defaultCalculators from './data/calculators.json';
 import defaultCalculatorDetail from './data/calculator-detail.json';
 import defaultCalculationResult from './data/calculation-result.json';
+import defaultCalculatorVersions from './data/calculator-versions.json';
+import defaultCalculationScenarios from './data/calculation-scenarios.json';
 
 type UserFixture = typeof defaultUser;
 type CalculatorsFixture = typeof defaultCalculators;
@@ -111,6 +113,57 @@ export async function mockCalculationsList(
     if (route.request().method() === 'GET') {
       return route.fulfill({
         status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(fixture),
+      });
+    }
+    return route.continue();
+  });
+}
+
+// Stub GET /api/calculators/:id/versions - returns calculator versions array.
+export async function mockCalculatorVersions(
+  page: Page,
+  fixture: typeof defaultCalculatorVersions = defaultCalculatorVersions
+) {
+  await page.route(/\/api\/calculators\/[^/]+\/versions$/, route => {
+    if (route.request().method() === 'GET') {
+      return route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(fixture),
+      });
+    }
+    return route.continue();
+  });
+}
+
+// Stub GET /api/calculations/:id/scenarios - returns scenarios array with cashFlows.
+export async function mockCalculationScenarios(
+  page: Page,
+  fixture: typeof defaultCalculationScenarios = defaultCalculationScenarios
+) {
+  await page.route(/\/api\/calculations\/[^/]+\/scenarios$/, route => {
+    if (route.request().method() === 'GET') {
+      return route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(fixture),
+      });
+    }
+    return route.continue();
+  });
+}
+
+// Stub POST /api/calculations - creates a calculation and returns it.
+export async function mockCreateCalculation(
+  page: Page,
+  fixture: CalculationResultFixture = defaultCalculationResult
+) {
+  await page.route('**/api/calculations', route => {
+    if (route.request().method() === 'POST') {
+      return route.fulfill({
+        status: 201,
         contentType: 'application/json',
         body: JSON.stringify(fixture),
       });

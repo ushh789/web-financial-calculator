@@ -1,0 +1,50 @@
+[
+  {
+    "id": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+    "calculationId": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+    "scenarioName": "Default",
+    "scenarioInput": {
+      "amount": 100000,
+      "rate": 5,
+      "term": 12
+    },
+    "scenarioResult": {
+      "cashFlows": [
+        {
+          "date": "2024-06-01",
+          "totalAmount": { "amount": 100000, "currencyCode": "USD" },
+          "type": "INFLOW",
+          "description": "Disbursement",
+          "breakdown": {
+            "principal": { "amount": 100000, "currencyCode": "USD" },
+            "interest": { "amount": 0, "currencyCode": "USD" },
+            "fee": { "amount": 0, "currencyCode": "USD" }
+          }
+        },
+        {
+          "date": "2024-07-01",
+          "totalAmount": { "amount": 8560.75, "currencyCode": "USD" },
+          "type": "OUTFLOW",
+          "description": "Monthly payment",
+          "breakdown": {
+            "principal": { "amount": 8144.08, "currencyCode": "USD" },
+            "interest": { "amount": 416.67, "currencyCode": "USD" },
+            "fee": { "amount": 0, "currencyCode": "USD" }
+          }
+        },
+        {
+          "date": "2024-08-01",
+          "totalAmount": { "amount": 8560.75, "currencyCode": "USD" },
+          "type": "OUTFLOW",
+          "description": "Monthly payment",
+          "breakdown": {
+            "principal": { "amount": 8178.00, "currencyCode": "USD" },
+            "interest": { "amount": 382.75, "currencyCode": "USD" },
+            "fee": { "amount": 0, "currencyCode": "USD" }
+          }
+        }
+      ]
+    },
+    "createdAt": "2024-06-01T10:00:00Z"
+  }
+]
