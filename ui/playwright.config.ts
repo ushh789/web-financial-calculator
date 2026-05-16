@@ -23,7 +23,7 @@ export default defineConfig({
     timeout: 120_000,
   },
   projects: [
-    { name: 'setup', testMatch: /auth\.setup\.ts/ },
+    { name: 'setup', testDir: './e2e', testMatch: /auth\.setup\.ts/ },
     {
       name: 'chromium',
       use: {
