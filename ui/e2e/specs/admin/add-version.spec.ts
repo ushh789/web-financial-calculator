@@ -41,13 +41,13 @@ const newVersion = {
 test.describe('Add version flow', () => {
   test.beforeEach(async ({ page }) => {
     await page.addInitScript((admin) => {
-      sessionStorage.setItem('auth-store', JSON.stringify({ state: { user: admin }, version: 0 }));
+      localStorage.setItem('auth-store', JSON.stringify({ state: { user: admin }, version: 0 }));
     }, adminJson);
   });
 
   test('add version button opens the version form dialog', async ({ page, mocks }) => {
-    await mocks.mockCalculatorsList(page);
-    await mocks.mockCalculatorVersions(page);
+    await mocks.mockCalculatorsList();
+    await mocks.mockCalculatorVersions();
 
     await page.goto('/admin/calculators');
 
@@ -59,7 +59,8 @@ test.describe('Add version flow', () => {
     await addVersionBtn.click();
 
     // The Dialog opens and renders AddVersionForm — it has a submit button
-    const submitBtn = page.getByRole('button', { name: /add version/i }).last();
+    const dialog = page.getByRole('dialog');
+    const submitBtn = dialog.getByRole('button', { name: /add version|додати версію/i });
     await expect(submitBtn).toBeVisible();
   });
 
@@ -67,9 +68,9 @@ test.describe('Add version flow', () => {
     page,
     mocks,
   }) => {
-    await mocks.mockCalculatorsList(page);
-    await mocks.mockCalculatorVersions(page);
-    await mocks.mockAddCalculatorVersion(page);
+    await mocks.mockCalculatorsList();
+    await mocks.mockCalculatorVersions();
+    await mocks.mockAddCalculatorVersion();
 
     await page.goto('/admin/calculators');
 
@@ -79,8 +80,9 @@ test.describe('Add version flow', () => {
     const addVersionBtn = page.getByRole('button', { name: /add version/i }).first();
     await addVersionBtn.click();
 
-    // The submit button inside the dialog is the last "Add Version" button
-    const submitBtn = page.getByRole('button', { name: /add version/i }).last();
+    // The submit button inside the dialog
+    const dialog = page.getByRole('dialog');
+    const submitBtn = dialog.getByRole('button', { name: /add version|додати версію/i });
     await expect(submitBtn).toBeVisible();
 
     // Submit with default form values
@@ -116,7 +118,7 @@ test.describe('Add version flow', () => {
       return route.continue();
     });
 
-    await mocks.mockCalculatorsList(page);
+    await mocks.mockCalculatorsList();
 
     await page.goto('/admin/calculators');
 
@@ -126,7 +128,8 @@ test.describe('Add version flow', () => {
     const addVersionBtn = page.getByRole('button', { name: /add version/i }).first();
     await addVersionBtn.click();
 
-    const submitBtn = page.getByRole('button', { name: /add version/i }).last();
+    const dialog = page.getByRole('dialog');
+    const submitBtn = dialog.getByRole('button', { name: /add version|додати версію/i });
     await expect(submitBtn).toBeVisible();
     await submitBtn.click();
 

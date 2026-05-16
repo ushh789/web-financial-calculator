@@ -6,7 +6,7 @@ const CALC_ID = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
 
 test.beforeEach(async ({ page }) => {
   await page.addInitScript((user) => {
-    sessionStorage.setItem('auth-store', JSON.stringify({ state: { user }, version: 0 }));
+    localStorage.setItem('auth-store', JSON.stringify({ state: { user }, version: 0 }));
   }, userJson);
 });
 
@@ -26,9 +26,10 @@ test.describe('Sensitivity panel', () => {
     page,
     mocks,
   }) => {
-    await mocks.mockCalculationDetail(page);
-    await mocks.mockCalculationScenarios(page);
-    await mocks.mockCalculatorVersions(page);
+    // useCalculation calls GET /api/calculations?userId=...&page=0&size=100
+    await mocks.mockCalculationsList();
+    await mocks.mockCalculationScenarios();
+    await mocks.mockCalculatorVersions();
 
     await openSensitivityTab(page);
 
@@ -36,9 +37,9 @@ test.describe('Sensitivity panel', () => {
   });
 
   test('sensitivity chart is visible inside the panel', async ({ page, mocks }) => {
-    await mocks.mockCalculationDetail(page);
-    await mocks.mockCalculationScenarios(page);
-    await mocks.mockCalculatorVersions(page);
+    await mocks.mockCalculationsList();
+    await mocks.mockCalculationScenarios();
+    await mocks.mockCalculatorVersions();
 
     await openSensitivityTab(page);
 
@@ -49,9 +50,9 @@ test.describe('Sensitivity panel', () => {
     page,
     mocks,
   }) => {
-    await mocks.mockCalculationDetail(page);
-    await mocks.mockCalculationScenarios(page);
-    await mocks.mockCalculatorVersions(page);
+    await mocks.mockCalculationsList();
+    await mocks.mockCalculationScenarios();
+    await mocks.mockCalculatorVersions();
 
     await openSensitivityTab(page);
 
@@ -68,9 +69,9 @@ test.describe('Sensitivity panel', () => {
     page,
     mocks,
   }) => {
-    await mocks.mockCalculationDetail(page);
-    await mocks.mockCalculationScenarios(page);
-    await mocks.mockCalculatorVersions(page);
+    await mocks.mockCalculationsList();
+    await mocks.mockCalculationScenarios();
+    await mocks.mockCalculatorVersions();
 
     await openSensitivityTab(page);
 
@@ -82,9 +83,9 @@ test.describe('Sensitivity panel', () => {
   });
 
   test('all three axis buttons are present', async ({ page, mocks }) => {
-    await mocks.mockCalculationDetail(page);
-    await mocks.mockCalculationScenarios(page);
-    await mocks.mockCalculatorVersions(page);
+    await mocks.mockCalculationsList();
+    await mocks.mockCalculationScenarios();
+    await mocks.mockCalculatorVersions();
 
     await openSensitivityTab(page);
 
@@ -94,13 +95,13 @@ test.describe('Sensitivity panel', () => {
   });
 
   test('sensitivity panel contains an SVG chart', async ({ page, mocks }) => {
-    await mocks.mockCalculationDetail(page);
-    await mocks.mockCalculationScenarios(page);
-    await mocks.mockCalculatorVersions(page);
+    await mocks.mockCalculationsList();
+    await mocks.mockCalculationScenarios();
+    await mocks.mockCalculatorVersions();
 
     await openSensitivityTab(page);
 
     // Recharts ResponsiveContainer renders an SVG
-    await expect(page.locator(SELECTORS.sensitivityChart).locator('svg')).toBeVisible();
+    await expect(page.locator(SELECTORS.sensitivityChart).locator('svg').first()).toBeVisible();
   });
 });

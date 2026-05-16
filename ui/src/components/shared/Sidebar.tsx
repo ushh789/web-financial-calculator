@@ -87,7 +87,7 @@ export function Sidebar() {
       <nav className="flex-1 p-3 space-y-4 overflow-y-auto">
         {/* Workspace section */}
         <div>
-          <p className="uppercase text-text-3 text-[10px] tracking-[0.08em] font-medium px-3 mb-1">
+          <p className="uppercase text-text-2 text-[10px] tracking-[0.08em] font-medium px-3 mb-1">
             {tSidebar("workspace")}
           </p>
           <div className="space-y-0.5">
@@ -99,7 +99,7 @@ export function Sidebar() {
 
         {/* Account section */}
         <div>
-          <p className="uppercase text-text-3 text-[10px] tracking-[0.08em] font-medium px-3 mb-1">
+          <p className="uppercase text-text-2 text-[10px] tracking-[0.08em] font-medium px-3 mb-1">
             {tSidebar("account")}
           </p>
           <div className="space-y-0.5">
@@ -123,14 +123,14 @@ export function Sidebar() {
                 : user.username}
             </span>
             {"email" in user && user.email && (
-              <span className="text-xs text-text-3 truncate">{String(user.email)}</span>
+              <span className="text-xs text-text-2 truncate">{String(user.email)}</span>
             )}
           </div>
           <button
             onClick={() => logout()}
             disabled={isLoggingOut}
             aria-label={t("logout")}
-            className="shrink-0 w-7 h-7 flex items-center justify-center rounded text-text-3 hover:text-text hover:bg-surface-sunken transition-colors disabled:opacity-50"
+            className="shrink-0 w-7 h-7 flex items-center justify-center rounded text-text-2 hover:text-text hover:bg-surface-sunken transition-colors disabled:opacity-50"
           >
             <LogOut className="w-3.5 h-3.5" />
           </button>

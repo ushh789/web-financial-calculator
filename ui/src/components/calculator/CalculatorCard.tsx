@@ -36,11 +36,11 @@ export async function CalculatorCard({ calculator }: CalculatorCardProps) {
           {calculator.name}
         </h3>
         {calculator.description && (
-          <p className="text-sm text-text-3 mt-1 line-clamp-2">
+          <p className="text-sm text-text-2 mt-1 line-clamp-2">
             {calculator.description}
           </p>
         )}
-        <p className="text-xs text-text-3 font-mono mt-2">{calculator.code}</p>
+        <p className="text-xs text-text-2 font-mono mt-2">{calculator.code}</p>
       </div>
 
       {/* Arrow link */}
@@ -53,7 +53,7 @@ export async function CalculatorCard({ calculator }: CalculatorCardProps) {
           <ArrowRight className="w-4 h-4" />
         </Link>
       ) : (
-        <div className="mt-3 text-xs text-text-3">{t("inactive")}</div>
+        <div className="mt-3 text-xs text-text-2">{t("inactive")}</div>
       )}
     </div>
   );

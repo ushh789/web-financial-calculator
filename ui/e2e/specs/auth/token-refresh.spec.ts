@@ -1,15 +1,17 @@
 import { test, expect } from '../../fixtures/test';
 import userJson from '../../fixtures/data/user.json';
+import { setAccessTokenCookie } from '../../utils/auth';
 
 test.describe('Token refresh interceptor', () => {
   test('401 → refresh → retry succeeds — page stays on dashboard', async ({ page }) => {
-    // Pre-populate sessionStorage to simulate logged-in state
+    // Pre-populate localStorage to simulate logged-in state
     await page.addInitScript((userFixture) => {
-      sessionStorage.setItem(
+      localStorage.setItem(
         'auth-store',
         JSON.stringify({ state: { user: userFixture }, version: 0 })
       );
     }, userJson);
+    await setAccessTokenCookie(page);
 
     let dashboardCallCount = 0;
 
@@ -42,13 +44,14 @@ test.describe('Token refresh interceptor', () => {
   });
 
   test('401 → refresh fails → redirect to login', async ({ page }) => {
-    // Pre-populate sessionStorage to simulate logged-in state
+    // Pre-populate localStorage to simulate logged-in state
     await page.addInitScript((userFixture) => {
-      sessionStorage.setItem(
+      localStorage.setItem(
         'auth-store',
         JSON.stringify({ state: { user: userFixture }, version: 0 })
       );
     }, userJson);
+    await setAccessTokenCookie(page);
 
     // Any authenticated API call returns 401
     await page.route('**/api/calculators', route =>
@@ -64,7 +67,14 @@ test.describe('Token refresh interceptor', () => {
 
     // Mock refresh to also fail with 401
     await page.route('**/auth/refresh', route =>
-      route.fulfill({ status: 401, contentType: 'application/json', body: JSON.stringify({ message: 'Refresh token expired' }) })
+      route.fulfill({
+        status: 401,
+        contentType: 'application/json',
+        headers: {
+          'Set-Cookie': 'accessToken=; Path=/; Max-Age=0; HttpOnly; SameSite=Lax',
+        },
+        body: JSON.stringify({ message: 'Refresh token expired' }),
+      })
     );
 
     await page.goto('/dashboard');

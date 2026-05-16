@@ -31,11 +31,20 @@ export default defineConfig({
         storageState: '.storage/user.json',
       },
       dependencies: ['setup'],
-      testIgnore: /specs\/auth\//,
+      testIgnore: [/specs\/auth\//, /specs\/admin\//],
     },
     {
       name: 'chromium-anon',
-      use: { ...devices['Desktop Chrome'] },
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: {
+          cookies: [{
+            name: 'NEXT_LOCALE', value: 'en', domain: 'localhost', path: '/',
+            expires: -1, httpOnly: false, secure: false, sameSite: 'Lax',
+          }],
+          origins: [],
+        },
+      },
       testMatch: /specs\/auth\//,
     },
     {

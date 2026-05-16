@@ -6,15 +6,15 @@ const CALC_ID = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
 
 test.beforeEach(async ({ page }) => {
   await page.addInitScript((user) => {
-    sessionStorage.setItem('auth-store', JSON.stringify({ state: { user }, version: 0 }));
+    localStorage.setItem('auth-store', JSON.stringify({ state: { user }, version: 0 }));
   }, userJson);
 });
 
 test.describe('Cash flow table', () => {
   test('table renders with rows after switching to table tab', async ({ page, mocks }) => {
-    await mocks.mockCalculationsList(page);
-    await mocks.mockCalculationScenarios(page);
-    await mocks.mockCalculatorVersions(page);
+    await mocks.mockCalculationsList();
+    await mocks.mockCalculationScenarios();
+    await mocks.mockCalculatorVersions();
 
     await page.goto(`/calculations/${CALC_ID}`);
 
@@ -29,9 +29,9 @@ test.describe('Cash flow table', () => {
   });
 
   test('OUTFLOW filter shows only outflow rows', async ({ page, mocks }) => {
-    await mocks.mockCalculationsList(page);
-    await mocks.mockCalculationScenarios(page);
-    await mocks.mockCalculatorVersions(page);
+    await mocks.mockCalculationsList();
+    await mocks.mockCalculationScenarios();
+    await mocks.mockCalculatorVersions();
 
     await page.goto(`/calculations/${CALC_ID}`);
 
@@ -49,9 +49,9 @@ test.describe('Cash flow table', () => {
   });
 
   test('INFLOW filter shows only inflow rows', async ({ page, mocks }) => {
-    await mocks.mockCalculationsList(page);
-    await mocks.mockCalculationScenarios(page);
-    await mocks.mockCalculatorVersions(page);
+    await mocks.mockCalculationsList();
+    await mocks.mockCalculationScenarios();
+    await mocks.mockCalculatorVersions();
 
     await page.goto(`/calculations/${CALC_ID}`);
 
@@ -69,9 +69,9 @@ test.describe('Cash flow table', () => {
   });
 
   test('pagination footer renders when table has data', async ({ page, mocks }) => {
-    await mocks.mockCalculationsList(page);
-    await mocks.mockCalculationScenarios(page);
-    await mocks.mockCalculatorVersions(page);
+    await mocks.mockCalculationsList();
+    await mocks.mockCalculationScenarios();
+    await mocks.mockCalculatorVersions();
 
     await page.goto(`/calculations/${CALC_ID}`);
 

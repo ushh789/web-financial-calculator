@@ -1,34 +1,28 @@
+"use client";
+
+import { useParams } from "next/navigation";
 import { notFound } from "next/navigation";
 import { CalculatorDetail } from "@/components/calculator/CalculatorDetail";
-import { serverFetch } from "@/lib/api/serverFetch";
-import type { components } from "@/lib/types/api.types";
+import { useCalculator, useCalculatorVersions } from "@/lib/hooks/useCalculators";
+import { Skeleton } from "@/components/ui/skeleton";
 
-type CalculatorDto = components["schemas"]["CalculatorDto"];
-type CalculatorVersionDto = components["schemas"]["CalculatorVersionDto"];
+export default function CalculatorPage() {
+  const { id } = useParams<{ id: string }>();
+  const { data: calculator, isLoading: calcLoading, isError: calcError } = useCalculator(id);
+  const { data: versions = [], isLoading: versionsLoading } = useCalculatorVersions(id);
 
-interface PageProps {
-  params: Promise<{ id: string }>;
-}
+  if (calcLoading || versionsLoading) {
+    return (
+      <div className="space-y-4">
+        <Skeleton className="h-8 w-64" />
+        <Skeleton className="h-48 w-full" />
+      </div>
+    );
+  }
 
-export default async function CalculatorPage({ params }: PageProps) {
-  const { id } = await params;
-
-  let calculator: CalculatorDto;
-  let versions: CalculatorVersionDto[];
-
-  try {
-    [calculator, versions] = await Promise.all([
-      serverFetch<CalculatorDto>(`/api/calculators/${id}`),
-      serverFetch<CalculatorVersionDto[]>(`/api/calculators/${id}/versions`),
-    ]);
-  } catch {
+  if (calcError || !calculator) {
     notFound();
   }
 
-  return (
-    <CalculatorDetail
-      calculator={calculator!}
-      versions={versions!}
-    />
-  );
+  return <CalculatorDetail calculator={calculator!} versions={versions} />;
 }

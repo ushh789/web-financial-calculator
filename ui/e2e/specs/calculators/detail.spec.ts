@@ -1,27 +1,20 @@
 import { test, expect } from '../../fixtures/test';
-import userJson from '../../fixtures/data/user.json';
 
 const CALC_ID = '11111111-1111-1111-1111-111111111111';
 const CALC_NAME = 'Annuity Loan';
 
-test.beforeEach(async ({ page }) => {
-  await page.addInitScript((user) => {
-    sessionStorage.setItem('auth-store', JSON.stringify({ state: { user }, version: 0 }));
-  }, userJson);
-});
-
 test.describe('Calculator detail page', () => {
   test('shows the calculator name', async ({ page, mocks }) => {
-    await mocks.mockCalculatorDetail(page);
-    await mocks.mockCalculatorVersions(page);
+    await mocks.mockCalculatorDetail();
+    await mocks.mockCalculatorVersions();
     await page.goto(`/calculators/${CALC_ID}`);
 
-    await expect(page.getByText(CALC_NAME)).toBeVisible();
+    await expect(page.getByRole('heading', { name: CALC_NAME })).toBeVisible();
   });
 
   test('calculator form fields are visible', async ({ page, mocks }) => {
-    await mocks.mockCalculatorDetail(page);
-    await mocks.mockCalculatorVersions(page);
+    await mocks.mockCalculatorDetail();
+    await mocks.mockCalculatorVersions();
     await page.goto(`/calculators/${CALC_ID}`);
 
     // CalculatorForm renders inputs for amount, rate, term, startDate, currency
@@ -32,8 +25,8 @@ test.describe('Calculator detail page', () => {
   });
 
   test('version selector renders when versions are present', async ({ page, mocks }) => {
-    await mocks.mockCalculatorDetail(page);
-    await mocks.mockCalculatorVersions(page);
+    await mocks.mockCalculatorDetail();
+    await mocks.mockCalculatorVersions();
     await page.goto(`/calculators/${CALC_ID}`);
 
     // VersionSelector renders a <Select> with label "Calculator version"

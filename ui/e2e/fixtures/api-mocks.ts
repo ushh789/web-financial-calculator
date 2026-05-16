@@ -20,12 +20,14 @@ export async function mockAuthMe(page: Page, user: UserFixture = defaultUser) {
   );
 }
 
-// Stub GET /api/calculators - returns a paginated list of calculators.
+// Stub GET /api/calculators (list only — NOT /api/calculators/:id routes).
+// Uses an anchored regex so the pattern does NOT accidentally match
+// /api/calculators/:id or /api/calculators/:id/versions.
 export async function mockCalculatorsList(
   page: Page,
   fixture: CalculatorsFixture = defaultCalculators
 ) {
-  await page.route('**/api/calculators', route => {
+  await page.route(/\/api\/calculators\/?(\?[^/]*)?$/, route => {
     if (route.request().method() === 'GET') {
       return route.fulfill({
         status: 200,
@@ -33,7 +35,11 @@ export async function mockCalculatorsList(
         body: JSON.stringify(fixture),
       });
     }
-    return route.continue();
+    if (route.request().method() === 'POST') {
+      // Allow POST through to mockCreateCalculator if both are registered
+      return route.fallback();
+    }
+    return route.fallback();
   });
 }
 
@@ -42,7 +48,7 @@ export async function mockCalculatorDetail(
   page: Page,
   fixture: CalculatorDetailFixture = defaultCalculatorDetail
 ) {
-  await page.route(/\/api\/calculators\/[^/]+$/, route => {
+  await page.route(/\/api\/calculators\/[^/?]+$/, route => {
     if (route.request().method() === 'GET') {
       return route.fulfill({
         status: 200,
@@ -50,7 +56,7 @@ export async function mockCalculatorDetail(
         body: JSON.stringify(fixture),
       });
     }
-    return route.continue();
+    return route.fallback();
   });
 }
 
@@ -69,16 +75,18 @@ export async function mockRunCalculation(
         body: JSON.stringify(fixture),
       });
     }
-    return route.continue();
+    return route.fallback();
   });
 }
 
 // Stub GET /api/calculations/:id - returns a single calculation.
+// NOTE: useCalculation() does NOT call this endpoint — it uses getByUser (list) instead.
+// This mock is kept for completeness but most tests should use mockCalculationsList.
 export async function mockCalculationDetail(
   page: Page,
   fixture: CalculationResultFixture = defaultCalculationResult
 ) {
-  await page.route(/\/api\/calculations\/[^/]+$/, route => {
+  await page.route(/\/api\/calculations\/[^/?]+$/, route => {
     if (route.request().method() === 'GET') {
       return route.fulfill({
         status: 200,
@@ -86,7 +94,7 @@ export async function mockCalculationDetail(
         body: JSON.stringify(fixture),
       });
     }
-    return route.continue();
+    return route.fallback();
   });
 }
 
@@ -98,18 +106,22 @@ type CalculationsListFixture = {
   number: number;
 };
 
-// Stub GET /api/calculations - returns a paginated list of calculations.
+// Stub GET /api/calculations (list with userId query param).
+// This is what useCalculation() calls: getByUser(userId, 0, 100).
+// The fixture content MUST include the calculation that tests navigate to.
+// Default fixture wraps defaultCalculationResult (id: aaaaaaaa-...) so that
+// useCalculation() can find it by id in the list.
 export async function mockCalculationsList(
   page: Page,
   fixture: CalculationsListFixture = {
     content: [defaultCalculationResult],
     totalElements: 1,
     totalPages: 1,
-    size: 20,
+    size: 100,
     number: 0,
   }
 ) {
-  await page.route('**/api/calculations', route => {
+  await page.route(/\/api\/calculations\/?(\?[^/]*)?$/, route => {
     if (route.request().method() === 'GET') {
       return route.fulfill({
         status: 200,
@@ -117,7 +129,7 @@ export async function mockCalculationsList(
         body: JSON.stringify(fixture),
       });
     }
-    return route.continue();
+    return route.fallback();
   });
 }
 
@@ -134,7 +146,7 @@ export async function mockCalculatorVersions(
         body: JSON.stringify(fixture),
       });
     }
-    return route.continue();
+    return route.fallback();
   });
 }
 
@@ -151,7 +163,7 @@ export async function mockCalculationScenarios(
         body: JSON.stringify(fixture),
       });
     }
-    return route.continue();
+    return route.fallback();
   });
 }
 
@@ -160,7 +172,7 @@ export async function mockCreateCalculation(
   page: Page,
   fixture: CalculationResultFixture = defaultCalculationResult
 ) {
-  await page.route('**/api/calculations', route => {
+  await page.route(/\/api\/calculations\/?(\?[^/]*)?$/, route => {
     if (route.request().method() === 'POST') {
       return route.fulfill({
         status: 201,
@@ -168,7 +180,7 @@ export async function mockCreateCalculation(
         body: JSON.stringify(fixture),
       });
     }
-    return route.continue();
+    return route.fallback();
   });
 }
 
@@ -187,7 +199,7 @@ export async function mockAddScenario(
         body: JSON.stringify(fixture),
       });
     }
-    return route.continue();
+    return route.fallback();
   });
 }
 
@@ -196,7 +208,7 @@ export async function mockCreateCalculator(
   page: Page,
   fixture: CalculatorsFixture['content'][number] = defaultCalculators.content[0]!
 ) {
-  await page.route('**/api/calculators', route => {
+  await page.route(/\/api\/calculators\/?(\?[^/]*)?$/, route => {
     if (route.request().method() === 'POST') {
       return route.fulfill({
         status: 201,
@@ -204,7 +216,7 @@ export async function mockCreateCalculator(
         body: JSON.stringify(fixture),
       });
     }
-    return route.continue();
+    return route.fallback();
   });
 }
 
@@ -221,6 +233,6 @@ export async function mockAddCalculatorVersion(
         body: JSON.stringify(fixture),
       });
     }
-    return route.continue();
+    return route.fallback();
   });
 }

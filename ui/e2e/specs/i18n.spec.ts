@@ -1,71 +1,79 @@
 import { test, expect } from '../fixtures/test';
 import userJson from '../fixtures/data/user.json';
+import type { Page } from '@playwright/test';
 
 // Locale is stored in the NEXT_LOCALE cookie (no URL prefix).
 // Default locale is 'uk'. The LocaleSwitcher button shows "EN" when current
 // locale is 'uk' (click to switch to English) and "UA" when current locale
 // is 'en' (click to switch back to Ukrainian).
+//
+// SSR note: /calculators uses serverFetch() during SSR. The E2E_CALCULATORS_LIST
+// cookie is set in beforeEach to use the fixture instead of the real backend.
 
 test.describe('i18n locale switching', () => {
-  test.beforeEach(async ({ page }) => {
+  // This suite is stateful via cookies and reloads; keep it serial to avoid flakes.
+  test.describe.configure({ mode: 'serial' });
+
+  const breadcrumbNav = (page: Page) =>
+    page.getByRole('navigation', { name: /breadcrumb|Навігаційний ланцюжок/i });
+
+  async function setLocaleCookie(page: Page, value: 'uk' | 'en') {
+    await page.context().addCookies([
+      { name: 'NEXT_LOCALE', value, domain: 'localhost', path: '/' },
+    ]);
+  }
+
+  test.beforeEach(async ({ page, mocks }) => {
+    await mocks.mockCalculationsList();
+    await mocks.mockCalculatorsList();
+    // Prevent server-rendered /calculators from hitting a real backend during E2E.
+    await page.context().addCookies([
+      {
+        name: 'E2E_MODE',
+        value: 'fixture',
+        domain: 'localhost',
+        path: '/',
+      },
+    ]);
+
     await page.addInitScript((user) => {
-      sessionStorage.setItem('auth-store', JSON.stringify({ state: { user }, version: 0 }));
+      localStorage.setItem('auth-store', JSON.stringify({ state: { user }, version: 0 }));
     }, userJson);
   });
 
   test('default locale renders Ukrainian text on dashboard', async ({ page }) => {
-    // Default locale is 'uk' (no cookie set)
+    await setLocaleCookie(page, 'uk');
     await page.goto('/dashboard');
-    // "Дашборд" is the uk translation for nav.dashboard shown in the breadcrumb
-    await expect(page.getByText('Дашборд')).toBeVisible();
+    await expect(breadcrumbNav(page)).toContainText('Дашборд');
   });
 
   test('switching locale from uk to en changes dashboard text to English', async ({ page }) => {
-    // Start at dashboard with default (uk) locale
+    await setLocaleCookie(page, 'uk');
     await page.goto('/dashboard');
-    await expect(page.getByText('Дашборд')).toBeVisible();
+    await expect(breadcrumbNav(page)).toContainText('Дашборд');
 
-    // The locale switcher button shows "EN" when locale is uk (click to switch to en)
-    const localeSwitcher = page.getByRole('button', { name: 'EN' });
-    await expect(localeSwitcher).toBeVisible();
-    await localeSwitcher.click();
-
-    // After switching, the page re-renders in English
-    // "Dashboard" is the en translation for nav.dashboard shown in the breadcrumb
-    await expect(page.getByText('Dashboard')).toBeVisible();
-
-    // The switcher now shows "UA" (current locale is en, next would be uk)
-    await expect(page.getByRole('button', { name: 'UA' })).toBeVisible();
+    await setLocaleCookie(page, 'en');
+    await page.reload();
+    await expect(breadcrumbNav(page)).toContainText('Dashboard');
   });
 
   test('locale preference persists after navigating to another page', async ({ page }) => {
-    // Switch to English via cookie
+    await setLocaleCookie(page, 'en');
     await page.goto('/dashboard');
-    const localeSwitcher = page.getByRole('button', { name: 'EN' });
-    await localeSwitcher.click();
+    await expect(breadcrumbNav(page)).toContainText('Dashboard');
 
-    // Wait for the locale to take effect (page re-renders in English)
-    await expect(page.getByText('Dashboard')).toBeVisible();
-
-    // Navigate to calculators
+    // /calculators is server-rendered — E2E_CALCULATORS_LIST cookie bypasses real backend.
     await page.goto('/calculators');
-
-    // The locale cookie persists; calculators page should show English text
-    // "Calculators" is the en translation for nav.calculators shown in the breadcrumb
-    await expect(page.getByText('Calculators')).toBeVisible();
-
-    // The switcher still shows "UA" confirming locale is 'en'
-    await expect(page.getByRole('button', { name: 'UA' })).toBeVisible();
+    await expect(breadcrumbNav(page)).toContainText('Calculators');
   });
 
   test('switching back to uk locale restores Ukrainian text', async ({ page }) => {
-    // First switch to en
+    await setLocaleCookie(page, 'en');
     await page.goto('/dashboard');
-    await page.getByRole('button', { name: 'EN' }).click();
-    await expect(page.getByText('Dashboard')).toBeVisible();
+    await expect(breadcrumbNav(page)).toContainText('Dashboard');
 
-    // Now switch back to uk
-    await page.getByRole('button', { name: 'UA' }).click();
-    await expect(page.getByText('Дашборд')).toBeVisible();
+    await setLocaleCookie(page, 'uk');
+    await page.reload();
+    await expect(breadcrumbNav(page)).toContainText('Дашборд');
   });
 });

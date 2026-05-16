@@ -6,15 +6,18 @@ const CALC_ID = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
 
 test.beforeEach(async ({ page }) => {
   await page.addInitScript((user) => {
-    sessionStorage.setItem('auth-store', JSON.stringify({ state: { user }, version: 0 }));
+    localStorage.setItem('auth-store', JSON.stringify({ state: { user }, version: 0 }));
   }, userJson);
 });
 
 test.describe('Scenario panel', () => {
   test('scenario panel renders on calculation page', async ({ page, mocks }) => {
-    await mocks.mockCalculationDetail(page);
-    await mocks.mockCalculationScenarios(page);
-    await mocks.mockCalculatorVersions(page);
+    // useCalculation calls GET /api/calculations?userId=...&page=0&size=100
+    // mockCalculationsList returns a page with the default calculation-result fixture
+    // which has id=aaaaaaaa-..., matching CALC_ID.
+    await mocks.mockCalculationsList();
+    await mocks.mockCalculationScenarios();
+    await mocks.mockCalculatorVersions();
 
     await page.goto(`/calculations/${CALC_ID}`);
 
@@ -22,9 +25,9 @@ test.describe('Scenario panel', () => {
   });
 
   test('add scenario button toggles the form', async ({ page, mocks }) => {
-    await mocks.mockCalculationDetail(page);
-    await mocks.mockCalculationScenarios(page);
-    await mocks.mockCalculatorVersions(page);
+    await mocks.mockCalculationsList();
+    await mocks.mockCalculationScenarios();
+    await mocks.mockCalculatorVersions();
 
     await page.goto(`/calculations/${CALC_ID}`);
 
@@ -42,10 +45,10 @@ test.describe('Scenario panel', () => {
     page,
     mocks,
   }) => {
-    await mocks.mockCalculationDetail(page);
-    await mocks.mockCalculationScenarios(page);
-    await mocks.mockCalculatorVersions(page);
-    await mocks.mockAddScenario(page);
+    await mocks.mockCalculationsList();
+    await mocks.mockCalculationScenarios();
+    await mocks.mockCalculatorVersions();
+    await mocks.mockAddScenario();
 
     await page.goto(`/calculations/${CALC_ID}`);
 
@@ -60,16 +63,16 @@ test.describe('Scenario panel', () => {
     await page.locator('#term').fill('24');
 
     // Submit
-    await page.getByRole('button', { name: /^save$|^add$|^submit$/i }).click();
+    await page.getByRole('button', { name: /create scenario|створити сценарій/i }).click();
 
     // After successful submission the form closes (scenarioName input hidden)
     await expect(page.locator('#scenarioName')).not.toBeVisible();
   });
 
   test('scenario list renders with at least one entry', async ({ page, mocks }) => {
-    await mocks.mockCalculationDetail(page);
-    await mocks.mockCalculationScenarios(page);
-    await mocks.mockCalculatorVersions(page);
+    await mocks.mockCalculationsList();
+    await mocks.mockCalculationScenarios();
+    await mocks.mockCalculatorVersions();
 
     await page.goto(`/calculations/${CALC_ID}`);
 
@@ -143,18 +146,18 @@ test.describe('Scenario panel', () => {
       return route.continue();
     });
 
-    await mocks.mockCalculationDetail(page);
-    await mocks.mockCalculatorVersions(page);
+    await mocks.mockCalculationsList();
+    await mocks.mockCalculatorVersions();
 
     await page.goto(`/calculations/${CALC_ID}`);
 
     // Wait for scenario list to appear
     await expect(page.locator(SELECTORS.scenarioList)).toBeVisible();
 
-    // Click Compare on both scenario rows (buttons with text "Compare")
-    const compareButtons = page.locator(SELECTORS.scenarioList).getByRole('button', { name: /compare/i });
-    await compareButtons.nth(0).click();
-    await compareButtons.nth(1).click();
+    // Click Compare on both scenario rows (buttons with text "Compare" or "Порівняти")
+    const list = page.locator(SELECTORS.scenarioList);
+    await list.locator('> div').nth(0).getByRole('button', { name: /compare|порівняти/i }).click();
+    await list.locator('> div').nth(1).getByRole('button', { name: /compare|порівняти/i }).click();
 
     // ScenarioCompare renders a grid with two cards — look for the grid element
     const compareGrid = page.locator('.grid.grid-cols-1.sm\\:grid-cols-2');

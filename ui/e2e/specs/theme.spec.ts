@@ -5,12 +5,31 @@ import userJson from '../fixtures/data/user.json';
 // The ThemeToggle button has aria-label="Toggle theme" (from common.toggleTheme in en/uk).
 // When locale is uk (default), the label is "Перемкнути тему".
 // We use aria-label matching both languages via a regex.
+//
+// SSR note: /calculators is a server component that calls serverFetch().
+// We set the E2E_CALCULATORS_LIST cookie so serverFetch returns the fixture
+// instead of hitting the real backend at localhost:8080.
 
 test.describe('theme toggle', () => {
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ page, mocks }) => {
+    await mocks.mockCalculationsList();
+    await mocks.mockCalculatorsList();
     await page.addInitScript((user) => {
-      sessionStorage.setItem('auth-store', JSON.stringify({ state: { user }, version: 0 }));
+      localStorage.setItem('auth-store', JSON.stringify({ state: { user }, version: 0 }));
     }, userJson);
+
+    // Enable SSR fixture bypass for /calculators navigation.
+    await page.context().addCookies([
+      {
+        name: 'E2E_CALCULATORS_LIST',
+        value: 'fixture',
+        domain: 'localhost',
+        path: '/',
+        httpOnly: false,
+        secure: false,
+        sameSite: 'Lax',
+      },
+    ]);
   });
 
   test('html element has a theme class on page load', async ({ page }) => {
@@ -55,7 +74,8 @@ test.describe('theme toggle', () => {
     const expectedClass = startedDark ? /light/ : /dark/;
     await expect(html).toHaveClass(expectedClass);
 
-    // Navigate to calculators and verify theme is preserved
+    // Navigate to calculators and verify theme is preserved.
+    // E2E_CALCULATORS_LIST cookie set in beforeEach ensures serverFetch uses the fixture.
     await page.goto('/calculators');
     await expect(html).toHaveClass(expectedClass);
   });

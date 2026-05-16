@@ -10,8 +10,8 @@ if (!fs.existsSync(storageDir)) {
   fs.mkdirSync(storageDir, { recursive: true });
 }
 
-// Inject Zustand auth-store into sessionStorage without touching the login UI.
-// The app uses persist({ storage: createJSONStorage(() => sessionStorage), name: 'auth-store' }).
+// Inject Zustand auth-store into localStorage without touching the login UI.
+// The app uses persist({ storage: createJSONStorage(() => localStorage), name: 'auth-store' }).
 async function saveStorageState(
   page: import('@playwright/test').Page,
   user: typeof userJson,
@@ -26,9 +26,23 @@ async function saveStorageState(
 
   await page.goto('/login');
 
-  // Set sessionStorage on the established origin, then capture storage state.
+  // Force English locale so all tests use English text.
+  await page.context().addCookies([
+    { name: 'NEXT_LOCALE', value: 'en', domain: 'localhost', path: '/' },
+    {
+      name: 'accessToken',
+      value: 'playwright-access-token',
+      domain: 'localhost',
+      path: '/',
+      httpOnly: true,
+      secure: false,
+      sameSite: 'Lax',
+    },
+  ]);
+
+  // Set localStorage on the established origin, then capture storage state.
   await page.evaluate((value) => {
-    sessionStorage.setItem('auth-store', value);
+    localStorage.setItem('auth-store', value);
   }, storeValue);
 
   await page.context().storageState({ path: outPath });

@@ -6,14 +6,14 @@ const CALC_ID = '11111111-1111-1111-1111-111111111111';
 
 test.beforeEach(async ({ page }) => {
   await page.addInitScript((user) => {
-    sessionStorage.setItem('auth-store', JSON.stringify({ state: { user }, version: 0 }));
+    localStorage.setItem('auth-store', JSON.stringify({ state: { user }, version: 0 }));
   }, userJson);
 });
 
 test.describe('Version selector', () => {
   test('version selector shows multiple versions', async ({ page, mocks }) => {
-    await mocks.mockCalculatorDetail(page);
-    await mocks.mockCalculatorVersions(page);
+    await mocks.mockCalculatorDetail();
+    await mocks.mockCalculatorVersions();
     await page.goto(`/calculators/${CALC_ID}`);
 
     // Open the version selector dropdown
@@ -26,8 +26,8 @@ test.describe('Version selector', () => {
   });
 
   test('selecting a different version re-renders the form', async ({ page, mocks }) => {
-    await mocks.mockCalculatorDetail(page);
-    await mocks.mockCalculatorVersions(page);
+    await mocks.mockCalculatorDetail();
+    await mocks.mockCalculatorVersions();
     await page.goto(`/calculators/${CALC_ID}`);
 
     // Ensure the form is rendered with the default (last) version

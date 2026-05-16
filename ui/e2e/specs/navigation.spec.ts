@@ -1,23 +1,41 @@
 import { test, expect } from '../fixtures/test';
 import userJson from '../fixtures/data/user.json';
 
-// Auth note: the playwright config injects sessionStorage state via storageState
+// Auth note: the playwright config injects localStorage state via storageState
 // (.storage/user.json) which was populated by auth.setup.ts. The app is purely
 // client-side auth (no /auth/me call); the Zustand auth-store is read from
-// sessionStorage on hydration.
+// localStorage on hydration.
+//
+// SSR note: /calculators is a server component that calls serverFetch().
+// We set the E2E_CALCULATORS_LIST cookie so serverFetch returns the fixture
+// instead of hitting the real backend at localhost:8080.
 
 test.describe('Sidebar navigation', () => {
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ page, mocks }) => {
+    await mocks.mockCalculationsList();
+    await mocks.mockCalculatorsList();
+    // Pre-populate Zustand auth-store in localStorage so the sidebar renders.
     await page.addInitScript((user) => {
-      sessionStorage.setItem('auth-store', JSON.stringify({ state: { user }, version: 0 }));
+      localStorage.setItem('auth-store', JSON.stringify({ state: { user }, version: 0 }));
     }, userJson);
+
+    // Enable SSR fixture bypass for /calculators so navigating there doesn't
+    // fail with a 401 error from the real backend.
+    await page.context().addCookies([
+      {
+        name: 'E2E_MODE',
+        value: 'fixture',
+        domain: 'localhost',
+        path: '/',
+      },
+    ]);
   });
 
   test('clicking Dashboard sidebar link navigates to /dashboard', async ({ page }) => {
     await page.goto('/calculators');
 
     // Click the Dashboard nav link in the sidebar
-    const dashboardLink = page.getByRole('link', { name: /dashboard|дашборд/i });
+    const dashboardLink = page.locator('aside').getByRole('link', { name: /dashboard|дашборд/i });
     await dashboardLink.click();
 
     await expect(page).toHaveURL(/\/dashboard/);
@@ -27,17 +45,18 @@ test.describe('Sidebar navigation', () => {
     await page.goto('/dashboard');
 
     // Click the Calculators nav link in the sidebar
-    const calculatorsLink = page.getByRole('link', { name: /calculators|калькулятори/i });
+    const calculatorsLink = page.locator('aside').getByRole('link', { name: /calculators|калькулятори/i });
     await calculatorsLink.click();
 
     await expect(page).toHaveURL(/\/calculators/);
   });
 
-  test('clicking Calculations sidebar link navigates to /calculations', async ({ page }) => {
+  test('clicking Calculations sidebar link navigates to /calculations', async ({ page, mocks }) => {
+
     await page.goto('/dashboard');
 
     // Click the Calculations nav link in the sidebar
-    const calculationsLink = page.getByRole('link', { name: /calculations|розрахунки/i });
+    const calculationsLink = page.locator('aside').getByRole('link', { name: /calculations|розрахунки/i });
     await calculationsLink.click();
 
     await expect(page).toHaveURL(/\/calculations/);
@@ -45,34 +64,33 @@ test.describe('Sidebar navigation', () => {
 });
 
 test.describe('Anonymous user access', () => {
-  // These tests run WITHOUT injecting auth into sessionStorage.
-  // The app is client-side only (no server middleware protecting routes).
-  // Without auth state, the sidebar/header still render but the user profile
-  // footer in the sidebar is hidden. The page content may still render
-  // (no server-side redirect), but the user is effectively unauthenticated.
-  //
-  // Note: if the app adds client-side redirect logic in the future,
-  // update these tests to assert toHaveURL(/login/).
-
-  test('visiting /dashboard without auth renders the page (no server-side guard)', async ({ page }) => {
-    // Do NOT inject sessionStorage auth
-    await page.goto('/dashboard');
-
-    // The page renders without redirecting — there is no server middleware.
-    // The URL remains /dashboard.
-    await expect(page).toHaveURL(/\/dashboard/);
+  test.use({
+    storageState: {
+      cookies: [{
+        name: 'NEXT_LOCALE', value: 'en', domain: 'localhost', path: '/',
+        expires: -1, httpOnly: false, secure: false, sameSite: 'Lax',
+      }],
+      origins: [],
+    },
   });
 
-  test('visiting /calculators without auth renders the page', async ({ page }) => {
+  test('visiting /dashboard without auth redirects to login', async ({ page }) => {
+    await page.goto('/dashboard');
+
+    await expect(page).toHaveURL(/\/login\?from=%2Fdashboard/);
+  });
+
+  test('visiting /calculators without auth redirects to login', async ({ page }) => {
     await page.goto('/calculators');
-    await expect(page).toHaveURL(/\/calculators/);
+
+    await expect(page).toHaveURL(/\/login\?from=%2Fcalculators/);
   });
 });
 
 test.describe('Header user info', () => {
   test.beforeEach(async ({ page }) => {
     await page.addInitScript((user) => {
-      sessionStorage.setItem('auth-store', JSON.stringify({ state: { user }, version: 0 }));
+      localStorage.setItem('auth-store', JSON.stringify({ state: { user }, version: 0 }));
     }, userJson);
   });
 

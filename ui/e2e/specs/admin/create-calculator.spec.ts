@@ -5,12 +5,12 @@ import userJson from '../../fixtures/data/user.json';
 
 test.describe('Admin calculators page', () => {
   test('admin user sees the admin calculators page', async ({ page, mocks }) => {
-    // Pre-auth as admin via sessionStorage
+    // Pre-auth as admin via localStorage
     await page.addInitScript((admin) => {
-      sessionStorage.setItem('auth-store', JSON.stringify({ state: { user: admin }, version: 0 }));
+      localStorage.setItem('auth-store', JSON.stringify({ state: { user: admin }, version: 0 }));
     }, adminJson);
 
-    await mocks.mockCalculatorsList(page);
+    await mocks.mockCalculatorsList();
 
     await page.goto('/admin/calculators');
 
@@ -22,10 +22,10 @@ test.describe('Admin calculators page', () => {
     mocks,
   }) => {
     await page.addInitScript((admin) => {
-      sessionStorage.setItem('auth-store', JSON.stringify({ state: { user: admin }, version: 0 }));
+      localStorage.setItem('auth-store', JSON.stringify({ state: { user: admin }, version: 0 }));
     }, adminJson);
 
-    await mocks.mockCalculatorsList(page);
+    await mocks.mockCalculatorsList();
 
     await page.goto('/admin/calculators');
 
@@ -43,10 +43,10 @@ test.describe('Admin calculators page', () => {
   test('non-admin user is redirected away from admin pages', async ({ page, mocks }) => {
     // Pre-auth as a regular user (role: USER)
     await page.addInitScript((user) => {
-      sessionStorage.setItem('auth-store', JSON.stringify({ state: { user }, version: 0 }));
+      localStorage.setItem('auth-store', JSON.stringify({ state: { user }, version: 0 }));
     }, userJson);
 
-    await mocks.mockCalculatorsList(page);
+    await mocks.mockCalculatorsList();
 
     await page.goto('/admin/calculators');
 
@@ -60,10 +60,10 @@ test.describe('Admin calculators page', () => {
     mocks,
   }) => {
     await page.addInitScript((admin) => {
-      sessionStorage.setItem('auth-store', JSON.stringify({ state: { user: admin }, version: 0 }));
+      localStorage.setItem('auth-store', JSON.stringify({ state: { user: admin }, version: 0 }));
     }, adminJson);
 
-    await mocks.mockCalculatorsList(page);
+    await mocks.mockCalculatorsList();
 
     await page.goto('/admin/calculators');
 
