@@ -1,0 +1,9 @@
+{
+  "id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+  "userId": "00000000-0000-0000-0000-000000000001",
+  "calculatorId": "11111111-1111-1111-1111-111111111111",
+  "calculatorVersionId": "cccccccc-cccc-cccc-cccc-cccccccccccc",
+  "currency": "USD",
+  "selectedScenarioId": null,
+  "createdAt": "2024-06-01T10:00:00Z"
+}
