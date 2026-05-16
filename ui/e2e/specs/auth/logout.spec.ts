@@ -20,8 +20,11 @@ test.describe('Logout', () => {
 
     await page.goto('/dashboard');
 
-    // The logout button is in the Sidebar footer as a button with aria-label matching nav.logout
-    const logoutButton = page.getByRole('button', { name: /logout|вийти/i });
+    // Wait for Zustand to hydrate from sessionStorage — the user name appears in the sidebar footer.
+    await expect(page.getByText('Test User')).toBeVisible();
+
+    // aria-label is "Log out" (en.json nav.logout) — two words, not one.
+    const logoutButton = page.getByRole('button', { name: /log out|вийти/i });
     await expect(logoutButton).toBeVisible();
     await logoutButton.click();
 
