@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { expect, userEvent, within } from "@storybook/test";
-import { fn } from "@storybook/test";
+import { expect, userEvent, within } from "storybook/test";
+import { fn } from "storybook/test";
 import { http, HttpResponse } from "msw";
 import { CreateCalculatorForm } from "./CreateCalculatorForm";
 

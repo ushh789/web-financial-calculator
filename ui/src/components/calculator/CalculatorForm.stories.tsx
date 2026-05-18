@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { userEvent, within } from "@storybook/test";
+import { userEvent, within } from "storybook/test";
 import { http, HttpResponse } from "msw";
 import { CalculatorForm } from "./CalculatorForm";
 

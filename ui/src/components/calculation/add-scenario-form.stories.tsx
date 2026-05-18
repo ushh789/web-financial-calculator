@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { expect, userEvent, within } from "@storybook/test";
+import { expect, userEvent, within } from "storybook/test";
 import { http, HttpResponse } from "msw";
-import { fn } from "@storybook/test";
+import { fn } from "storybook/test";
 import { AddScenarioForm } from "./AddScenarioForm";
 
 const successHandler = http.post(
