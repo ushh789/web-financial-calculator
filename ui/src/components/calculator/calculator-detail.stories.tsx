@@ -106,13 +106,6 @@ export const WithVersions: Story = {
   },
 };
 
-export const SingleVersion: Story = {
-  args: {
-    calculator: loanCalc,
-    versions: [versions[1]!],
-  },
-};
-
 export const NoVersions: Story = {
   args: {
     calculator: loanCalc,
@@ -120,7 +113,7 @@ export const NoVersions: Story = {
   },
 };
 
-export const InactiveCalculator: Story = {
+export const Inactive: Story = {
   args: {
     calculator: inactiveCalc,
     versions,
