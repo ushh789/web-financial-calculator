@@ -42,11 +42,11 @@ export function AdminCalculatorsView() {
   }
 
   return (
-    <div className="space-y-4">
+    <div data-testid="admin-calculators-page" className="space-y-4">
       <div className="flex items-center justify-between">
         <h1 className="page-title">{t("title")}</h1>
         <Sheet open={createOpen} onOpenChange={setCreateOpen}>
-          <SheetTrigger render={<Button />}>
+          <SheetTrigger render={<Button data-testid="create-calculator-btn" />}>
             {t("createCalculator")}
           </SheetTrigger>
           <SheetContent className="w-full sm:max-w-2xl overflow-y-auto scrollbar-hide">

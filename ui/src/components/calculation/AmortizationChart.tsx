@@ -71,6 +71,7 @@ export function AmortizationChart({
       <p className="text-[11px] uppercase tracking-[0.08em] text-text-3 font-medium mb-4">
         {t("amortizationTitle")}
       </p>
+      <div data-testid="amortization-chart">
       <ResponsiveContainer width="100%" height={300}>
         <ComposedChart
           data={chartData}
@@ -184,6 +185,7 @@ export function AmortizationChart({
           />
         </ComposedChart>
       </ResponsiveContainer>
+      </div>
     </div>
   );
 }

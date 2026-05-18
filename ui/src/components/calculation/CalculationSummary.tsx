@@ -36,7 +36,7 @@ export function CalculationSummary({ cashFlows, currency, amount, rate, term }: 
   const interestPct = 100 - principalPct;
 
   return (
-    <div className="bg-surface rounded-lg border border-border shadow-1 overflow-hidden">
+    <div data-testid="calculation-summary" className="bg-surface rounded-lg border border-border shadow-1 overflow-hidden">
       <div className="p-(--density-pad) border-b border-hairline">
         <p className="text-[11px] uppercase tracking-[0.08em] text-text-3 font-medium mb-2">
           {t("monthlyPayment")}

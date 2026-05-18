@@ -80,7 +80,7 @@ export function ScenarioPanel({ calculation }: Props) {
       : null;
 
   return (
-    <div className="space-y-4">
+    <div data-testid="scenario-panel" className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
           <p className="text-[11px] uppercase tracking-[0.08em] text-text-3 font-medium">{t("title")}</p>
@@ -91,6 +91,7 @@ export function ScenarioPanel({ calculation }: Props) {
         <Button
           size="sm"
           variant="ghost"
+          data-testid="add-scenario-btn"
           onClick={() => setShowAddForm((v) => !v)}
           className="text-text-2 hover:text-text hover:bg-surface-sunken h-8 gap-1.5"
         >
@@ -125,7 +126,7 @@ export function ScenarioPanel({ calculation }: Props) {
       </AnimatePresence>
 
       {scenarios.length > 0 && (
-        <div className="divide-y divide-hairline border border-border rounded-lg overflow-hidden">
+        <div data-testid="scenario-list" className="divide-y divide-hairline border border-border rounded-lg overflow-hidden">
           {scenarios.map((scenario, idx) => {
             const isActive = scenario.id === calculation.selectedScenarioId;
             const isInCompare = compareIds.includes(scenario.id!);
