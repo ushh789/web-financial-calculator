@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "./sheet";
-import { Button } from "./button";
 
 const meta: Meta = {
   title: "UI/Sheet",
@@ -12,7 +11,7 @@ type Story = StoryObj;
 export const Default: Story = {
   render: () => (
     <Sheet defaultOpen>
-      <SheetTrigger asChild><Button>Open sheet</Button></SheetTrigger>
+      <SheetTrigger>Open sheet</SheetTrigger>
       <SheetContent>
         <SheetHeader><SheetTitle>Sheet title</SheetTitle></SheetHeader>
         <p className="text-sm mt-4">Sheet content goes here.</p>
@@ -24,7 +23,7 @@ export const Default: Story = {
 export const LeftSide: Story = {
   render: () => (
     <Sheet defaultOpen>
-      <SheetTrigger asChild><Button>Left sheet</Button></SheetTrigger>
+      <SheetTrigger>Left sheet</SheetTrigger>
       <SheetContent side="left">
         <SheetHeader><SheetTitle>Left panel</SheetTitle></SheetHeader>
       </SheetContent>

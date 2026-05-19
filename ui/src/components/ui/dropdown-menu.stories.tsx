@@ -12,7 +12,7 @@ type Story = StoryObj;
 export const Default: Story = {
   render: () => (
     <DropdownMenu defaultOpen>
-      <DropdownMenuTrigger asChild><Button variant="outline">Options</Button></DropdownMenuTrigger>
+      <DropdownMenuTrigger>Options</DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuLabel>Actions</DropdownMenuLabel>
         <DropdownMenuSeparator />

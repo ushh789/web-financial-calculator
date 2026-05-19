@@ -30,7 +30,7 @@ const versions: CalculatorVersionDto[] = [
       type: "LOAN",
       interest: {
         method: "COMPOUND",
-        dayCountConvention: "ACT_365",
+        dayCountConvention: "ACTUAL_365",
         rateType: "FIXED",
         accrualFrequency: "MONTHLY",
       },
@@ -62,7 +62,7 @@ const versions: CalculatorVersionDto[] = [
       type: "LOAN",
       interest: {
         method: "COMPOUND",
-        dayCountConvention: "ACT_365",
+        dayCountConvention: "ACTUAL_365",
         rateType: "FIXED",
         accrualFrequency: "MONTHLY",
       },

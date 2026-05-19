@@ -12,7 +12,7 @@ type Story = StoryObj;
 export const Default: Story = {
   render: () => (
     <Dialog defaultOpen>
-      <DialogTrigger asChild><Button>Open dialog</Button></DialogTrigger>
+      <DialogTrigger>Open dialog</DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Confirm action</DialogTitle>
@@ -30,7 +30,7 @@ export const Default: Story = {
 export const Closed: Story = {
   render: () => (
     <Dialog>
-      <DialogTrigger asChild><Button>Open dialog</Button></DialogTrigger>
+      <DialogTrigger>Open dialog</DialogTrigger>
       <DialogContent>
         <DialogHeader><DialogTitle>Dialog title</DialogTitle></DialogHeader>
       </DialogContent>

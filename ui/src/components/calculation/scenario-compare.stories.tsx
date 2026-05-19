@@ -48,8 +48,8 @@ export const TwoScenarios: Story = {
 export const NoResults: Story = {
   args: {
     scenarios: [
-      { id: "scen-001", scenarioName: "A", scenarioInput: { amount: 50000, rate: 12, term: 24 }, scenarioResult: null },
-      { id: "scen-002", scenarioName: "B", scenarioInput: { amount: 50000, rate: 8, term: 24 }, scenarioResult: null },
+      { id: "scen-001", scenarioName: "A", scenarioInput: { amount: 50000, rate: 12, term: 24 } },
+      { id: "scen-002", scenarioName: "B", scenarioInput: { amount: 50000, rate: 8, term: 24 } },
     ],
     currency: "USD",
   },
