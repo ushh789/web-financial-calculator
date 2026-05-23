@@ -1,51 +1,47 @@
 package com.example.demo.calculations;
 
-import com.example.demo.calculations.engine.StandardFinancialProductEngine;
-import com.example.demo.calculations.validation.CalculationConstraintsValidator;
-import com.example.demo.common.CalculationResult;
-import com.example.demo.model.CalculationDto;
-import com.example.demo.model.CalculationInputDto;
-import com.example.demo.model.CalculationScenarioDto;
-import com.example.demo.model.CreateCalculationRequest;
-import com.example.demo.model.CreateScenarioRequest;
-import com.example.demo.model.CalculatorVersionDto;
-import com.example.demo.model.FinancialProductDefinitionDto;
-import com.example.demo.calculators.CalculatorService;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import com.example.demo.calculations.engine.FinancialProductEngine;
+import com.example.demo.calculations.validation.CalculationConstraintsValidator;
+import com.example.demo.calculators.CalculatorService;
+import com.example.demo.common.CalculationResult;
+import com.example.demo.model.CalculationDto;
+import com.example.demo.model.CalculationInputDto;
+import com.example.demo.model.CalculationScenarioDto;
+import com.example.demo.model.CalculatorVersionDto;
+import com.example.demo.model.CreateCalculationRequest;
+import com.example.demo.model.CreateScenarioRequest;
+import com.example.demo.model.FinancialProductDefinitionDto;
+import com.example.demo.portfolio.PortfolioItem;
+import com.example.demo.portfolio.PortfolioItemRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 @Service
 @RequiredArgsConstructor
 public class CalculationService {
-
     private final CalculationRepository calculationRepository;
     private final CalculationScenarioRepository scenarioRepository;
     private final CalculationMapper mapper;
     private final CalculatorService calculatorService;
-    private final StandardFinancialProductEngine standardFinancialProductEngine;
+    private final FinancialProductEngine financialProductEngine;
     private final ObjectMapper objectMapper;
     private final CalculationConstraintsValidator constraintsValidator;
+    private final PortfolioItemRepository portfolioItemRepository;
 
     @Transactional(readOnly = true)
     public Page<CalculationDto> findAllByUserId(UUID userId, Pageable pageable) {
         return calculationRepository.findAllByUserId(userId, pageable)
                 .map(mapper::toDto);
-    }
-
-    @Transactional(readOnly = true)
-    public CalculationDto findById(UUID id) {
-        return calculationRepository.findById(id)
-                .map(mapper::toDto)
-                .orElseThrow(() -> new IllegalArgumentException("Calculation not found: " + id));
     }
 
     @Transactional
@@ -61,7 +57,6 @@ public class CalculationService {
 
         Calculation calculation = new Calculation();
         calculation.setUserId(request.getUserId());
-        calculation.setCalculatorId(request.getCalculatorId());
         calculation.setCalculatorVersionId(version.getId());
         calculation.setCurrency(request.getCurrency());
         
@@ -75,7 +70,7 @@ public class CalculationService {
         defaultScenario.setScenarioName("Default");
         defaultScenario.setScenarioInput(inputDataMap);
         
-        CalculationResult calculationResult = standardFinancialProductEngine.generateSchedule(
+        CalculationResult calculationResult = financialProductEngine.generateSchedule(
             productDefinition,
             inputData
         );
@@ -94,7 +89,7 @@ public class CalculationService {
         Calculation calculation = calculationRepository.findById(calculationId)
                 .orElseThrow(() -> new IllegalArgumentException("Calculation not found"));
 
-        CalculatorVersionDto version = calculatorService.findLatestVersion(calculation.getCalculatorId())
+        CalculatorVersionDto version = calculatorService.findVersionById(calculation.getCalculatorVersionId())
                 .orElseThrow(() -> new IllegalArgumentException("Calculator version not found"));
         
         FinancialProductDefinitionDto productDefinition = version.getAlgorithmMetadata();
@@ -110,7 +105,7 @@ public class CalculationService {
         scenario.setScenarioName(request.getScenarioName());
         scenario.setScenarioInput(inputDataMap);
         
-        CalculationResult calculationResult = standardFinancialProductEngine.generateSchedule(
+        CalculationResult calculationResult = financialProductEngine.generateSchedule(
             productDefinition,
             inputData
         );
@@ -141,5 +136,13 @@ public class CalculationService {
 
         calculation.setSelectedScenario(scenario);
         calculationRepository.save(calculation);
+
+        UUID userId = calculation.getUserId();
+        if (!portfolioItemRepository.existsByUserIdAndCalculationId(userId, calculationId)) {
+            PortfolioItem item = new PortfolioItem();
+            item.setUserId(userId);
+            item.setCalculationId(calculationId);
+            portfolioItemRepository.save(item);
+        }
     }
 }

@@ -1,13 +1,21 @@
 package com.example.demo.calculations;
 
-import jakarta.persistence.*;
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-
-import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Entity
 @Table(name = "calculations")
@@ -21,9 +29,6 @@ public class Calculation {
 
     @Column(name = "user_id", nullable = false)
     private UUID userId;
-
-    @Column(name = "calculator_id", nullable = false)
-    private UUID calculatorId;
 
     @Column(name = "calculator_version_id", nullable = false)
     private UUID calculatorVersionId;

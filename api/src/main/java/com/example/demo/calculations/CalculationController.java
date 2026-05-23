@@ -1,5 +1,8 @@
 package com.example.demo.calculations;
 
+import java.util.List;
+import java.util.UUID;
+
 import com.example.demo.api.CalculationsApiDelegate;
 import com.example.demo.model.CalculationDto;
 import com.example.demo.model.CalculationScenarioDto;
@@ -7,14 +10,12 @@ import com.example.demo.model.CreateCalculationRequest;
 import com.example.demo.model.CreateScenarioRequest;
 import com.example.demo.model.PageCalculationDto;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -22,12 +23,6 @@ public class CalculationController implements CalculationsApiDelegate {
 
     private final CalculationService calculationService;
     private final CalculationMapper calculationMapper;
-
-    @Override
-    public ResponseEntity<CalculationDto> getCalculationById(UUID id) {
-        CalculationDto dto = calculationService.findById(id);
-        return ResponseEntity.ok(dto);
-    }
 
     @Override
     public ResponseEntity<PageCalculationDto> getCalculations(UUID userId, Integer page, Integer size) {

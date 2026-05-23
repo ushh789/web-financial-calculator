@@ -1,0 +1,74 @@
+---
+config:
+  theme: mc
+  look: classic
+  fontFamily: '''Open Sans Variable'', sans-serif'
+  themeVariables:
+    fontFamily: '''Open Sans Variable'', sans-serif'
+  layout: elk
+---
+erDiagram
+	direction LR
+	users {
+		uuid id PK ""  
+		varchar username  ""  
+		varchar email  ""  
+		varchar password  ""  
+		varchar first_name  ""  
+		varchar last_name  ""  
+		text profile_picture_url  ""  
+		varchar role  ""  
+		timestamp created_at  ""  
+		timestamp updated_at  ""  
+	}
+
+	calculators {
+		uuid id PK ""  
+		varchar code  ""  
+		varchar name  ""  
+		text description  ""  
+		boolean active  ""  
+		timestamp created_at  ""  
+	}
+
+	calculator_versions {
+		uuid id PK ""  
+		uuid calculator_id FK ""  
+		integer version  ""  
+		jsonb algorithm_metadata  ""  
+		timestamp created_at  ""  
+	}
+
+	calculations {
+		uuid id PK ""
+		uuid user_id FK ""
+		uuid calculator_version_id FK ""
+		uuid selected_scenario_id FK ""
+		varchar currency  ""
+		timestamp created_at  ""
+		timestamp updated_at  ""
+	}
+
+	calculation_scenarios {
+		uuid id PK ""  
+		uuid calculation_id FK ""  
+		varchar scenario_name  ""  
+		jsonb scenario_input  ""  
+		jsonb scenario_result  ""  
+		timestamp created_at  ""  
+	}
+
+	portfolio_items {
+		uuid id PK ""  
+		uuid user_id FK ""  
+		uuid calculation_id FK ""  
+		timestamp added_at  ""  
+	}
+
+	users||--o{calculations:"user_id"
+	users||--o{portfolio_items:"user_id"
+	calculators||--o{calculator_versions:"calculator_id"
+	calculator_versions||--o{calculations:"calculator_version_id"
+	calculations||--o{calculation_scenarios:"calculation_id"
+	calculations||--o|calculation_scenarios:"selected_scenario_id"
+	calculations||--o{portfolio_items:"calculation_id"

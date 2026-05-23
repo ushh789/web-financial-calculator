@@ -1,12 +1,13 @@
 package com.example.demo.calculations.engine.repayment;
 
-import com.example.demo.model.AmortizationType;
-import com.example.demo.common.Money;
-import org.springframework.stereotype.Component;
-
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
+
+import com.example.demo.common.Money;
+import com.example.demo.model.AmortizationType;
+
+import org.springframework.stereotype.Component;
 
 @Component
 public class AnnuityRepaymentStrategy implements RepaymentStrategy {

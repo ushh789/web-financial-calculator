@@ -1,4 +1,4 @@
-package com.example.demo.calculators;
+package com.example.demo.portfolio;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -9,33 +9,29 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
-@Table(name = "calculators")
+@Table(name = "portfolio_items",
+       uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "calculation_id"}))
 @Getter
 @Setter
-public class Calculator {
+public class PortfolioItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(nullable = false, unique = true)
-    private String code;
+    @Column(name = "user_id", nullable = false)
+    private UUID userId;
 
-    @Column(nullable = false)
-    private String name;
-
-    @Column(columnDefinition = "TEXT")
-    private String description;
-
-    @Column(nullable = false)
-    private boolean active = true;
+    @Column(name = "calculation_id", nullable = false)
+    private UUID calculationId;
 
     @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    @Column(name = "added_at", nullable = false, updatable = false)
+    private LocalDateTime addedAt;
 }

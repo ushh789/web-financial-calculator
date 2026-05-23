@@ -1,9 +1,10 @@
 package com.example.demo.calculations.engine.repayment;
 
-import com.example.demo.model.AmortizationType;
-import org.springframework.stereotype.Component;
-
 import java.util.List;
+
+import com.example.demo.model.AmortizationType;
+
+import org.springframework.stereotype.Component;
 
 @Component
 public class RepaymentStrategyFactory {

@@ -384,6 +384,46 @@ paths:
         '204':
           description: Scenario selected
 
+  # PORTFOLIO
+  /api/portfolio:
+    get:
+      summary: Get current user's portfolio (cash flows from selected scenarios)
+      operationId: getPortfolio
+      tags: [Portfolio]
+      parameters:
+        - name: from
+          in: query
+          required: false
+          schema: { type: string, format: date }
+          description: Inclusive start date. Defaults to first day of current month.
+        - name: to
+          in: query
+          required: false
+          schema: { type: string, format: date }
+          description: Inclusive end date. Defaults to last day of current month.
+      responses:
+        '200':
+          description: Portfolio for current user, grouped by currency
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PortfolioDto' }
+
+  /api/portfolio/items/{calculationId}:
+    delete:
+      summary: Remove a calculation from current user's portfolio
+      operationId: removeFromPortfolio
+      tags: [Portfolio]
+      parameters:
+        - name: calculationId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '204':
+          description: Removed
+        '404':
+          description: Item not found in current user's portfolio
+
 components:
   securitySchemes:
     cookieAuth:
@@ -662,9 +702,6 @@ components:
         userId:
           type: string
           format: uuid
-        calculatorId:
-          type: string
-          format: uuid
         calculatorVersionId:
           type: string
           format: uuid
@@ -739,3 +776,40 @@ components:
           type: integer
         number:
           type: integer
+
+    PortfolioDto:
+      type: object
+      properties:
+        userId:  { type: string, format: uuid }
+        from:    { type: string, format: date }
+        to:      { type: string, format: date }
+        buckets:
+          type: array
+          items: { $ref: '#/components/schemas/PortfolioCurrencyBucketDto' }
+
+    PortfolioCurrencyBucketDto:
+      type: object
+      properties:
+        currency:     { type: string }
+        totalInflow:  { type: number }
+        totalOutflow: { type: number }
+        netCashFlow:  { type: number }
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/PortfolioItemDto' }
+
+    PortfolioItemDto:
+      type: object
+      properties:
+        date:           { type: string, format: date }
+        type:
+          type: string
+          enum: [INFLOW, OUTFLOW]
+        amount:         { type: number }
+        currency:       { type: string }
+        description:    { type: string }
+        principal:      { type: number }
+        interest:       { type: number }
+        fee:            { type: number }
+        calculationId:  { type: string, format: uuid }
+        scenarioId:     { type: string, format: uuid }

@@ -1,11 +1,12 @@
 package com.example.demo.calculations.engine.timeline;
 
-import com.example.demo.common.Frequency;
-import org.springframework.stereotype.Component;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.example.demo.common.Frequency;
+
+import org.springframework.stereotype.Component;
 
 @Component
 public class TimelineGenerator {

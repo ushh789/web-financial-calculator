@@ -54,3 +54,29 @@ databaseChangeLog:
                   }
                 }'::jsonb
               FROM calculators c WHERE c.code = 'MORTGAGE_ANNUITY';
+
+  - changeSet:
+      id: 13-insert-test-portfolio-usd
+      author: USHH
+      changes:
+        - sql:
+            sql: >
+              WITH ud AS (SELECT id FROM users WHERE username = 'user'),
+              cv AS (SELECT v.id AS vid FROM calculators c JOIN calculator_versions v ON v.calculator_id = c.id WHERE c.code = 'MORTGAGE_ANNUITY' LIMIT 1),
+              nc AS (INSERT INTO calculations (user_id, calculator_version_id, currency) SELECT ud.id, cv.vid, 'USD' FROM ud, cv RETURNING id),
+              ns AS (INSERT INTO calculation_scenarios (calculation_id, scenario_name, scenario_input, scenario_result) SELECT nc.id, 'Default', '{"amount":10000,"rate":0.12,"term":3,"startDate":"2026-05-01"}'::jsonb, '{"cashFlows":[{"date":"2026-05-01","totalAmount":{"amount":10000.00,"currencyCode":"USD"},"type":"INFLOW","description":"Disbursement","breakdown":{"principal":{"amount":10000.00,"currencyCode":"USD"},"interest":{"amount":0.00,"currencyCode":"USD"},"fee":{"amount":0.00,"currencyCode":"USD"}}},{"date":"2026-05-31","totalAmount":{"amount":3400.22,"currencyCode":"USD"},"type":"OUTFLOW","description":"Monthly Payment","breakdown":{"principal":{"amount":3300.22,"currencyCode":"USD"},"interest":{"amount":100.00,"currencyCode":"USD"},"fee":{"amount":0.00,"currencyCode":"USD"}}},{"date":"2026-06-30","totalAmount":{"amount":3400.22,"currencyCode":"USD"},"type":"OUTFLOW","description":"Monthly Payment","breakdown":{"principal":{"amount":3333.22,"currencyCode":"USD"},"interest":{"amount":67.00,"currencyCode":"USD"},"fee":{"amount":0.00,"currencyCode":"USD"}}},{"date":"2026-07-31","totalAmount":{"amount":3400.00,"currencyCode":"USD"},"type":"OUTFLOW","description":"Monthly Payment","breakdown":{"principal":{"amount":3366.33,"currencyCode":"USD"},"interest":{"amount":33.67,"currencyCode":"USD"},"fee":{"amount":0.00,"currencyCode":"USD"}}}]}'::jsonb FROM nc RETURNING id, calculation_id),
+              upd AS (UPDATE calculations SET selected_scenario_id = ns.id FROM ns WHERE calculations.id = ns.calculation_id)
+              INSERT INTO portfolio_items (user_id, calculation_id) SELECT ud.id, ns.calculation_id FROM ud, ns;
+
+  - changeSet:
+      id: 14-insert-test-portfolio-eur
+      author: USHH
+      changes:
+        - sql:
+            sql: >
+              WITH ud AS (SELECT id FROM users WHERE username = 'user'),
+              cv AS (SELECT v.id AS vid FROM calculators c JOIN calculator_versions v ON v.calculator_id = c.id WHERE c.code = 'MORTGAGE_ANNUITY' LIMIT 1),
+              nc AS (INSERT INTO calculations (user_id, calculator_version_id, currency) SELECT ud.id, cv.vid, 'EUR' FROM ud, cv RETURNING id),
+              ns AS (INSERT INTO calculation_scenarios (calculation_id, scenario_name, scenario_input, scenario_result) SELECT nc.id, 'Default', '{"amount":5000,"rate":0.12,"term":3,"startDate":"2026-05-01"}'::jsonb, '{"cashFlows":[{"date":"2026-05-01","totalAmount":{"amount":5000.00,"currencyCode":"EUR"},"type":"OUTFLOW","description":"Deposit Placement","breakdown":{"principal":{"amount":5000.00,"currencyCode":"EUR"},"interest":{"amount":0.00,"currencyCode":"EUR"},"fee":{"amount":0.00,"currencyCode":"EUR"}}},{"date":"2026-05-31","totalAmount":{"amount":50.00,"currencyCode":"EUR"},"type":"INFLOW","description":"Interest Payout","breakdown":{"principal":{"amount":0.00,"currencyCode":"EUR"},"interest":{"amount":50.00,"currencyCode":"EUR"},"fee":{"amount":0.00,"currencyCode":"EUR"}}},{"date":"2026-06-30","totalAmount":{"amount":50.00,"currencyCode":"EUR"},"type":"INFLOW","description":"Interest Payout","breakdown":{"principal":{"amount":0.00,"currencyCode":"EUR"},"interest":{"amount":50.00,"currencyCode":"EUR"},"fee":{"amount":0.00,"currencyCode":"EUR"}}},{"date":"2026-07-31","totalAmount":{"amount":5050.00,"currencyCode":"EUR"},"type":"INFLOW","description":"Principal Repayment","breakdown":{"principal":{"amount":5000.00,"currencyCode":"EUR"},"interest":{"amount":50.00,"currencyCode":"EUR"},"fee":{"amount":0.00,"currencyCode":"EUR"}}}]}'::jsonb FROM nc RETURNING id, calculation_id),
+              upd AS (UPDATE calculations SET selected_scenario_id = ns.id FROM ns WHERE calculations.id = ns.calculation_id)
+              INSERT INTO portfolio_items (user_id, calculation_id) SELECT ud.id, ns.calculation_id FROM ud, ns;

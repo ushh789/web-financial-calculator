@@ -1,16 +1,17 @@
 package com.example.demo.calculations.engine;
 
+import com.example.demo.calculations.engine.product.ProductEngineStrategy;
 import com.example.demo.calculations.engine.product.ProductEngineStrategyFactory;
 import com.example.demo.common.CalculationResult;
 import com.example.demo.model.CalculationInputDto;
 import com.example.demo.model.FinancialProductDefinitionDto;
-import com.example.demo.calculations.engine.product.ProductEngineStrategy;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class StandardFinancialProductEngine {
+public class FinancialProductEngine {
 
     private final ProductEngineStrategyFactory productEngineStrategyFactory;
 

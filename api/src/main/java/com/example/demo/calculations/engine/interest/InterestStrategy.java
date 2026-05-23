@@ -1,27 +1,17 @@
 package com.example.demo.calculations.engine.interest;
 
-import com.example.demo.common.Money;
-import com.example.demo.model.DayCountConvention;
-import com.example.demo.model.RateType;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-/**
- * Interface for interest calculation strategies.
- */
+import com.example.demo.common.Money;
+import com.example.demo.model.DayCountConvention;
+import com.example.demo.model.InterestMethod;
+import com.example.demo.model.RateType;
+
 public interface InterestStrategy {
 
-    /**
-     * Checks if this strategy supports the given rate type.
-     * @param type The rate type to check.
-     * @return true if supported, false otherwise.
-     */
-    boolean supports(RateType type);
+    boolean supports(RateType type, InterestMethod method);
 
-    /**
-     * Calculates the interest for a given period.
-     */
     Money calculateInterest(
             Money balance,
             BigDecimal rate,
@@ -29,4 +19,8 @@ public interface InterestStrategy {
             LocalDate endDate,
             DayCountConvention convention
     );
+
+    default Money updateBalance(Money balance, Money interest) {
+        return balance;
+    }
 }

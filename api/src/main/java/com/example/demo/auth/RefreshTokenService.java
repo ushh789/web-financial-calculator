@@ -1,15 +1,16 @@
 package com.example.demo.auth;
 
-import com.example.demo.users.User;
-import lombok.RequiredArgsConstructor;
-import org.jspecify.annotations.NonNull;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
+
+import com.example.demo.users.User;
+import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.NonNull;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor

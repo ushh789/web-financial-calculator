@@ -164,13 +164,6 @@ databaseChangeLog:
                     foreignKeyName: fk_calculations_user
                     references: users(id)
               - column:
-                  name: calculator_id
-                  type: UUID
-                  constraints:
-                    nullable: false
-                    foreignKeyName: fk_calculations_calculator
-                    references: calculators(id)
-              - column:
                   name: calculator_version_id
                   type: UUID
                   constraints:
@@ -195,12 +188,6 @@ databaseChangeLog:
             columns:
               - column:
                   name: user_id
-        - createIndex:
-            tableName: calculations
-            indexName: idx_calculations_type
-            columns:
-              - column:
-                  name: calculator_id
         - createIndex:
             tableName: calculations
             indexName: idx_calculations_created
@@ -298,3 +285,50 @@ databaseChangeLog:
                   type: TIMESTAMP
                   constraints:
                     nullable: false
+
+  - changeSet:
+      id: 10-create-table-portfolio-items
+      author: USHH
+      changes:
+        - createTable:
+            tableName: portfolio_items
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+                  defaultValueComputed: uuid_generate_v4()
+              - column:
+                  name: user_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_portfolio_items_user
+                    references: users(id)
+                    deleteCascade: true
+              - column:
+                  name: calculation_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_portfolio_items_calculation
+                    references: calculations(id)
+                    deleteCascade: true
+              - column:
+                  name: added_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+                  defaultValueComputed: now()
+        - addUniqueConstraint:
+            tableName: portfolio_items
+            columnNames: user_id, calculation_id
+            constraintName: uq_portfolio_user_calc
+        - createIndex:
+            tableName: portfolio_items
+            indexName: idx_portfolio_items_user
+            columns:
+              - column:
+                  name: user_id

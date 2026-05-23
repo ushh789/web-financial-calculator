@@ -1,15 +1,15 @@
 package com.example.demo.calculations.engine.product;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.LocalDate;
+import java.util.List;
+
 import com.example.demo.calculations.engine.timeline.TimelineGenerator;
 import com.example.demo.common.Frequency;
 import com.example.demo.model.CalculationInputDto;
 import com.example.demo.model.ProductDefaultsDto;
 import lombok.RequiredArgsConstructor;
-
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.time.LocalDate;
-import java.util.List;
 
 @RequiredArgsConstructor
 public abstract class BaseProductEngineStrategy implements ProductEngineStrategy {

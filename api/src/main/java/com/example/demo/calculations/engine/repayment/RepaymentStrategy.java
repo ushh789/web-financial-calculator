@@ -1,9 +1,9 @@
 package com.example.demo.calculations.engine.repayment;
 
+import java.math.BigDecimal;
+
 import com.example.demo.common.Money;
 import com.example.demo.model.AmortizationType;
-
-import java.math.BigDecimal;
 
 public interface RepaymentStrategy {
     

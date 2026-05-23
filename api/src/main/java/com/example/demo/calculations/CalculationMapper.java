@@ -1,5 +1,7 @@
 package com.example.demo.calculations;
 
+import java.util.Map;
+
 import com.example.demo.common.CalculationResult;
 import com.example.demo.common.DateTimeMapper;
 import com.example.demo.model.CalculationDto;
@@ -9,10 +11,9 @@ import com.example.demo.model.PageCalculationDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-
-import java.util.Map;
 
 @Mapper(componentModel = "spring", uses = {DateTimeMapper.class})
 public abstract class CalculationMapper {

@@ -1,10 +1,11 @@
 package com.example.demo.calculations.validation;
 
+import java.math.BigDecimal;
+
 import com.example.demo.model.CalculationInputDto;
 import com.example.demo.model.ProductConstraintsDto;
-import org.springframework.stereotype.Component;
 
-import java.math.BigDecimal;
+import org.springframework.stereotype.Component;
 
 @Component
 public class CalculationConstraintsValidator {

@@ -1,5 +1,8 @@
 package com.example.demo.auth;
 
+import java.time.Instant;
+import java.util.stream.Collectors;
+
 import com.example.demo.api.AuthApiDelegate;
 import com.example.demo.model.CreateUserRequest;
 import com.example.demo.model.LoginRequest;
@@ -9,6 +12,7 @@ import com.example.demo.users.UserMapper;
 import com.example.demo.users.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -21,9 +25,6 @@ import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
-
-import java.time.Instant;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

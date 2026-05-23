@@ -1,18 +1,19 @@
 package com.example.demo.users;
 
+import java.util.UUID;
+
 import com.example.demo.api.UsersApiDelegate;
 import com.example.demo.model.CreateUserRequest;
 import com.example.demo.model.PageUserDto;
 import com.example.demo.model.UserDto;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor

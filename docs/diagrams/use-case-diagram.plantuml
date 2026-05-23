@@ -1,0 +1,50 @@
+@startuml
+!theme plain
+left to right direction
+
+skinparam actorStyle awesome
+
+
+actor "Авторизований\nкористувач" as AuthUser
+actor "Адміністратор" as Admin
+actor "Гість" as Guest
+
+AuthUser <|-- Admin
+
+rectangle "Фінансовий калькулятор" {
+    usecase "Вхід в систему" as UC1
+    usecase "Реєстрація" as UC2
+    usecase "Вихід" as UC4
+    usecase "Перегляд калькуляторів" as UC5
+    usecase "Перегляд розрахунків" as UC7
+    usecase "Створення розрахунку" as UC8
+    usecase "Перегляд сценаріїв" as UC9
+    usecase "Створення сценарію" as UC10
+    usecase "Вибір активного сценарію" as UC11
+    usecase "Перегляд всіх користувачів" as UC12
+    usecase "Створення користувача" as UC13
+    usecase "Перегляд користувача" as UC14
+    usecase "Видалення користувача" as UC15
+    usecase "Перегляд портфоліо" as UC16
+    usecase "Видалення сценарію з портфоліо" as UC18
+}
+
+Guest --> UC1
+Guest --> UC2
+AuthUser --> UC4
+AuthUser --> UC5
+AuthUser --> UC7
+AuthUser --> UC8
+AuthUser --> UC9
+AuthUser --> UC10
+AuthUser --> UC11
+AuthUser --> UC16
+AuthUser --> UC18
+Admin --> UC12
+Admin --> UC13
+Admin --> UC14
+Admin --> UC15
+
+UC10 ..> UC8 : <<include>>
+UC11 ..> UC9 : <<extend>>
+@enduml

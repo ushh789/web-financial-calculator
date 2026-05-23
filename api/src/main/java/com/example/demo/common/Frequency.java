@@ -1,8 +1,8 @@
 package com.example.demo.common;
 
-import lombok.Getter;
-
 import java.time.Period;
+
+import lombok.Getter;
 
 /**
  * Defines how often an event occurs.

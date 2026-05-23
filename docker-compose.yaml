@@ -28,25 +28,25 @@ services:
     networks:
       - financial_calc_network
 
-  ui:
-    build:
-      context: .
-      dockerfile: ui/Dockerfile
-    container_name: financial-calc-ui
-    ports:
-      - "5173:5173"
-    environment:
-      CHOKIDAR_USEPOLLING: "true"
-      WATCHPACK_POLLING: "true"
-      CHOKIDAR_INTERVAL: "100"
-    volumes:
-      - ./ui:/app
-      - /app/node_modules
-    depends_on:
-      - api
-    restart: on-failure
-    networks:
-      - financial_calc_network
+#  ui:
+#    build:
+#      context: .
+#      dockerfile: ui/Dockerfile
+#    container_name: financial-calc-ui
+#    ports:
+#      - "5173:5173"
+#    environment:
+#      CHOKIDAR_USEPOLLING: "true"
+#      WATCHPACK_POLLING: "true"
+#      CHOKIDAR_INTERVAL: "100"
+#    volumes:
+#      - ./ui:/app
+#      - /app/node_modules
+#    depends_on:
+#      - api
+#    restart: on-failure
+#    networks:
+#      - financial_calc_network
 
 
 networks:

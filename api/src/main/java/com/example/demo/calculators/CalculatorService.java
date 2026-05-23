@@ -1,21 +1,22 @@
 package com.example.demo.calculators;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 import com.example.demo.model.CalculatorDto;
 import com.example.demo.model.CalculatorVersionDto;
 import com.example.demo.model.CreateCalculatorRequest;
 import com.example.demo.model.CreateVersionRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -88,6 +89,12 @@ public class CalculatorService {
                 .stream()
                 .map(mapper::toDto)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<CalculatorVersionDto> findVersionById(UUID versionId) {
+        return versionRepository.findById(versionId)
+                .map(mapper::toDto);
     }
 
     @Transactional(readOnly = true)

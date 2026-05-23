@@ -1,28 +1,29 @@
 package com.example.demo.calculations.engine.product;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.LocalDate;
+import java.util.List;
+
 import com.example.demo.calculations.engine.interest.InterestStrategy;
 import com.example.demo.calculations.engine.interest.InterestStrategyFactory;
 import com.example.demo.calculations.engine.repayment.RepaymentStrategy;
 import com.example.demo.calculations.engine.repayment.RepaymentStrategyFactory;
 import com.example.demo.calculations.engine.timeline.TimelineGenerator;
-import com.example.demo.model.AmortizationType;
 import com.example.demo.common.CalculationResult;
 import com.example.demo.common.CashFlow;
 import com.example.demo.common.Frequency;
 import com.example.demo.common.Money;
 import com.example.demo.common.PaymentBreakdown;
+import com.example.demo.model.AmortizationType;
 import com.example.demo.model.CalculationInputDto;
 import com.example.demo.model.DayCountConvention;
 import com.example.demo.model.FinancialProductDefinitionDto;
 import com.example.demo.model.ProductDefaultsDto;
 import com.example.demo.model.ProductType;
 import com.example.demo.model.RateType;
-import org.springframework.stereotype.Component;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.time.LocalDate;
-import java.util.List;
+import org.springframework.stereotype.Component;
 
 @Component
 public class LoanEngineStrategy extends BaseProductEngineStrategy {
