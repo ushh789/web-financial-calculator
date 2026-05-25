@@ -7,6 +7,7 @@ import com.example.demo.api.AuthApiDelegate;
 import com.example.demo.model.CreateUserRequest;
 import com.example.demo.model.LoginRequest;
 import com.example.demo.model.UserDto;
+import com.example.demo.users.Role;
 import com.example.demo.users.User;
 import com.example.demo.users.UserMapper;
 import com.example.demo.users.UserService;
@@ -86,6 +87,9 @@ public class AuthController implements AuthApiDelegate {
     @Override
     public ResponseEntity<UserDto> register(CreateUserRequest createUserRequest) {
         UserDto created = userService.createUser(createUserRequest);
+        if (created.getRole() != null) {
+            createUserRequest.setRole(Role.USER.name());
+        }
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 

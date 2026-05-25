@@ -5,7 +5,10 @@ import java.math.MathContext;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
+import com.example.demo.common.CalculationResult;
+import com.example.demo.common.CashFlow;
 import com.example.demo.common.Money;
+import com.example.demo.common.PaymentBreakdown;
 import com.example.demo.model.DayCountConvention;
 import com.example.demo.model.InterestMethod;
 import com.example.demo.model.RateType;
@@ -29,6 +32,11 @@ public class SimpleInterestStrategy implements InterestStrategy {
                 .multiply(yearFraction, MathContext.DECIMAL128);
 
         return new Money(interestAmount, balance.currencyCode());
+    }
+
+    @Override
+    public void recordInterestCashFlow(CalculationResult result, LocalDate date, PaymentBreakdown breakdown, String currency) {
+        result.add(date, new PaymentBreakdown(Money.zero(currency), breakdown.interest(), Money.zero(currency)), CashFlow.CashFlowType.INFLOW, "Interest Payout");
     }
 
     private BigDecimal getYearFraction(LocalDate start, LocalDate end, DayCountConvention convention) {

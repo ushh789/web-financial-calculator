@@ -91,9 +91,7 @@ public class DepositEngineStrategy extends BaseProductEngineStrategy {
                 Money.zero(currency)
             );
 
-            if (method == InterestMethod.SIMPLE) {
-                result.add(currentDate, new PaymentBreakdown(Money.zero(currency), breakdown.interest(), Money.zero(currency)), CashFlow.CashFlowType.INFLOW, "Interest Payout");
-            }
+            interestStrategy.recordInterestCashFlow(result, currentDate, breakdown, currency);
 
             if (principalPayment.amount().compareTo(BigDecimal.ZERO) > 0) {
                 result.add(currentDate, new PaymentBreakdown(principalPayment, Money.zero(currency), Money.zero(currency)), CashFlow.CashFlowType.INFLOW, "Principal Repayment");

@@ -3,7 +3,9 @@ package com.example.demo.calculations.engine.interest;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import com.example.demo.common.CalculationResult;
 import com.example.demo.common.Money;
+import com.example.demo.common.PaymentBreakdown;
 import com.example.demo.model.DayCountConvention;
 import com.example.demo.model.InterestMethod;
 import com.example.demo.model.RateType;
@@ -22,5 +24,8 @@ public interface InterestStrategy {
 
     default Money updateBalance(Money balance, Money interest) {
         return balance;
+    }
+
+    default void recordInterestCashFlow(CalculationResult result, LocalDate date, PaymentBreakdown breakdown, String currency) {
     }
 }
